@@ -1,0 +1,955 @@
+/* ===== RESET & GENERAL ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Google Sans', 'Roboto', Arial, sans-serif;
+    height: 100vh;
+    overflow: hidden;
+    background: #f8f9fa;
+}
+
+/* ===== BẢN ĐỒ ===== */
+#map-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+}
+
+#google-map-iframe {
+    width: 100%;
+    height: 100%;
+    border: 0;
+}
+
+/* ===== THANH TÌM KIẾM ===== */
+.search-container {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+    width: 90%;
+    max-width: 600px;
+}
+
+.search-wrapper {
+    background: white;
+    border-radius: 28px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    display: flex;
+    align-items: center;
+    padding: 4px 20px;
+    transition: box-shadow 0.3s ease;
+}
+
+.search-wrapper:focus-within {
+    box-shadow: 0 4px 16px rgba(26, 115, 232, 0.3);
+}
+
+.search-icon {
+    color: #5f6368;
+    margin-right: 12px;
+}
+
+#map-search-form {
+    flex: 1;
+}
+
+#map-search-input {
+    width: 100%;
+    border: none;
+    outline: none;
+    padding: 14px 0;
+    font-size: 16px;
+    color: #202124;
+    background: transparent;
+}
+
+#map-search-input::placeholder {
+    color: #5f6368;
+}
+
+/* Địa chỉ tìm được */
+.found-address {
+    display: none;
+    align-items: center;
+    gap: 8px;
+    background: white;
+    padding: 12px 20px;
+    border-radius: 20px;
+    margin-top: 8px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    font-size: 14px;
+    color: #202124;
+    animation: slideDown 0.3s ease;
+}
+
+.found-address.show {
+    display: flex;
+}
+
+.found-address .material-icons {
+    color: #EA4335;
+    font-size: 20px;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ===== NÚT KHÁM PHÁ ===== */
+.explore-button {
+    position: fixed;
+    bottom: 32px;
+    left: 120px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: linear-gradient(135deg, #1A73E8 0%, #174ea6 100%);
+    color: white;
+    border: none;
+    padding: 16px 28px;
+    border-radius: 28px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(26, 115, 232, 0.4);
+    z-index: 100;
+    transition: all 0.3s ease;
+}
+
+.explore-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(26, 115, 232, 0.5);
+}
+
+.explore-button .material-icons {
+    font-size: 24px;
+}
+
+/* ===== NÚT TÌM ĐƯỜNG ===== */
+.route-button {
+    position: fixed;
+    bottom: 32px;
+    left: 360px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: linear-gradient(135deg, #34A853 0%, #2d8e47 100%);
+    color: white;
+    border: none;
+    padding: 16px 28px;
+    border-radius: 28px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(52, 168, 83, 0.4);
+    z-index: 100;
+    transition: all 0.3s ease;
+}
+
+.route-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(52, 168, 83, 0.5);
+}
+
+.route-button .material-icons {
+    font-size: 24px;
+}
+
+/* ===== MODAL ===== */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 2000;
+    justify-content: center;
+    align-items: center;
+    animation: fadeIn 0.3s ease;
+}
+
+.modal.show {
+    display: flex;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.modal-content {
+    background: white;
+    width: 90%;
+    max-width: 900px;
+    max-height: 85vh;
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    display: flex;
+    flex-direction: column;
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 28px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.modal-header h2 {
+    font-size: 24px;
+    color: #202124;
+    font-weight: 400;
+}
+
+.close-modal {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+    transition: background 0.2s ease;
+}
+
+.close-modal:hover {
+    background: #f1f3f4;
+}
+
+.close-modal .material-icons {
+    font-size: 24px;
+    color: #5f6368;
+}
+
+/* Form tìm kiếm điểm đến */
+#destination-search-form {
+    padding: 24px 28px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.destination-input-wrapper {
+    display: flex;
+    align-items: center;
+    background: #f1f3f4;
+    border-radius: 24px;
+    padding: 4px 4px 4px 20px;
+    gap: 12px;
+}
+
+.destination-input-wrapper .material-icons {
+    color: #1A73E8;
+    font-size: 24px;
+}
+
+#destination-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    padding: 12px 0;
+    font-size: 16px;
+    color: #202124;
+}
+
+#destination-input::placeholder {
+    color: #5f6368;
+}
+
+.search-submit-btn {
+    background: #1A73E8;
+    border: none;
+    color: white;
+    padding: 10px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s ease;
+}
+
+.search-submit-btn:hover {
+    background: #174ea6;
+}
+
+.search-submit-btn .material-icons {
+    font-size: 24px;
+}
+
+.search-submit-btn .material-icons {
+    font-size: 24px;
+}
+
+/* Nút pin tất cả */
+.pin-all-container {
+    padding: 16px 28px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.pin-all-btn {
+    width: 100%;
+    background: linear-gradient(135deg, #FBBC04 0%, #f9ab00 100%);
+    border: none;
+    color: white;
+    padding: 14px 24px;
+    border-radius: 24px;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(251, 188, 4, 0.3);
+}
+
+.pin-all-btn:hover {
+    background: linear-gradient(135deg, #f9ab00 0%, #ea8600 100%);
+    box-shadow: 0 4px 12px rgba(251, 188, 4, 0.4);
+    transform: translateY(-1px);
+}
+
+.pin-all-btn .material-icons {
+    font-size: 20px;
+}
+
+.pin-count {
+    background: rgba(255, 255, 255, 0.3);
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+/* Phân trang pin địa điểm */
+.pagination-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 12px;
+}
+
+.page-btn {
+    background: white;
+    border: 1px solid #dadce0;
+    color: #1A73E8;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    transition: all 0.2s ease;
+}
+
+.page-btn:hover:not(:disabled) {
+    background: #f1f3f4;
+    border-color: #1A73E8;
+}
+
+.page-btn:disabled {
+    color: #5f6368;
+    border-color: #e0e0e0;
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+.page-btn .material-icons {
+    font-size: 18px;
+}
+
+.page-info {
+    font-size: 14px;
+    color: #5f6368;
+    font-weight: 500;
+    min-width: 50px;
+    text-align: center;
+}
+
+/* Loading spinner */
+.loading {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    gap: 16px;
+}
+
+.loading.show {
+    display: flex;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #e0e0e0;
+    border-top-color: #1A73E8;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.loading p {
+    color: #5f6368;
+    font-size: 14px;
+}
+
+/* ===== KẾT QUẢ ===== */
+.results-container {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px 28px;
+}
+
+/* Thông báo lỗi */
+.error-message {
+    background: #fef7e0;
+    border-left: 4px solid #f9ab00;
+    padding: 16px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.error-message .material-icons {
+    color: #f9ab00;
+    font-size: 24px;
+}
+
+.error-message p {
+    color: #5f6368;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+/* Thông báo không có kết quả */
+.no-results {
+    text-align: center;
+    padding: 40px 20px;
+    color: #5f6368;
+}
+
+.no-results .material-icons {
+    font-size: 64px;
+    color: #dadce0;
+    margin-bottom: 16px;
+}
+
+.no-results h3 {
+    font-size: 18px;
+    font-weight: 400;
+    margin-bottom: 8px;
+}
+
+.no-results p {
+    font-size: 14px;
+}
+
+/* Item địa điểm */
+.result-item {
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    gap: 16px;
+    position: relative;
+}
+
+.result-item:hover {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
+    border-color: #1A73E8;
+}
+
+.result-item::after {
+    content: 'Click để xem trên bản đồ';
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    background: #1A73E8;
+    color: white;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    pointer-events: none;
+}
+
+.result-item:hover::after {
+    opacity: 1;
+}
+
+.result-image {
+    width: 120px;
+    height: 120px;
+    border-radius: 8px;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.result-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.result-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.result-name {
+    font-size: 18px;
+    font-weight: 500;
+    color: #202124;
+    margin: 0;
+    flex: 1;
+}
+
+.result-rating {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: #1A73E8;
+    color: white;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.result-rating .material-icons {
+    font-size: 16px;
+}
+
+.result-meta {
+    display: flex;
+    gap: 16px;
+    font-size: 14px;
+    color: #5f6368;
+    flex-wrap: wrap;
+}
+
+.result-meta span {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.result-meta .material-icons {
+    font-size: 16px;
+}
+
+.result-summary {
+    font-size: 14px;
+    color: #5f6368;
+    line-height: 1.5;
+    margin: 0;
+}
+
+.result-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+}
+
+.result-address {
+    font-size: 13px;
+    color: #5f6368;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex: 1;
+}
+
+.result-address .material-icons {
+    font-size: 16px;
+    color: #EA4335;
+}
+
+.open-maps-btn {
+    background: transparent;
+    border: 1px solid #dadce0;
+    color: #5f6368;
+    padding: 6px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.open-maps-btn:hover {
+    background: #f1f3f4;
+    border-color: #1A73E8;
+    color: #1A73E8;
+}
+
+.open-maps-btn .material-icons {
+    font-size: 18px;
+}
+
+.open-maps-btn .material-icons {
+    font-size: 18px;
+}
+
+.open-maps-btn .material-icons {
+    font-size: 18px;
+}
+
+/* ===== NOTIFICATION ===== */
+.notification {
+    position: fixed;
+    bottom: 100px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: #202124;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 24px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    z-index: 3000;
+    opacity: 0;
+    transition: all 0.3s ease;
+    font-size: 14px;
+    max-width: 90%;
+}
+
+.notification.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+.notification .material-icons {
+    font-size: 20px;
+    color: #FBBC04;
+    flex-shrink: 0;
+}
+
+.notification-message {
+    flex: 1;
+}
+
+/* Notification có button */
+.notification-action {
+    padding: 16px 24px;
+    border-radius: 16px;
+    max-width: 600px;
+}
+
+.notification-btn {
+    background: #1A73E8;
+    border: none;
+    color: white;
+    padding: 8px 20px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.notification-btn:hover {
+    background: #1557b0;
+    transform: scale(1.05);
+}
+
+/* ===== FORM TÌM ĐƯỜNG ===== */
+.route-form-container {
+    padding: 24px 28px;
+    border-bottom: 1px solid #e0e0e0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.route-input-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.route-point-marker {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 14px;
+    flex-shrink: 0;
+}
+
+.origin-marker {
+    background: #EA4335;
+    color: white;
+}
+
+.destination-marker {
+    background: #34A853;
+    color: white;
+}
+
+.route-input {
+    flex: 1;
+    border: 1px solid #dadce0;
+    outline: none;
+    background: white;
+    padding: 12px 16px;
+    font-size: 15px;
+    color: #202124;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.route-input:focus {
+    border-color: #1A73E8;
+    box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.1);
+}
+
+.route-input::placeholder {
+    color: #5f6368;
+}
+
+.swap-points-btn {
+    align-self: center;
+    background: white;
+    border: 1px solid #dadce0;
+    color: #5f6368;
+    padding: 8px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    margin-left: 44px;
+}
+
+.swap-points-btn:hover {
+    background: #f1f3f4;
+    border-color: #1A73E8;
+    color: #1A73E8;
+}
+
+.swap-points-btn .material-icons {
+    font-size: 24px;
+}
+
+.find-route-btn {
+    background: #1A73E8;
+    border: none;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 24px;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+    margin-top: 8px;
+}
+
+.find-route-btn:hover {
+    background: #174ea6;
+    box-shadow: 0 2px 8px rgba(26, 115, 232, 0.3);
+}
+
+.find-route-btn .material-icons {
+    font-size: 20px;
+}
+
+/* Gợi ý địa điểm */
+.route-suggestions {
+    padding: 20px 28px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.route-suggestions h3 {
+    font-size: 16px;
+    font-weight: 500;
+    color: #202124;
+    margin-bottom: 16px;
+}
+
+.suggestions-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.suggestion-item {
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 12px 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.suggestion-item:hover {
+    background: #f8f9fa;
+    border-color: #1A73E8;
+}
+
+.suggestion-item .material-icons {
+    color: #EA4335;
+    font-size: 20px;
+}
+
+.suggestion-info {
+    flex: 1;
+}
+
+.suggestion-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: #202124;
+    margin-bottom: 2px;
+}
+
+.suggestion-address {
+    font-size: 12px;
+    color: #5f6368;
+}
+
+/* ===== SCROLLBAR ===== */
+.results-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.results-container::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.results-container::-webkit-scrollbar-thumb {
+    background: #dadce0;
+    border-radius: 4px;
+}
+
+.results-container::-webkit-scrollbar-thumb:hover {
+    background: #bdc1c6;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+    .search-container {
+        width: 95%;
+        top: 16px;
+    }
+    
+    .explore-button {
+        bottom: 20px;
+        left: 80px;
+        padding: 14px 20px;
+        font-size: 14px;
+    }
+    
+    .route-button {
+        bottom: 20px;
+        left: 300px;
+        padding: 14px 20px;
+        font-size: 14px;
+    }
+    
+    .modal-content {
+        width: 95%;
+        max-height: 90vh;
+    }
+    
+    .result-item {
+        flex-direction: column;
+    }
+    
+    .result-image {
+        width: 100%;
+        height: 200px;
+    }
+    
+    .result-header {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .notification {
+        bottom: 80px;
+        font-size: 13px;
+        padding: 12px 16px;
+        max-width: 95%;
+    }
+    
+    .notification-action {
+        flex-direction: column;
+        align-items: stretch;
+        text-align: center;
+    }
+    
+    .notification-btn {
+        width: 100%;
+        margin-top: 8px;
+    }
+}
