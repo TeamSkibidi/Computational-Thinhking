@@ -357,7 +357,10 @@ async def app_info():
         }
     }
 
-
-# ============================================================
-# RUN APPLICATION
-# ============================================================
+@app.get("/chat_bot", tags=["ChatBot"])
+async def chat_bot_end_point(q: str):
+    data = await chat_bot_with_ai(q)
+    if not data:
+        print("\n không có phản hồi từ AI ")
+        return {"response": "No response from AI"}
+    return data
