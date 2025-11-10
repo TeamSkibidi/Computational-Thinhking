@@ -66,8 +66,8 @@ class UserEntity(User):
         Cập nhật updated_at
 
         vd
-        Người dùng yêu cầu tạm khóa.
-        Hệ thống phát hiện vi phạm và admin khóa.
+        Người dùng yêu cầu tạm khóa
+        Hệ thống phát hiện vi phạm và admin khóa
         """
         self.is_active = False
         self.touch()
@@ -77,6 +77,18 @@ class UserEntity(User):
         ghi ngắn gọn hơn cập nhật thời gian thôi
         """
         self.updated_at = datetime.now(timezone.utc)
+        
+    def to_safe_dict(self):
+        """
+        Trả về dict 'an toàn' để gửi ra API/UI, loại bỏ hashed_password
+
+        
+        self.model_dump() là phương thức của Pydantic BaseModel giúp chuyển sang dict
+        Sau đó ta pop(hashed_password) để giảm rủi ro lộ thông tin
+        """
+        data = self.model_dump()
+        data.pop("hashed_password", None)
+        return data    
         
         
     
