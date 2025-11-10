@@ -57,6 +57,17 @@ class UserEntity(User):
         self.is_active = True
         self.updated_at = datetime.now(timezone.utc)
         
-        
+    def deactivate(self):
+        """
+        Khóa tài khoản.
+        đổi is_active=False
+        Cập nhật updated_at
+
+        vd
+        Người dùng yêu cầu tạm khóa.
+        Hệ thống phát hiện vi phạm và admin khóa.
+        """
+        self.is_active = False
+        self.updated_at = datetime.now(timezone.utc)
         
     
