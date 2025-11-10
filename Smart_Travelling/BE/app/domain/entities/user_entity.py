@@ -44,4 +44,19 @@ class UserEntity(User):
             raise ValueError("Mật khẩu cũ không đúng")
         self.set_password(new_password)
         
+    def activate(self):
+        """
+        Kích hoạt tài khoản
+        đổi is_active=True
+        sau đó cập nhật update_at để lưu thời điểm đổi trạng thái
+        
+        vd:
+        sau khi admin gỡ khóa tài khoản
+        """
+        
+        self.is_active = True
+        self.updated_at = datetime.now(timezone.utc)
+        
+        
+        
     
