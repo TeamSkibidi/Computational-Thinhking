@@ -33,6 +33,15 @@ class UserEntity(User):
         return pwd_context.verify(password, self.hashed_password)
     
     
-    
+    def change_password(self, old_password: str, new_password: str):
+        """
+        Đổi mật khẩu thì người dùng nhập đúng mật khẩu cũ nhằm người khác đổi mật khẩu
+        Nếu old_password không đúng -> raise ValueError để tầng trên (service/router)
+        bắt và trả về mã ỗi phù hợp
+        """
+        
+        if not self.verify_password(old_password):
+            raise ValueError("Mật khẩu cũ không đúng")
+        self.set_password(new_password)
         
     
