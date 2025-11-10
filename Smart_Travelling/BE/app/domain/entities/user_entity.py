@@ -17,7 +17,8 @@ class UserEntity(User):
         sau đó cập nhật update_at để biết thời gian thay đổi gần nhất
         """
         self.hashed_password = pwd_context.hash(password)
-        self.updated_at = datetime.now(timezone.utc)
+        self.touch()
+
         
         
         
@@ -55,7 +56,8 @@ class UserEntity(User):
         """
         
         self.is_active = True
-        self.updated_at = datetime.now(timezone.utc)
+        self.touch()
+
         
     def deactivate(self):
         """
@@ -68,6 +70,13 @@ class UserEntity(User):
         Hệ thống phát hiện vi phạm và admin khóa.
         """
         self.is_active = False
+        self.touch()
+        
+    def touch(self):
+        """
+        ghi ngắn gọn hơn cập nhật thời gian thôi
+        """
         self.updated_at = datetime.now(timezone.utc)
+        
         
     
