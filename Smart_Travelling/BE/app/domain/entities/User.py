@@ -24,7 +24,7 @@ class User(BaseModel):
     # số điện thoại việt nam, có hoặc không cũng được
     # nhưng nếu có thì theo định dạng +84 hoặc 0
     # regex=r"^(?:\+84|0)\d{9,10}$": định dạng +84 và 0 đồng thời là sđt gồm 10 hoặc 11 số
-    phone_number: Optional[str] = Field(None, regex=r"^(?:\+84|0)\d{9,10}$")
+    phone_number: Optional[str] = Field(None, pattern=r"^(?:\+84|0)\d{9,10}$")
     
     # Mật khẩu đã được hash
     hashed_password: str
@@ -45,6 +45,9 @@ class User(BaseModel):
     # Thời điểm cập nhật gần nhất — None nếu chưa có thay đổi gì
     # Khi người dùng đổi mật khẩu / thông tin, hệ thống sẽ cập nhật lại
     updated_at: Optional[datetime] = None
+    
+    #số lần nhập sai
+    failed_attempts: int = 0
     
     
         

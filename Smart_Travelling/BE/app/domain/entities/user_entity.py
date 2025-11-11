@@ -10,6 +10,8 @@ pwd_context = CryptContext(schemes=["bcrypt"])
 # Class để nói đến các behavior liên qua đến người dùng
 class UserEntity(User):
     
+    MAX_FAILED_ATTEMPTS = 5  # Giới hạn 5 lần nhập mật khẩu
+    
    
     def set_password(self, password: str):
         """
@@ -24,14 +26,28 @@ class UserEntity(User):
         
     def verify_password(self, password: str) -> bool:
         """
-        Kiểm tra xem mật khẩu có khớp không
-        cách hoạt động là Passlib.verify() tự đọc salt từ chuỗi hash đã lưu và hash lại input
-        
-        trả về:
-        True: đúng mk
-        False: sai mk
+        Kiểm tra mật khẩu. 
+            Nếu sai: tăng failed_attempts
+            Nếu đúng: reset về 0
+            Nếu sai >= 5: khóa tài khoản và raise lỗi       
         """
-        return pwd_context.verify(password, self.hashed_password)
+        
+        if not pwd_context.verify(password, self.hashed_password):
+            self.failed_attempts += 1
+            self.touch()
+            
+            #kiểm tra nếu sai quá 5 lần thì xóa
+            if self.failed_attempts >= self.MAX_FAILED_ATTEMPTS:
+                self.is_active = False
+                raise ValueError("Bạn đã nhập sai quá 5 lần. Tài khoản tạm khóa, vui lòng liên hệ admin")
+            else:
+                raise ValueError(f"Mật khẩu sai ({self.failed_attempts}/{self.MAX_FAILED_ATTEMPTS})")
+        
+        else:
+            #Đúng mật khẩu thì reset bộ nhớ
+            self.failed_attempts = 0
+            self.touch()
+            return True
     
     
     def change_password(self, old_password: str, new_password: str):
@@ -56,6 +72,7 @@ class UserEntity(User):
         """
         
         self.is_active = True
+        self.failed_attempts = 0
         self.touch()
 
         
