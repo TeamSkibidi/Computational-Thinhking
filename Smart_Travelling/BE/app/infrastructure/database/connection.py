@@ -154,23 +154,3 @@ async def get_pool_info() -> dict:
         "maxsize": _pool.maxsize,
         "minsize": _pool.minsize
     }
-
-
-# ============================================================
-# BACKWARD COMPATIBILITY - Nếu code cũ đang dùng _conn()
-# ============================================================
-
-def _conn():
-    """
-    DEPRECATED: Legacy function for backward compatibility
-    
-    ⚠️  Không nên dùng hàm này nữa!
-    ⚠️  Dùng get_connection() thay thế
-    
-    Raises:
-        RuntimeError: Luôn raise lỗi vì không thể dùng sync trong async context
-    """
-    raise RuntimeError(
-        "❌ _conn() is deprecated and cannot be used with async/await!\n"
-        "✅ Use 'async with get_connection() as conn:' instead"
-    )
