@@ -217,3 +217,32 @@ def reset_failed_attempts(user_id: int) -> bool:
 
     return updated
 
+
+
+# đây là hàm mình set nó về false -> tài khoản không thể đăng nhập được nữa
+def deactivate_user(user_id: int) -> bool:
+    return _set_active(user_id, False)
+
+
+# hàm set về true -> kích hoạt lại tài khoản (admin sẽ dùng)
+def activate_user(user_id: int) -> bool:
+    return _set_active(user_id, True)
+
+
+# hàm dùng chung để set lại trạng thái active
+def _set_active(user_id: int, active: bool) -> bool:
+    db = get_db()
+    if db is None:
+        return False
+
+    cursor = db.cursor()
+    sql = "UPDATE users SET is_active = %s WHERE id = %s"
+    cursor.execute(sql, (active, user_id))
+    db.commit()
+
+    updated = cursor.rowcount > 0
+
+    cursor.close()
+    db.close()
+
+    return updated
