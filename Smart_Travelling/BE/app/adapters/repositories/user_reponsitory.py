@@ -160,3 +160,22 @@ def update_user_email(user_id: int, new_email: str) -> bool:
     db.close()
 
     return updated
+
+# update số điện thoại
+def update_user_phone(user_id: int, phone: str) -> bool:
+    db = get_db()
+    if db is None:
+        return False
+
+    cursor = db.cursor()
+    sql = "UPDATE users SET phone_number = %s WHERE id = %s"
+    cursor.execute(sql, (phone, user_id))
+    db.commit()
+
+    updated = cursor.rowcount > 0
+
+    cursor.close()
+    db.close()
+
+    return updated
+
