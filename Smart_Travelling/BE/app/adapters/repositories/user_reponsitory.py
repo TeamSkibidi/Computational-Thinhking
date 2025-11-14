@@ -1,0 +1,66 @@
+from typing import Optional, List, Dict
+from app.infrastructure.database.connectdb import get_db
+
+
+
+# Tạo tài khoản
+
+def create_user(data: Dict) -> int:
+    """
+
+    Tham số:
+        data (Dict): chứa các thông tin của user:
+            - username (str)
+            - email (str)
+            - phone_number (str, optional)
+            - hashed_password (str)
+            - role (str, optional, mặc định = "user")
+            - is_active (bool, optional, mặc định = True)
+            - failed_attempts (int, optional, mặc định = 0)
+
+    Trả về:
+        int: ID của user vừa tạo.
+             - Trả về -1 nếu kết nối database thất bại.
+    """
+
+    # Lấy connection đến database
+    db = get_db()
+    if db is None:
+        return -1  # Không kết nối được thì trả về -1 mục đích để báo lỗi
+
+    # Tạo cursor để thực thi các câu lệnh SQL
+    cursor = db.cursor()
+
+    # Câu lệnh SQL dạng để tránh SQL 
+    sql = """
+        INSERT INTO users 
+        (username, email, phone_number, hashed_password, role, is_active, failed_attempts)
+        VALUES (%s, %s, %s, %s, %s, %s, %s)
+    """
+
+    # Chuẩn bị các giá trị đưa vào SQL
+    values = (
+        data["username"],
+        data["email"],
+        data.get("phone_number"),           # .get() để tránh lỗi nếu key không tồn tại
+        data["hashed_password"],
+        data.get("role", "user"),           # mặc định là user
+        data.get("is_active", True),        # mặc định là active
+        data.get("failed_attempts", 0)      # mặc định = 0
+    )
+
+    # Thực thi câu lệnh 
+    cursor.execute(sql, values) # khi thêm vào thì id tự tăng thêm 1 đơn vị
+
+    # Lưu thay đổi vào database
+    db.commit()
+
+    # Lấy ID của dòng vừa được thêm
+    new_id = cursor.lastrowid 
+
+    # Đóng cursor và connection để tránh rò rỉ tài nguyên
+    cursor.close()
+    db.close()
+
+    # Trả về ID user mới tạo
+    return new_id
