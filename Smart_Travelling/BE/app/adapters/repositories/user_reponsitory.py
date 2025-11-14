@@ -64,3 +64,36 @@ def create_user(data: Dict) -> int:
 
     # Trả về ID user mới tạo
     return new_id
+
+
+
+
+# lấy tài khoản user bằng tên
+
+def get_user_by_username(username: str) -> Optional[Dict]:
+    # Mỗi lần truy vấn thì mở kết nối DB
+    db = get_db()
+    if db is None:
+        return None
+
+    # cursor(dictionary=True):
+    #    Giúp fetchone() trả về dạng dictionary ({"username": "minh"})
+    #    Nếu bỏ dictionary=True thì sẽ trả về tuple (("minh",))
+    #    Dùng dictionary giúp code rõ ràng hơn và dễ convert sang JSON
+    cursor = db.cursor(dictionary=True)
+
+    # Câu SQL lấy user theo username
+    sql = "SELECT * FROM users WHERE username = %s"
+
+    # Thực thi câu truy vấn, truyền giá trị vào %s
+    cursor.execute(sql, (username,))
+
+    # Lấy đúng 1 dòng kết quả
+    result = cursor.fetchone()  # chỗ này đã lấy được thông tin của user
+
+    # Đóng cursor và connection để tránh rò rỉ tài nguyên
+    cursor.close()
+    db.close()
+
+    # Trả về user hoặc None nếu không có
+    return result
