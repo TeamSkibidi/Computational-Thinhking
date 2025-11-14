@@ -118,3 +118,22 @@ def get_user_by_email(email: str) -> Optional[Dict]:
     db.close()
 
     return result
+
+
+# Lấy tài khoản bằng id của user, tương tự như username
+def get_user_by_id(user_id: int) -> Optional[Dict]:
+    db = get_db()
+    if db is None:
+        return None
+
+    cursor = db.cursor(dictionary=True)
+
+    sql = "SELECT * FROM users WHERE id = %s"
+    cursor.execute(sql, (user_id,))
+
+    result = cursor.fetchone()
+
+    cursor.close()
+    db.close()
+
+    return result
