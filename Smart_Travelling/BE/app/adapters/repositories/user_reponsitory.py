@@ -97,3 +97,24 @@ def get_user_by_username(username: str) -> Optional[Dict]:
 
     # Trả về user hoặc None nếu không có
     return result
+
+
+# lấy user bằng email mục đíc là lấy ra coi thử email đã bị trùng chưa
+# tương tự như username trên nhưng bằng email
+
+def get_user_by_email(email: str) -> Optional[Dict]:
+    db = get_db()
+    if db is None:
+        return None
+
+    cursor = db.cursor(dictionary=True)
+
+    sql = "SELECT * FROM users WHERE email = %s"
+    cursor.execute(sql, (email,))
+
+    result = cursor.fetchone()# lấy kết quả đó ra
+
+    cursor.close()
+    db.close()
+
+    return result
