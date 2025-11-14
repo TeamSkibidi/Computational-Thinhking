@@ -197,3 +197,23 @@ def update_user_password(user_id: int, hashed_password: str) -> bool:
     db.close()
 
     return updated
+
+
+# reset lại số lần nhập sai về 0 nếu đăng nhập thành công
+def reset_failed_attempts(user_id: int) -> bool:
+    db = get_db()
+    if db is None:
+        return False
+
+    cursor = db.cursor()
+    sql = "UPDATE users SET failed_attempts = 0 WHERE id = %s"
+    cursor.execute(sql, (user_id,))
+    db.commit()
+
+    updated = cursor.rowcount > 0
+
+    cursor.close()
+    db.close()
+
+    return updated
+
