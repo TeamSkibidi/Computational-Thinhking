@@ -265,3 +265,23 @@ def delete_user(user_id: int) -> bool:
     db.close()
 
     return deleted
+
+
+
+# lấy tất cả user, không lấy admin
+def get_all_users() -> List[Dict]:
+    db = get_db()
+    if db is None:
+        return []
+
+    cursor = db.cursor(dictionary=True)
+
+    sql = "SELECT * FROM users WHERE role = 'user' ORDER BY id ASC"     #ASC là theo id tăng dần
+    cursor.execute(sql)
+
+    results = cursor.fetchall()
+
+    cursor.close()
+    db.close()
+
+    return results
