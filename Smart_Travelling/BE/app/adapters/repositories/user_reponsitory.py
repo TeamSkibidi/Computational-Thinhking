@@ -179,3 +179,21 @@ def update_user_phone(user_id: int, phone: str) -> bool:
 
     return updated
 
+
+# update mật khẩu
+def update_user_password(user_id: int, hashed_password: str) -> bool:
+    db = get_db()
+    if db is None:
+        return False
+
+    cursor = db.cursor()
+    sql = "UPDATE users SET hashed_password = %s WHERE id = %s"
+    cursor.execute(sql, (hashed_password, user_id))
+    db.commit()
+
+    updated = cursor.rowcount > 0
+
+    cursor.close()
+    db.close()
+
+    return updated
