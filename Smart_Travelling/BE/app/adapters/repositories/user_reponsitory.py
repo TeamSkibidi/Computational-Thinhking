@@ -137,3 +137,26 @@ def get_user_by_id(user_id: int) -> Optional[Dict]:
     db.close()
 
     return result
+
+
+# Update các trường hợp
+
+# update email (đổi email)
+def update_user_email(user_id: int, new_email: str) -> bool:
+    db = get_db()
+    if db is None:
+        return False
+
+    cursor = db.cursor()
+    
+    sql = "UPDATE users SET email = %s WHERE id = %s"
+    cursor.execute(sql, (new_email, user_id))
+    
+    db.commit()
+
+    updated = cursor.rowcount > 0       # phần này để kiểm tra số dòng thay đổi
+
+    cursor.close()
+    db.close()
+
+    return updated
