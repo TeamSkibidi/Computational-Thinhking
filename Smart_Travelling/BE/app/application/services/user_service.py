@@ -94,3 +94,47 @@ def login(username: str, password: str) -> Dict:
 
     # Trả dữ liệu an toàn
     return entity.to_safe_dict()
+
+
+def change_password(user_id: int, old_password: str, new_password: str) -> bool:
+    """
+    USER - Đổi mật khẩu.
+    Logic:
+        - Lấy user từ DB
+        - Tạo UserEntity để xử lý logic 
+        - Nếu old sai → raise error trong Entity
+        - Nếu đúng → set mật khẩu mới (hash)
+        - Lưu hashed_password xuống DB
+        - Cập nhật updated_at
+    """
+
+    # 1) Lấy user từ DB
+    user_db = user_reponsitory.get_user_by_id(user_id)
+    if user_db is None:
+        raise ValueError("User không tồn tại")
+
+    # 2) Tạo entity từ DB
+    entity = UserEntity(
+        id=user_db["id"],
+        username=user_db["username"],
+        email=user_db.get("email"),
+        phone_number=user_db.get("phone_number"),
+        hashed_password=user_db["hashed_password"],
+        role=user_db["role"],
+        is_active=user_db["is_active"],
+        failed_attempts=user_db["failed_attempts"],
+        created_at=user_db.get("created_at"),
+        updated_at=user_db.get("updated_at"),
+    )
+
+    # 3) Kiểm tra mật khẩu cũ + hash mật khẩu mới
+    entity.change_password(old_password, new_password)
+
+    # 4) Lưu hashed_password mới
+    user_reponsitory.update_user_password(entity.id, entity.hashed_password)
+
+    # # 5) Reset số lần nhập sai về 0 (nếu có)
+    # if entity.failed_attempts != 0:
+    #     user_reponsitory.reset_failed_attempts(entity.id)
+
+    return True
