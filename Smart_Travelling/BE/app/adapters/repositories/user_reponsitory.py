@@ -11,7 +11,7 @@ def create_user(data: Dict) -> int:
     Tham số:
         data (Dict): chứa các thông tin của user:
             - username (str)
-            - email (str)
+            - email (str, optional)
             - phone_number (str, optional)
             - hashed_password (str)
             - role (str, optional, mặc định = "user")
@@ -41,7 +41,7 @@ def create_user(data: Dict) -> int:
     # Chuẩn bị các giá trị đưa vào SQL
     values = (
         data["username"],
-        data["email"],
+        data.get("email"),
         data.get("phone_number"),           # .get() để tránh lỗi nếu key không tồn tại
         data["hashed_password"],
         data.get("role", "user"),           # mặc định là user
@@ -99,7 +99,7 @@ def get_user_by_username(username: str) -> Optional[Dict]:
     return result
 
 
-# lấy user bằng email mục đíc là lấy ra coi thử email đã bị trùng chưa
+# lấy user bằng email mục đíc là lấy ra coi thử email đã bị trùng chưa (chưa nhất thiết dùng vì mình đã bỏ đăng kí bằng email)
 # tương tự như username trên nhưng bằng email
 
 def get_user_by_email(email: str) -> Optional[Dict]:
