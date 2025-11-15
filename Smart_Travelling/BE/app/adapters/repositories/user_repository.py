@@ -6,7 +6,7 @@ from datetime import datetime, timezone
 
 # Tạo tài khoản
 
-def create_user(data: Dict) -> int:
+def create_user(data: Dict) -> bool:
     """
 
     Tham số:
@@ -19,15 +19,13 @@ def create_user(data: Dict) -> int:
             - is_active (bool, optional, mặc định = True)
             - failed_attempts (int, optional, mặc định = 0)
 
-    Trả về:
-        int: ID của user vừa tạo.
-             - Trả về -1 nếu kết nối database thất bại.
+   
     """
 
     # Lấy connection đến database
     db = get_db()
     if db is None:
-        return -1  # Không kết nối được thì trả về -1 mục đích để báo lỗi
+        return False
 
     # Tạo cursor để thực thi các câu lệnh SQL
     cursor = db.cursor()
@@ -56,15 +54,13 @@ def create_user(data: Dict) -> int:
     # Lưu thay đổi vào database
     db.commit()
 
-    # Lấy ID của dòng vừa được thêm
-    new_id = cursor.lastrowid 
 
     # Đóng cursor và connection để tránh rò rỉ tài nguyên
     cursor.close()
     db.close()
 
     # Trả về ID user mới tạo
-    return new_id
+    return True
 
 
 
