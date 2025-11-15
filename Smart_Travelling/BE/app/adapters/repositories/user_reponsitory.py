@@ -1,5 +1,6 @@
 from typing import Optional, List, Dict
 from app.infrastructure.database.connectdb import get_db
+from datetime import datetime, timezone
 
 
 
@@ -189,6 +190,34 @@ def update_user_password(user_id: int, hashed_password: str) -> bool:
     cursor = db.cursor()
     sql = "UPDATE users SET hashed_password = %s WHERE id = %s"
     cursor.execute(sql, (hashed_password, user_id))
+    db.commit()
+
+    updated = cursor.rowcount > 0
+
+    cursor.close()
+    db.close()
+
+    return updated
+
+
+
+# cập nhật lại số lần nhập sai và thời điểm update
+def update_failed_attempts(user_id: int, attempts: int) -> bool:
+    
+    db = get_db()
+    if db is None:
+        return False
+
+    cursor = db.cursor()
+
+    sql = """
+        UPDATE users 
+        SET failed_attempts = %s, updated_at = %s
+        WHERE id = %s
+    """
+    now = datetime.now(timezone.utc)
+
+    cursor.execute(sql, (attempts, now, user_id))
     db.commit()
 
     updated = cursor.rowcount > 0
