@@ -5,7 +5,7 @@ from app.domain.entities.user_entity import UserEntity      #import tận class
 
 
 #Đăng kí tài khoản
-def register_user(data: Dict) -> int:
+def register_user(data: Dict) -> bool:
     
     # Đăng ký tài khoản mới chỉ cần username + password.
     
