@@ -4,8 +4,8 @@ CREATE TABLE
     IF NOT EXISTS users (
         id INT AUTO_INCREMENT PRIMARY KEY,
         username VARCHAR(30) NOT NULL UNIQUE,
-        email VARCHAR(255) NOT NULL UNIQUE,
-        phone_number VARCHAR(15),
+        email VARCHAR(255) NULL ,
+        phone_number VARCHAR(15) null ,
         hashed_password VARCHAR(255) NOT NULL,
         role ENUM ('user', 'admin') DEFAULT 'user',
         is_active BOOLEAN DEFAULT TRUE,
