@@ -202,3 +202,16 @@ def get_user_profile(user_id: int) -> Optional[Dict]:
 
     # 3. Trả về thông tin an toàn (không trả hashed_password)
     return entity.to_safe_dict()
+
+#khóa tài khoản của user
+def admin_deactivate_user(user_id: int) -> bool:
+    """
+    ADMIN – Khoá tài khoản người dùng (is_active = False).
+    """
+
+    user_db = user_repository.get_user_by_id(user_id)
+    if user_db is None:
+        raise ValueError("User không tồn tại")
+
+    # Gọi hàm có khóa lại trong repository
+    return user_repository.deactivate_user(user_id)
