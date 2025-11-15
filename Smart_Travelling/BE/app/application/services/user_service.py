@@ -203,6 +203,10 @@ def get_user_profile(user_id: int) -> Optional[Dict]:
     # 3. Trả về thông tin an toàn (không trả hashed_password)
     return entity.to_safe_dict()
 
+
+
+
+# PHẦN NÀY LÀ CÁC THAO TÁC CỦA ADMIN
 #khóa tài khoản của user
 def admin_deactivate_user(user_id: int) -> bool:
     """
@@ -215,3 +219,23 @@ def admin_deactivate_user(user_id: int) -> bool:
 
     # Gọi hàm có khóa lại trong repository
     return user_repository.deactivate_user(user_id)
+
+
+#mở khóa tài khoản người dùng
+def admin_activate_user(user_id: int) -> bool:
+    """
+    ADMIN – Mở khoá tài khoản người dùng.
+    Reset failed_attempts về 0.
+    """
+
+    user_db = user_repository.get_user_by_id(user_id)
+    if user_db is None:
+        raise ValueError("User không tồn tại")
+
+    # 1) bật active = True
+    result = user_repository.activate_user(user_id)
+    
+    # 2) reset số lần nhập sai
+    user_repository.reset_failed_attempts(user_id)
+
+    return result
