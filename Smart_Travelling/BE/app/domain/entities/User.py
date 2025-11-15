@@ -19,7 +19,7 @@ class User(BaseModel):
     username: str = Field(..., min_length=3, max_length=30)
     
     # email người dùng, kiểm tra định dạng email của họ
-    email: EmailStr
+    email: Optional[EmailStr] = None
     
     # số điện thoại việt nam, có hoặc không cũng được
     # nhưng nếu có thì theo định dạng +84 hoặc 0
