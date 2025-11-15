@@ -159,6 +159,9 @@ def update_user_email(user_id: int, new_email: str) -> bool:
 
     cursor.close()
     db.close()
+    
+    # cập nhật timestamp
+    update_timestamp(user_id)
 
     return updated
 
@@ -177,6 +180,9 @@ def update_user_phone(user_id: int, phone: str) -> bool:
 
     cursor.close()
     db.close()
+    
+    # cập nhật timestamp
+    update_timestamp(user_id)
 
     return updated
 
@@ -196,6 +202,9 @@ def update_user_password(user_id: int, hashed_password: str) -> bool:
 
     cursor.close()
     db.close()
+    
+    # cập nhật timestamp
+    update_timestamp(user_id)
 
     return updated
 
@@ -211,19 +220,19 @@ def update_failed_attempts(user_id: int, attempts: int) -> bool:
     cursor = db.cursor()
 
     sql = """
-        UPDATE users 
-        SET failed_attempts = %s, updated_at = %s
-        WHERE id = %s
+        UPDATE users SET failed_attempts = %s WHERE id = %s
     """
-    now = datetime.now(timezone.utc)
 
-    cursor.execute(sql, (attempts, now, user_id))
+    cursor.execute(sql, (attempts, user_id))
     db.commit()
 
     updated = cursor.rowcount > 0
 
     cursor.close()
     db.close()
+    
+    # cập nhật timestamp
+    update_timestamp(user_id)
 
     return updated
 
@@ -243,6 +252,9 @@ def reset_failed_attempts(user_id: int) -> bool:
 
     cursor.close()
     db.close()
+    
+    # cập nhật timestamp
+    update_timestamp(user_id)
 
     return updated
 
@@ -273,6 +285,9 @@ def set_active(user_id: int, active: bool) -> bool:
 
     cursor.close()
     db.close()
+    
+    # cập nhật timestamp
+    update_timestamp(user_id)
 
     return updated
 
