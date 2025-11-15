@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 from passlib.context import CryptContext
-from User import User
+from app.domain.entities.User import User
 
 # CryptContext là một thư viện con của passlib để quản lý thuật toán hash
 # chọn "bcrypt" (an toàn, phổ biến và có salt ngẫu nhiên mỗi lần hash)
