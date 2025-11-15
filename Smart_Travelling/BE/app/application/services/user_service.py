@@ -4,10 +4,6 @@ from app.adapters.repositories import user_repository      # chỉ import file t
 from app.domain.entities.user_entity import UserEntity      #import tận class
 
 
-# chọn thuật toán bycypt để hash mật khẩu
-pwd_context = CryptContext(schemes=["bcrypt"])
-
-
 #Đăng kí tài khoản
 def register_user(data: Dict) -> int:
     
@@ -256,3 +252,14 @@ def admin_list_all_users() -> List[Dict]:
 
     return users
 
+#xóa user
+def admin_delete_user(user_id: int) -> bool:
+    """
+    ADMIN - Xoá user khỏi hệ thống.
+    """
+
+    user_db = user_repository.get_user_by_id(user_id)
+    if user_db is None:
+        raise ValueError("User không tồn tại")
+
+    return user_repository.delete_user(user_id)
