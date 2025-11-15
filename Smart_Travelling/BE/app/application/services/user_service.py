@@ -1,7 +1,8 @@
 from passlib.context import CryptContext
 from typing import Dict, Optional, List
-from app.adapters.repositories import user_repository
-from app.domain.entities.user_entity import UserEntity
+from app.adapters.repositories import user_reponsitory      # chỉ import file thì nếu bên trong không có class thì dùng vâyj
+from app.domain.entities.user_entity import UserEntity      #import tận class
+
 
 # chọn thuật toán bycypt để hash mật khẩu
 pwd_context = CryptContext(schemes=["bcrypt"])
@@ -13,11 +14,11 @@ def register_user(data: Dict) -> int:
     # Đăng ký tài khoản mới chỉ cần username + password.
     
 
-    # 1. Kiểm tra username trùng
-    if user_repository.get_user_by_username(data["username"]):
+    # Kiểm tra username trùng
+    if user_reponsitory.get_user_by_username(data["username"]):
         raise ValueError("Username đã tồn tại")
 
-    # 2. Tạo UserEntity — KHÔNG truyền toàn bộ data tránh lỗi
+    # Tạo UserEntity — KHÔNG truyền toàn bộ data tránh lỗi
     entity = UserEntity(
         username=data["username"],
         email=None,              # vì không dùng email
@@ -28,12 +29,68 @@ def register_user(data: Dict) -> int:
         failed_attempts=0,
     )
 
-    # 3. Hash password
+    # Hash password
     entity.set_password(data["password"])
 
-    # 4. Convert sang dict để lưu DB
+    # Convert sang dict để lưu DB
     user_dict = entity.model_dump()
    
 
-    # 5. Lưu DB
-    return user_repository.create_user(user_dict)
+    # Lưu DB
+    return user_reponsitory.create_user(user_dict)
+
+#đăng nhập tài khoản
+def login(username: str, password: str) -> Dict:
+    """
+    Đăng nhập người dùng bằng username + password.
+    - Nếu sai -> tăng failed_attempts
+    - Nếu sai >= 5 -> khóa tài khoản
+    - Nếu đúng -> reset failed_attempts và cập nhật updated_at
+    """
+
+    # 1) Lấy user từ DB
+    user_db = user_reponsitory.get_user_by_username(username)
+    if user_db is None:
+        raise ValueError("Tài khoản không tồn tại.")
+
+    # 2) Tạo Entity từ DB để xử lý logic
+    entity = UserEntity(
+        id=user_db["id"],
+        username=user_db["username"],
+        email=user_db.get("email"),
+        phone_number=user_db.get("phone_number"),
+        hashed_password=user_db["hashed_password"],
+        role=user_db["role"],
+        is_active=user_db["is_active"],
+        failed_attempts=user_db["failed_attempts"],
+        created_at=user_db.get("created_at"),
+        updated_at=user_db.get("updated_at"),
+    )
+
+    # 3) Nếu tài khoản bị khóa -> không cho login
+    if not entity.is_active:
+        raise ValueError("Tài khoản đã bị khóa. Vui lòng liên hệ admin để mở khóa.")
+
+    # 4) Xác thực mật khẩu 
+    try:
+        entity.verify_password(password)   # đúng thì return True, sai thì raise ValueError
+
+    except ValueError as e:
+
+        # Trường hợp bị khóa do sai quá 5 lần
+        if not entity.is_active:
+            user_reponsitory.deactivate_user(entity.id)
+
+        # Trường hợp chỉ sai < 5 lần → cập nhật failed_attempts
+        else:
+            user_reponsitory.update_failed_attempts(entity.id, entity.failed_attempts)
+
+        raise e   # ném lỗi lên router hoặc API
+
+    # xuống tới đây tức là nhập đúng rồi
+
+    # Reset số lần nhập sai
+    user_reponsitory.reset_failed_attempts(entity.id)
+
+    # Trả dữ liệu an toàn
+    return entity.to_safe_dict()
