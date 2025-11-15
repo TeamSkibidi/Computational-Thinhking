@@ -239,3 +239,20 @@ def admin_activate_user(user_id: int) -> bool:
     user_repository.reset_failed_attempts(user_id)
 
     return result
+
+
+# lấy ra danh sách của user
+def admin_list_all_users() -> List[Dict]:
+    """
+    ADMIN – Xem danh sách user (không bao gồm admin).
+    Xoá hashed_password trước khi trả ra API.
+    """
+
+    users = user_repository.get_all_users()
+
+    # Xoá mật khẩu hash để an toàn
+    for u in users:
+        u.pop("hashed_password", None)
+
+    return users
+
