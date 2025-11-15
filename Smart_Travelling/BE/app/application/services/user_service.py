@@ -139,7 +139,7 @@ def change_password(user_id: int, old_password: str, new_password: str) -> bool:
 
     return True
 
-
+#cập nhật thông tin người dùng (email, phone number)
 def update_user_info(user_id: int, data: Dict) -> bool:
     """
     USER - Cập nhật thông tin cá nhân (email, phone_number).
@@ -173,3 +173,32 @@ def update_user_info(user_id: int, data: Dict) -> bool:
             updated_anything = True
 
     return updated_anything
+
+#lấy thông tin người dùng
+def get_user_profile(user_id: int) -> Optional[Dict]:
+    """
+    USER - Lấy thông tin tài khoản của chính mình.
+    Trả về dạng dict an toàn (không bao gồm hashed_password).
+    """
+
+    # 1. Lấy dữ liệu từ DB
+    user_db = user_repository.get_user_by_id(user_id)
+    if user_db is None:
+        return None
+
+    # 2. Tạo UserEntity từ dữ liệu DB
+    entity = UserEntity(
+        id=user_db["id"],
+        username=user_db["username"],
+        email=user_db.get("email"),
+        phone_number=user_db.get("phone_number"),
+        hashed_password=user_db["hashed_password"],
+        role=user_db["role"],
+        is_active=user_db["is_active"],
+        failed_attempts=user_db["failed_attempts"],
+        created_at=user_db.get("created_at"),
+        updated_at=user_db.get("updated_at"),
+    )
+
+    # 3. Trả về thông tin an toàn (không trả hashed_password)
+    return entity.to_safe_dict()
