@@ -276,6 +276,30 @@ def set_active(user_id: int, active: bool) -> bool:
 
     return updated
 
+
+def update_timestamp(user_id: int) -> bool:
+    
+    #Cập nhật updated_at cho user.
+    
+    db = get_db()
+    if db is None:
+        return False
+
+    cursor = db.cursor()
+
+    sql = "UPDATE users SET updated_at = %s WHERE id = %s"
+    now = datetime.now(timezone.utc)
+
+    cursor.execute(sql, (now, user_id))
+    db.commit()
+
+    updated = cursor.rowcount > 0
+
+    cursor.close()
+    db.close()
+
+    return updated
+
 # xóa tài khoản theo id của user
 def delete_user(user_id: int) -> bool:
     db = get_db()
