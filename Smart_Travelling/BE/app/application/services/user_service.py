@@ -1,6 +1,6 @@
 from passlib.context import CryptContext
 from typing import Dict, Optional, List
-from app.adapters.repositories import user_reponsitory      # chỉ import file thì nếu bên trong không có class thì dùng vâyj
+from app.adapters.repositories import user_repository      # chỉ import file thì nếu bên trong không có class thì dùng vâyj
 from app.domain.entities.user_entity import UserEntity      #import tận class
 
 
@@ -15,7 +15,7 @@ def register_user(data: Dict) -> int:
     
 
     # Kiểm tra username trùng
-    if user_reponsitory.get_user_by_username(data["username"]):
+    if user_repository.get_user_by_username(data["username"]):
         raise ValueError("Username đã tồn tại")
 
     # Tạo UserEntity — KHÔNG truyền toàn bộ data tránh lỗi
@@ -37,7 +37,7 @@ def register_user(data: Dict) -> int:
    
 
     # Lưu DB
-    return user_reponsitory.create_user(user_dict)
+    return user_repository.create_user(user_dict)
 
 #đăng nhập tài khoản
 def login(username: str, password: str) -> Dict:
@@ -49,7 +49,7 @@ def login(username: str, password: str) -> Dict:
     """
 
     # 1) Lấy user từ DB
-    user_db = user_reponsitory.get_user_by_username(username)
+    user_db = user_repository.get_user_by_username(username)
     if user_db is None:
         raise ValueError("Tài khoản không tồn tại.")
 
@@ -79,18 +79,18 @@ def login(username: str, password: str) -> Dict:
 
         # Trường hợp bị khóa do sai quá 5 lần
         if not entity.is_active:
-            user_reponsitory.deactivate_user(entity.id)
+            user_repository.deactivate_user(entity.id)
 
         # Trường hợp chỉ sai < 5 lần → cập nhật failed_attempts
         else:
-            user_reponsitory.update_failed_attempts(entity.id, entity.failed_attempts)
+            user_repository.update_failed_attempts(entity.id, entity.failed_attempts)
 
         raise e   # ném lỗi lên router hoặc API
 
     # xuống tới đây tức là nhập đúng rồi
 
     # Reset số lần nhập sai
-    user_reponsitory.reset_failed_attempts(entity.id)
+    user_repository.reset_failed_attempts(entity.id)
 
     # Trả dữ liệu an toàn
     return entity.to_safe_dict()
@@ -109,7 +109,7 @@ def change_password(user_id: int, old_password: str, new_password: str) -> bool:
     """
 
     # 1) Lấy user từ DB
-    user_db = user_reponsitory.get_user_by_id(user_id)
+    user_db = user_repository.get_user_by_id(user_id)
     if user_db is None:
         raise ValueError("User không tồn tại")
 
@@ -131,10 +131,45 @@ def change_password(user_id: int, old_password: str, new_password: str) -> bool:
     entity.change_password(old_password, new_password)
 
     # 4) Lưu hashed_password mới
-    user_reponsitory.update_user_password(entity.id, entity.hashed_password)
+    user_repository.update_user_password(entity.id, entity.hashed_password)
 
     # # 5) Reset số lần nhập sai về 0 (nếu có)
     # if entity.failed_attempts != 0:
-    #     user_reponsitory.reset_failed_attempts(entity.id)
+    #     user_repository.reset_failed_attempts(entity.id)
 
     return True
+
+
+def update_user_info(user_id: int, data: Dict) -> bool:
+    """
+    USER - Cập nhật thông tin cá nhân (email, phone_number).
+    """
+
+    updated_anything = False
+
+    # check email trùng
+    if "email" in data:
+        new_email = data["email"]
+        if new_email:
+            existing = user_repository.get_user_by_email(new_email)
+            if existing and existing["id"] != user_id:
+                raise ValueError("Email đã tồn tại")
+
+        # update email
+        if user_repository.update_user_email(user_id, new_email):
+            updated_anything = True
+
+    # check số điện thoại trùng
+    if "phone_number" in data:
+        new_phone = data["phone_number"]
+
+        # Nếu bạn muốn số điện thoại cũng unique:
+        if new_phone:
+            existing_phone = user_repository.get_user_by_phone(new_phone)
+            if existing_phone and existing_phone["id"] != user_id:
+                raise ValueError("Số điện thoại đã tồn tại")
+
+        if user_repository.update_user_phone(user_id, new_phone):
+            updated_anything = True
+
+    return updated_anything
