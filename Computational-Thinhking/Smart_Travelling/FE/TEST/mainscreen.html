@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+  <title>Travel Dashboard - Nguyễn Trọng Khang</title>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="mainstyle.css" />
+</head>
+<body>
+  <!-- Pull-to-Refresh Indicator -->
+  <div id="pullToRefresh">
+    <span id="refreshText">Kéo xuống để làm mới</span>
+    <div style="width: 20px; height: 20px; border: 2px solid white; border-top: 2px solid transparent; border-radius: 50%; margin-left: 10px;"></div>
+  </div>
+
+  <header class="header">
+    <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+  </header>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-profile">
+      <div class="profile-avatar">👤</div>
+      <span class="profile-name">Nguyễn Trọng Khang</span>
+    </div>
+    <div class="sidebar-login">
+      <a class="login-btn" href="../login/login.html">Đăng nhập</a>
+    </div>
+    <div class="search-tabs">
+      <button class="search-tab" data-label="Dự báo thời tiết">
+        <div class="tab-icon">🌤️</div>
+        <span class="tab-text">Dự báo thời tiết</span>
+      </button>
+      <button class="search-tab" data-label="Tìm kiếm địa điểm"onclick="window.location.href='/testmap.html'">
+        <div class="tab-icon">🔍</div>
+        
+        <span class="tab-text">Tìm kiếm địa điểm</span>
+      </button>
+      <button class="search-tab" data-label="Gợi ý lịch trình">
+        <div class="tab-icon">📅</div>
+        <span class="tab-text">Gợi ý lịch trình</span>
+      </button>
+      <button class="search-tab" data-label="Chatbox">
+        <div class="tab-icon">💬</div>
+        <span class="tab-text">Chatbox</span>
+      </button>
+      <button class="search-tab" data-label="Album">
+        <div class="tab-icon">📸</div>
+        <span class="tab-text">Album</span>
+      </button>
+      <button class="search-tab" data-label="Nhận diện hình ảnh">
+        <div class="tab-icon">🖼️</div>
+        <span class="tab-text">Nhận diện hình ảnh</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- Hero section -->
+  <section class="hero-section">
+  <h1>Khám phá Việt Nam tuyệt đẹp 🇻🇳</h1>
+
+<p>Kéo xuống để xem các điểm đến nổi bật</p>
+
+
+  </section>
+
+  <div class="main-content">
+    <div class="category-buttons">
+      <button class="category-btn" onclick="filterCategory('trai-dat')">
+        <div class="category-icon trai-dat">🌍</div>
+      </button>
+      <button class="category-btn" onclick="filterCategory('dong-bang')">
+        <div class="category-icon dong-bang">🌾</div>
+      </button>
+      <button class="category-btn" onclick="filterCategory('bien')">
+        <div class="category-icon bien">🌊</div>
+      </button>
+      <button class="category-btn" onclick="filterCategory('nui')">
+        <div class="category-icon nui">⛰️</div>
+      </button>
+    </div>
+
+    <div class="destinations-grid" id="destinationsGrid">
+      <!-- ĐÀ LẠT -->
+      <div class="destination-card hidden loaded" data-category="nui">
+        <div class="destination-image dalat-image">
+          <div class="destination-overlay"><h2 class="destination-title"></h2></div>
+        </div>
+        <p class="destination-description">
+          Khám phá cao nguyên thơ mộng với khí hậu mát mẻ, đồi thông xanh và hồ Xuân Hương.
+        </p>
+        <div class="destination-footer"><span>Hotline: 0123456789</span><span>🗺️</span></div>
+      </div>
+
+      <!-- HẠ LONG -->
+      <div class="destination-card hidden loaded" data-category="bien">
+        <div class="destination-image halong-image">
+          <div class="destination-overlay">
+            <h2 class="destination-title"></h2>
+          </div>
+        </div>
+        <p class="destination-description">
+          Vịnh Hạ Long với vịnh đá vôi huyền thoại và hơn 1600 hòn đảo. Chào mừng đến Việt Nam!! ✈️
+        </p>
+        <div class="destination-footer"><span>Hotline: 0123456789</span><span>📞</span></div>
+      </div>
+
+      <!-- SA PA -->
+      <div class="destination-card hidden loaded" data-category="nui">
+        <div class="destination-image sapa-image">
+          <div class="destination-overlay"><h2 class="destination-title"></h2></div>
+        </div>
+        <p class="destination-description">
+          Tham quan ruộng bậc thang hùng vĩ và văn hóa dân tộc thiểu số đa dạng với nhiều điều mới mẻ chờ đón bạn!.
+        </p>
+        <div class="destination-footer"><span>Hotline: 0123456789</span><span>🌾</span></div>
+      </div>
+
+      <!-- PHÚ QUỐC -->
+      <div class="destination-card hidden loaded" data-category="bien">
+        <div class="destination-image phuquoc-image">
+          <div class="destination-overlay"><h2 class="destination-title"></h2></div>
+        </div>
+        <p class="destination-description">
+          Thiên đường biển đảo với bãi biển dài, nước trong xanh và các hoạt động nghỉ dưỡng.
+        </p>
+        <div class="destination-footer"><span>Hotline: 0123456789</span><span>🏝️</span></div>
+      </div>
+
+      <div class="loading" id="loadingSpinner" style="display: none;">Đang tải thêm...</div>
+    </div>
+  </div>
+
+  <script src="mainscript.js"></script>
+</body>
+</html>

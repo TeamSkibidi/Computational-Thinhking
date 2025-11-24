@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chồng Thẻ với Văn Bản</title>
+    <link rel="stylesheet" href="local.css">
+  
+</head>
+<body>
+
+    <header class="site-header">
+        <h1>Demon Slayer Team</h1>
+        
+        <nav class="category-nav">
+            <ul>
+                <li class="search-bar">
+                    <input type="text" class="input" placeholder="Tìm địa điểm...." id="username" />
+                </li>
+                
+                <li><a href="local.html" class="active">Tất cả</a></li>
+                <li><a href="pho.html">Phở</a></li>
+                <li><a href="caphe.html">Cà phê</a></li>
+                <li><a href="com.html">Cơm</a></li>
+                
+                <li><a href="javascript:history.back()">Back</a></li>
+
+            </ul>
+        </nav>
+    </header>
+
+    <div class="app-container">
+        <div class="card-container">
+            <div class="card-stack" id="cardStack">
+                <div class="card" data-index="1" style="background-image: url('../image/com2.jpg')"></div>
+                <div class="card" data-index="2" style="background-image: url('../image/com1.jpg')"></div>
+                <div class="card" data-index="3" style="background-image: url('../image/com3.jpg')"></div>
+                <div class="card" data-index="4" style="background-image: url('../image/com4.jpg')"></div>
+            </div>
+        </div>
+        <div class="text-container" id="textContainer">
+            <div class="text-content" data-index="1">
+                <h2>Kamado Tanjiro</h2>
+                <p>Nhân vật chính của câu chuyện...</p>
+            </div>
+            <div class="text-content" data-index="2">
+                <h2>Nezuko Kamado</h2>
+                <p>Em gái của Tanjiro...</p>
+            </div>
+            <div class="text-content" data-index="3">
+                <h2>Zenitsu Agatsuma</h2>
+                <p>Một kiếm sĩ nhút nhát...</p>
+            </div>
+            <div class="text-content" data-index="4">
+                <h2>Giyu Tomioka</h2>
+                <p>Thủy Trụ của Sát Quỷ Đoàn...</p>
+            </div>
+        </div>
+    </div>
+    <div class="navigation-controls">
+    <button id="backBtn">&#10094; </button>
+    <button id="nextBtn"> &#10095;</button>
+</div>
+
+   <script>
+    const stack = document.getElementById('cardStack');
+    const textContainer = document.getElementById('textContainer');
+    const nextBtn = document.getElementById('nextBtn');
+    const backBtn = document.getElementById('backBtn');
+    let isAnimating = false;
+
+    function updateActiveText(activeIndex) {
+        textContainer.querySelectorAll('.text-content').forEach(text => {
+            text.classList.remove('is-active');
+        });
+        const activeText = textContainer.querySelector(`.text-content[data-index="${activeIndex}"]`);
+        if (activeText) {
+            activeText.classList.add('is-active');
+        }
+    }
+
+    function handleNext() {
+        if (isAnimating) return; 
+        isAnimating = true;
+        const topCard = stack.querySelector('.card:last-child');
+        if (!topCard) {
+            isAnimating = false;
+            return;
+        }
+        topCard.classList.add('is-exiting-forward');
+        topCard.addEventListener('transitionend', () => {
+            topCard.classList.remove('is-exiting-forward');
+            stack.prepend(topCard);
+            const newTopCard = stack.querySelector('.card:last-child');
+            updateActiveText(newTopCard.dataset.index);
+            isAnimating = false;
+        }, { once: true }); 
+    }
+
+    function handleBack() {
+        if (isAnimating) return;
+        isAnimating = true;
+        const bottomCard = stack.querySelector('.card:first-child');
+        if (!bottomCard) {
+            isAnimating = false;
+            return;
+        }
+        bottomCard.classList.add('is-entering-backward');
+        stack.append(bottomCard);
+        updateActiveText(bottomCard.dataset.index);
+        requestAnimationFrame(() => {
+            bottomCard.classList.remove('is-entering-backward');
+        });
+        bottomCard.addEventListener('transitionend', () => {
+            isAnimating = false;
+        }, { once: true });
+    }
+
+    function initialize() {
+        const initialTopCard = stack.querySelector('.card:last-child'); 
+        if (initialTopCard) {
+            updateActiveText(initialTopCard.dataset.index);
+        }
+        nextBtn.addEventListener('click', handleNext);
+        backBtn.addEventListener('click', handleBack);
+    }
+
+    initialize();
+   </script>
+
+</body>
+</html>

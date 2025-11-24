@@ -1,0 +1,225 @@
+section { position: fixed ; top: 0; left: 0; width: 100%; height: 100vh; transition: top 0.9s ease-in-out; } /* === HERO SECTION === */ 
+
+ #page2 { background-color: #fbbf24; color: black; position: fixed; top: 100%; left: 0; transition: top 1s ease-in-out; width: 100%; height: 100vh;z-index: 2;} 
+ button { padding: 12px 24px; font-size: 18px; border: none; border-radius: 8px; cursor: pointer; box-shadow: 0 4px 8px rgba(0,0,0,0.2); transition: all 0.3s ease; } 
+#nextBtn { position: absolute; bottom: 40px; background-color: white; color: #3b82f6; } 
+#nextBtn:hover { background-color: #e0e7ff; }
+      
+
+
+
+
+/* ===== BẮT ĐẦU CSS CHO MODAL THỜI TIẾT MỚI ===== */
+    /* 1. Nền mờ (Overlay) */
+    .popup-overlay {
+      display: none; /* Ẩn mặc định */
+      position: fixed;
+      inset: 0;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 10000;
+      align-items: center;
+      justify-content: center;
+      /* Hiệu ứng mờ dần cho lớp phủ */
+      opacity: 0;
+      transition: opacity 0.3s ease-in-out;
+    }
+
+    /* Trạng thái mở cho Overlay */
+    .popup-overlay.open {
+      display: flex;
+      opacity: 1;
+    }
+
+    /* 2. Cửa sổ Popup (Glassmorphism) */
+    .popup {
+      font-family: 'Inter', sans-serif; /* Dùng font Inter cho modal */
+      color: white;
+      
+      /* Giao diện kính mờ */
+      background-color: rgba(255, 255, 255, 0.15); /* Nền trắng mờ */
+      backdrop-filter: blur(25px) saturate(1.5); /* Hiệu ứng mờ chính */
+      border: 1px solid rgba(255, 255, 255, 0.3); /* Viền trắng mờ */
+      
+      border-radius: 24px; /* Bo góc lớn như trong ảnh */
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+      
+      width: 90%;
+      max-width: 800px; /* Giới hạn chiều rộng */
+      position: relative;
+      padding: 24px;
+      
+      /* Hiệu ứng bật lên */
+      transform: scale(0.95);
+      opacity: 0;
+      transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+    }
+    
+    /* Trạng thái mở cho Popup */
+    .popup-overlay.open .popup {
+      transform: scale(1);
+      opacity: 1;
+    }
+
+    /* Nút Trở về (giả lập) */
+    .popup-back-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      background: rgba(0, 0, 0, 0.2);
+      border: none;
+      color: white;
+      padding: 8px 12px;
+      border-radius: 20px;
+      cursor: pointer;
+      margin-bottom: 16px;
+    }
+
+    /* Tiêu đề "Dự báo thời tiết" */
+    .popup-title {
+      font-size: 20px;
+      font-weight: 600;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.2);
+      position: absolute;
+      top: 10px;
+      left: 300px;
+    }
+    .popup-title::before {
+      content: '☁️';
+      display: inline-block;
+      font-size: 24px;
+      margin-right: 8px;
+      transform: translateY(2px);
+    }
+    
+    
+
+    /* Thanh tìm kiếm bên trong modal */
+    .popup-search {
+      position: relative;
+      margin-bottom: 10px;
+      margin-top: 10px;
+    }
+    .popup-search input {
+      width: 90%;
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 20px;
+      padding: 10px 16px 10px 40px;
+      color: white;
+      font-size: 14px;
+    }
+    .popup-search input::placeholder {
+      color: rgba(255, 255, 255, 0.7);
+    }
+    .popup-search input:focus {
+      outline: none;
+      border-color: rgba(255, 255, 255, 0.5);
+    }
+    .popup-search .search-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    /* Khu vực thời tiết chính */
+    .weather-main {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    .weather-temp {
+      font-size: 80px;
+      font-weight: 700;
+      line-height: 1;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+    .weather-desc {
+      font-size: 18px;
+      font-weight: 500;
+      margin-bottom: 12px;
+    }
+    .weather-icon-large {
+      font-size: 100px;
+      position: relative;
+      right: 100px;
+    }
+
+    /* Thông tin chi tiết (Độ ẩm, Gió, v.v.) */
+    .weather-details {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    @media (min-width: 640px) {
+      .weather-details {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+    .detail-item {
+      font-size: 14px;
+    }
+    .detail-item span {
+      display: block;
+      font-weight: 600;
+      font-size: 16px;
+    }
+    
+    /* Dự báo 5 ngày (cuộn ngang) */
+    .forecast-container {
+      position: relative;
+      overflow-x: auto; /* Cho phép cuộn ngang */
+      padding-bottom: 10px;
+      justify-content: space-between;
+      /* Tùy chỉnh thanh cuộn */
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255,255,255,0.4) transparent;
+    }
+    .forecast-container::-webkit-scrollbar {
+      height: 6px;
+      
+    }
+    .forecast-container::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .forecast-container::-webkit-scrollbar-thumb {
+      background-color: rgba(255,255,255,0.4);
+      border-radius: 10px;
+    }
+    
+    .forecast-wrapper {
+      display: flex;
+      /* THAY ĐỔI: Căn giữa 3 mục đều nhau */
+      justify-content: space-around; 
+      gap: 12px;
+      /* XÓA: width: max-content; */
+    }
+
+    .forecast-day {
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 12px;
+      padding: 12px;
+      text-align: center;
+      justify-content: space-between;
+      width: 100px;
+    }
+    .forecast-day .day {
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+    .forecast-day .icon {
+      font-size: 32px;
+      margin-bottom: 8px;
+    }
+    .forecast-day .temp {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    /* ===== KẾT THÚC CSS CHO MODAL ===== */

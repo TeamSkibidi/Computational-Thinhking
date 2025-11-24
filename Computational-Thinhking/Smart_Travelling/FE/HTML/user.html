@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hồ sơ người dùng</title>
+    <link rel="stylesheet" href="../CSS/user.css"> 
+</head>
+<body>
+
+    <nav class="navbar">
+        <a href="#" class="brand"><i class="ph ph-nut"></i> UserSettings</a>
+        <div class="user-menu">
+            <span>Nguyễn Văn A</span>
+            <img src="../image/avatar.png" alt="Avatar">
+        </div>
+    </nav>
+
+    <div class="container">
+        <aside class="sidebar">
+            <ul class="nav-links">
+                <li>
+                    <a href="#" class="nav-link active" onclick="switchTab('tab-general', this)">
+                        <i class="ph ph-user"></i> Thông tin chung
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="nav-link" onclick="switchTab('tab-security', this)">
+                        <i class="ph ph-shield-check"></i> Bảo mật & Đăng nhập
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="nav-link" onclick="switchTab('tab-notifications', this)">
+                        <i class="ph ph-bell"></i> Thông báo
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="nav-link" style="color: var(--danger);" onclick="logout()">
+                        <i class="ph ph-sign-out"></i> Đăng xuất
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <main class="main-content">
+            
+            <div id="tab-general" class="content-section active">
+                <div class="card">
+                    <h2 class="section-title">Hồ sơ cá nhân</h2>
+                    <p class="section-desc">Quản lý thông tin hiển thị với cộng đồng.</p>
+
+                    <div class="avatar-upload">
+                        <img src="../image/avatar.png" alt="" class="avatar-preview">
+                        <div class="upload-actions">
+                            <h4>Ảnh đại diện</h4>
+                            <p>JPG, GIF hoặc PNG. Tối đa 5MB.</p>
+                            <button class="btn btn-outline">Tải ảnh lên</button>
+                        </div>
+                    </div>
+
+                    <div class="divider"></div>
+
+                    <form class="form-grid">
+                        <div class="form-group">
+                            <label>Họ và tên đệm</label>
+                            <input type="text" class="form-control" value="Nguyễn Văn">
+                        </div>
+                        <div class="form-group">
+                            <label>Tên</label>
+                            <input type="text" class="form-control" value="A">
+                        </div>
+                        <div class="form-group">
+                            <label>Email hiển thị</label>
+                            <input type="email" class="form-control" value="contact@nguyenvana.com">
+                        </div>
+                        <div class="form-group">
+                            <label>Số điện thoại</label>
+                            <input type="text" class="form-control" value="0912 345 678">
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Giới thiệu ngắn (Bio)</label>
+                            <textarea class="form-control" rows="3">Lập trình viên Frontend đam mê UI/UX.</textarea>
+                        </div>
+                    </form>
+                    
+                    <div class="divider"></div>
+                    <div style="text-align: right;">
+                        <button class="btn btn-primary">Lưu thay đổi</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-security" class="content-section">
+                <div class="card">
+                    <h2 class="section-title">Đăng nhập & Bảo mật</h2>
+                    <p class="section-desc">Quản lý mật khẩu và xác thực 2 lớp.</p>
+
+                    <div class="form-group" style="margin-bottom: 24px;">
+                        <label>Email đăng nhập</label>
+                        <div style="display: flex; gap: 10px;">
+                            <input type="email" class="form-control" value="nguyenvana@gmail.com" disabled>
+                            <button class="btn btn-outline">Đổi Email</button>
+                        </div>
+                    </div>
+
+                    <div class="divider"></div>
+
+                    <h3 class="section-title">Đổi mật khẩu</h3>
+                    <form class="form-grid" style="grid-template-columns: 1fr;">
+                        <div class="form-group">
+                            <label>Mật khẩu hiện tại</label>
+                            <input type="password" class="form-control" placeholder="••••••••">
+                        </div>
+                        <div class="form-group">
+                            <label>Mật khẩu mới</label>
+                            <input type="password" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label>Xác nhận mật khẩu mới</label>
+                            <input type="password" class="form-control">
+                        </div>
+                    </form>
+                    <div style="margin-top: 20px; text-align: right;">
+                        <button class="btn btn-primary">Cập nhật mật khẩu</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2 class="section-title">Xác thực 2 bước (2FA)</h2>
+                    <div class="switch-group">
+                        <div class="switch-info">
+                            <h4>Tin nhắn văn bản (SMS)</h4>
+                            <p>Sử dụng số điện thoại để nhận mã OTP.</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="switch-group" style="border: none;">
+                        <div class="switch-info">
+                            <h4>Ứng dụng Authenticator</h4>
+                            <p>Sử dụng Google Authenticator hoặc Authy.</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-notifications" class="content-section">
+                <div class="card">
+                    <h2 class="section-title">Cài đặt thông báo</h2>
+                    <p class="section-desc">Chọn cách chúng tôi liên lạc với bạn.</p>
+
+                    <div class="switch-group">
+                        <div class="switch-info">
+                            <h4>Thông báo qua Email</h4>
+                            <p>Nhận email về các hoạt động tài khoản.</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="switch-group">
+                        <div class="switch-info">
+                            <h4>Thông báo đẩy (Push)</h4>
+                            <p>Nhận thông báo trên trình duyệt.</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script src="../JS/user.js"></script> 
+</body>
+</html>

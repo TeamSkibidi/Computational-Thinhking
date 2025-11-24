@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hiệu ứng trượt bằng lướt chuột</title>
+  <link rel="stylesheet" href="../CSS/mainstyle.css" />
+  <link rel="stylesheet" href="../CSS/kkk.css" />
+</head>
+
+ 
+
+
+<body>
+  <div class="popup-overlay" id="popupOverlay">
+    <div class="popup" id="popup">
+      <button class="popup-back-btn" id="closePopup">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+          <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
+        </svg>
+        Trở về
+      </button>
+      
+      
+      
+      <h2 class="popup-title">Dự báo thời tiết</h2>
+      
+      <div class="popup-search">
+        <div class="search-icon">
+           
+        </div>
+        <input type="text" placeholder="Search for city, location...">
+      </div>
+
+      <div class="weather-main">
+        <div>
+          <p class="weather-desc">Thời tiết hiện tại</p>
+          <div class="weather-temp">32°</div>
+          <p class="weather-desc">Trời nắng trong lành</p>
+        </div>
+        <div class="weather-icon-large">🌤️</div>
+      </div>
+      
+      <div class="weather-details">
+        <div class="detail-item">Độ ẩm: <span>60%</span></div>
+        <div class="detail-item">Gió: <span>10km/h</span></div>
+        <div class="detail-item">Cảm giác như: <span>34°C</span></div>
+        <div class="detail-item">Chỉ số UV: <span>Cao</span></div>
+      </div>
+      
+    <p style="font-size: 14px; margin-bottom: 12px; font-weight: 500;">Tuyệt vời để đi tham quan bên ngoài</p>
+      
+      <div class="forecast-container">
+        <div class="forecast-wrapper">
+          
+          <div class="forecast-day">
+            <div class="day">Ngày mai</div>
+            <div class="icon">☀️</div>
+            <div class="temp">26° - 32°C</div>
+          </div>
+          
+          <div class="forecast-day">
+            <div class="day">Ngày mốt</div>
+            <div class="icon">☀️</div>
+            <div class="temp">26° - 32°C</div>
+          </div>
+          
+          <div class="forecast-day">
+            <div class="day">Ngày kia</div>
+            <div class="icon">☀️</div>
+            <div class="temp">26° - 32°C</div>
+          </div>
+          
+          </div>
+      </div>
+      </div>
+  </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== TRANG 1 ===== -->
+   
+
+    <!-- Header -->
+    <header class="header">
+      <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+    </header>
+
+    <!-- Sidebar -->
+     <aside class="sidebar" id="sidebar">
+      <div class="sidebar-profile">
+        <div class="profile-avatar"></div>
+       <button class="profile-name" id = "admin">admin</button>
+      </div>
+
+      <div class="sidebar-login">
+        <a class="login-btn" href="../HTML/login.html">Đăng nhập</a>
+      </div>
+
+      <div class="search-tabs">
+        <button class="search-tab" id="openPopup" data-label="Dự báo thời tiết">
+          <div class="tab-icon">🌤️</div>
+          <span class="tab-text">Dự báo thời tiết</span>
+        </button>
+
+
+
+        
+
+        <button class="search-tab" data-label="Tìm kiếm địa điểm"
+          onclick="window.location.href='../HTML/index.html'">
+          <div class="tab-icon">🔍</div>
+          <span class="tab-text">Tìm kiếm địa điểm</span>
+        </button>
+
+        <button class="search-tab" data-label="Gợi ý lịch trình">
+          <div class="tab-icon">📅</div>
+          <span class="tab-text">Gợi ý lịch trình</span>
+        </button>
+
+        <button class="search-tab" data-label="Chatbox">
+          <div class="tab-icon">💬</div>
+          <span class="tab-text">Chatbox</span>
+        </button>
+
+        <button class="search-tab" data-label="Album">
+          <div class="tab-icon">📸</div>
+          <span class="tab-text">Album</span>
+        </button>
+
+        <button class="search-tab" data-label="Nhận diện hình ảnh">
+          <div class="tab-icon">🖼️</div>
+          <span class="tab-text">Nhận diện hình ảnh</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Hero Section -->
+    
+
+
+
+   <section class="hero-section">
+      <h1>Khám phá Việt Nam tuyệt đẹp 🇻🇳</h1>
+      <p>Kéo xuống để xem các điểm đến nổi bật</p>
+      <button id="nextBtn"></button>
+    </section>
+
+  <!-- ===== TRANG 2 ===== -->
+  <section id="page2">
+    <div class="destinations-grid" id="destinationsGrid">
+      <!-- ĐÀ LẠT -->
+      <div class="destination-card hidden loaded" data-category="nui">
+        <div class="destination-image dalat-image">
+          <div class="destination-overlay">
+            <h2 class="destination-title">Đà Lạt</h2>
+          </div>
+        </div>
+        <p class="destination-description">
+          Khám phá cao nguyên thơ mộng với khí hậu mát mẻ, đồi thông xanh và hồ Xuân Hương.
+        </p>
+        <div class="destination-footer">
+          <span>Hotline: 0123456789</span>
+          <span>🗺️</span>
+        </div>
+      </div>
+
+      <!-- HẠ LONG -->
+      <div class="destination-card hidden loaded" data-category="bien">
+        <div class="destination-image halong-image">
+          <div class="destination-overlay">
+            <h2 class="destination-title">Hạ Long</h2>
+          </div>
+        </div>
+        <p class="destination-description">
+          Vịnh Hạ Long với vịnh đá vôi huyền thoại và hơn 1600 hòn đảo. Chào mừng đến Việt Nam!! ✈️
+        </p>
+        <div class="destination-footer">
+          <span>Hotline: 0123456789</span>
+          <span>📞</span>
+        </div>
+      </div>
+
+      <!-- SA PA -->
+      <div class="destination-card hidden loaded" data-category="nui">
+        <div class="destination-image sapa-image">
+          <div class="destination-overlay">
+            <h2 class="destination-title">Sa Pa</h2>
+          </div>
+        </div>
+        <p class="destination-description">
+          Tham quan ruộng bậc thang hùng vĩ và văn hóa dân tộc thiểu số đa dạng với nhiều điều mới mẻ chờ đón bạn!
+        </p>
+        <div class="destination-footer">
+          <span>Hotline: 0123456789</span>
+          <span>🌾</span>
+        </div>
+      </div>
+
+      <!-- PHÚ QUỐC -->
+      <div class="destination-card hidden loaded" data-category="bien">
+        <div class="destination-image phuquoc-image">
+          <div class="destination-overlay">
+            <h2 class="destination-title">Phú Quốc</h2>
+          </div>
+        </div>
+        <p class="destination-description">
+          Thiên đường biển đảo với bãi biển dài, nước trong xanh và các hoạt động nghỉ dưỡng.
+        </p>
+        <div class="destination-footer">
+          <span>Hotline: 0123456789</span>
+          <span>🏝️</span>
+        </div>
+      </div>
+
+       <div class="destination-card hidden loaded" data-category="bien">
+        <div class="destination-image phuquoc-image">
+          <div class="destination-overlay">
+            <h2 class="destination-title">Phú Quốc</h2>
+          </div>
+        </div>
+        <p class="destination-description">
+          Thiên đường biển đảo với bãi biển dài, nước trong xanh và các hoạt động nghỉ dưỡng.
+        </p>
+        <div class="destination-footer">
+          <span>Hotline: 0123456789</span>
+          <span>🏝️</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== SCRIPT ===== -->
+    <script > 
+   function toggleSidebar() {
+  console.log('toggleSidebar called');
+  document.getElementById("sidebar").classList.toggle("visible");
+}
+</script>
+
+<script>
+   document.addEventListener('DOMContentLoaded', function() {
+        const openButton = document.getElementById('openPopup');
+        const closeButton = document.getElementById('closePopup');
+        const closeButtonX = document.getElementById('closePopupBtnX');
+        const modalOverlay = document.getElementById('popupOverlay');
+
+        const openModal = () => modalOverlay.classList.add('open');
+        const closeModal = () => modalOverlay.classList.remove('open');
+
+        if (openButton) {
+            openButton.addEventListener('click', openModal);
+        }
+
+        if (closeButton) {
+            closeButton.addEventListener('click', closeModal);
+        }
+        
+        if (closeButtonX) {
+            closeButtonX.addEventListener('click', closeModal);
+        }
+        
+        if (modalOverlay) {
+            modalOverlay.addEventListener('click', function(event) {
+                // Chỉ đóng khi nhấp vào nền mờ (overlay), không phải popup
+                if (event.target === modalOverlay) {
+                    closeModal();
+                }
+            });
+        }
+
+        // --- SCRIPT 3: NÚT CUỘN TRANG (ĐÃ THÊM) ---
+       
+    });
+  </script>
+
+  
+  <script src="../JS/mainscript.js"></script>
+</body>
+</html>

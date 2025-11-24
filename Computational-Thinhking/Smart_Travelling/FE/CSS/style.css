@@ -1,0 +1,1034 @@
+/* ===== RESET & GENERAL ===== */ /* Tiêu đề khối: reset và cấu hình chung */
+* { /* Chọn tất cả phần tử */
+    margin: 0; /* bỏ margin mặc định */
+    padding: 0; /* bỏ padding mặc định */
+    box-sizing: border-box; /* tính toán kích thước bao gồm border/padding */
+} /* kết thúc cú pháp cho * */
+
+ /* dòng trống cho dễ đọc */
+/* Thêm vào style.css */
+
+body { /* phần tử body */
+    font-family: 'Google Sans', 'Roboto', Arial, sans-serif; /* font chính theo thứ tự ưu tiên */
+    height: 100vh; /* chiều cao bằng viewport height */
+    overflow: hidden; /* ẩn thanh cuộn nếu có */
+    background: #f8f9fa; /* màu nền nhẹ */
+} /* đóng body */
+
+body::before { /* pseudo-element thêm dải gradient bên trái */
+  content: ""; /* bắt buộc để pseudo hiển thị */
+  position: absolute; /* định vị tuyệt đối */
+  top: 0; /* đặt ở trên cùng */
+  left: 0; /* đặt ở trái */
+  width: 100px;                 /* độ rộng dải đen */ 
+  height: 100%; /* chiều cao toàn bộ */
+ background: linear-gradient( /* nền dạng gradient */
+    to right,                 /* hướng gradient: trái sang phải */
+   #f8f9fa 0%,    /* màu bắt đầu (khớp với background) */
+    rgba(196, 194, 194, 0) 100%     /* kết thúc trong suốt */ 
+  );
+
+   
+  pointer-events: none;          /* không chặn thao tác chuột */
+  z-index: 1; /* đặt phía trên map nhưng dưới UI chính nếu cần */
+} /* đóng body::before */
+/* ===== Thanh bài viết nổi cuối màn hình ===== */
+
+/* Container giữ nguyên */
+.article-container {
+  position: fixed;
+  bottom: 20px;
+  right: 200px;
+  z-index: 99;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 10px;
+  transition: transform 0.6s ease;
+}
+
+/* Mỗi thẻ bài viết */
+.article {
+  width: 300px;
+  height :100px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  overflow: hidden;
+  z-index: 99999;
+  display: flex;
+  transform: translateX(150%);
+  transition: transform 0.6s ease;
+  position: relative; /* THÊM: Bắt buộc để định vị icon con */
+  cursor: pointer;    /* THÊM: Đổi con trỏ chuột khi hover */
+}
+
+/* THÊM: Hiệu ứng khi hover vào thẻ */
+.article:hover {
+    box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+}
+
+/* === SỬA LỖI QUAN TRỌNG === */
+.article .material-icons {
+  position: absolute;   /* SỬA: 'fixed' -> 'absolute' để icon nằm trong thẻ */
+  bottom: 10px;            /* SỬA: Định vị ở góc trên bên phải */
+  left: 100px;          /* SỬA: Định vị */
+  color: #e80d0d;
+  font-size: 20px;      /* THÊM: Kích thước cho rõ ràng */
+  /* Bỏ 'bottom' và 'left' */
+}
+
+
+/* Hình ảnh bài viết */
+.article img {
+  width: 30%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.article h3 {
+  font-size: 15px;
+  color: #222;
+  margin-left: 10px;
+  margin-right: 10px;
+  line-height: 1.3;
+  font-weight: 600;
+  /* THÊM: Chừa khoảng trống cho icon không bị đè lên chữ */
+  padding-right: 20px; 
+  padding-top: 10px; /* Căn lề 1 chút */
+}
+ /* ===== BẢN ĐỒ ===== */ /* tiêu đề khu vực bản đồ */
+#map-container { /* container cho bản đồ */
+    position: absolute; /* định vị tuyệt đối */
+    top: 0; /* nằm ở trên cùng */
+    left: 0; /* nằm ở trái */
+    width: 100%; /* chiếm hết chiều ngang */
+    height: 100%; /* chiếm hết chiều cao */
+    z-index: 0; /* đặt phía dưới các layer UI khác */
+} /* đóng #map-container */
+
+
+ /* ===== THANH TÌM KIẾM ===== */ /* tiêu đề thanh tìm */
+.search-container { /* container cho thanh tìm */
+    position: fixed; /* cố định trên viewport */
+    top: 20px; /* cách trên 20px */
+    left: 50%; /* căn trái theo 50% */
+    transform: translateX(-50%); /* dịch sang trái 50% để căn giữa */
+    z-index: 100; /* đặt trên bản đồ */
+    width: 90%; /* chiếm 90% chiều ngang */
+    max-width: 600px; /* giới hạn tối đa */
+} /* đóng .search-container */
+
+.search-wrapper { /* wrapper input + icon */
+    background: white; /* nền trắng */
+    border-radius: 28px; /* bo góc lớn */
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15); /* bóng mờ nhẹ */
+    display: flex; /* dùng flex layout */
+    align-items: center; /* căn giữa theo chiều dọc */
+    padding: 4px 20px; /* padding trên/dưới và trái/phải */
+    transition: box-shadow 0.3s ease; /* chuyển động cho shadow */
+} /* đóng .search-wrapper */
+
+.search-wrapper:focus-within { /* khi con phần tử bên trong được focus */
+    box-shadow: 0 4px 16px rgba(26, 115, 232, 0.3); /* shadow nổi bật */
+} /* đóng :focus-within */
+
+.search-icon { /* icon tìm kiếm */
+    color: #5f6368; /* màu xám */
+    margin-right: 12px; /* khoảng cách bên phải */
+} /* đóng .search-icon */
+
+#map-search-form { /* form chứa input tìm */
+    flex: 1; /* chiếm không gian còn lại trong flex */
+} /* đóng #map-search-form */
+
+#map-search-input { /* ô nhập tìm kiếm */
+    width: 100%; /* chiếm chiều ngang container */
+    border: none; /* bỏ viền */
+    outline: none; /* bỏ outline mặc định */
+    padding: 14px 0; /* padding trên/dưới */
+    font-size: 16px; /* kích thước chữ */
+    color: #202124; /* màu chữ tối */
+    background: transparent; /* nền trong suốt */
+} /* đóng #map-search-input */
+
+#map-search-input::placeholder { /* style cho placeholder */
+    color: #5f6368; /* màu placeholder */
+} /* đóng placeholder */
+
+ /* Địa chỉ tìm được */ /* chú thích khối */
+.found-address { /* hiển thị địa chỉ gợi ý */
+    display: none; /* mặc định ẩn */
+    align-items: center; /* căn giữa theo dọc */
+    gap: 8px; /* khoảng cách giữa phần tử con */
+    background: white; /* nền trắng */
+    padding: 12px 20px; /* padding */
+    border-radius: 20px; /* bo góc */
+    margin-top: 8px; /* khoảng cách trên */
+    box-shadow: 0 1px 4px rgba(0,0,0,0.1); /* bóng mờ nhẹ */
+    font-size: 14px; /* cỡ chữ */
+    color: #202124; /* màu chữ */
+    animation: slideDown 0.3s ease; /* animation xuất hiện */
+} /* đóng .found-address */
+
+.found-address.show { /* khi có class show */
+    display: flex; /* hiển thị dạng flex */
+} /* đóng .found-address.show */
+
+.found-address .material-icons { /* icon trong .found-address */
+    color: #EA4335; /* màu đỏ */
+    font-size: 20px; /* kích thước icon */
+} /* đóng selector */
+
+@keyframes slideDown { /* định nghĩa animation slideDown */
+    from {
+        opacity: 0; /* bắt đầu mờ */
+        transform: translateY(-10px); /* bắt đầu lệch lên */
+    }
+    to {
+        opacity: 1; /* kết thúc đầy đủ */
+        transform: translateY(0); /* vị trí ban đầu */
+    }
+} /* đóng @keyframes */
+
+ /* ===== NÚT KHÁM PHÁ ===== */ /* khối Explore button */
+.explore-button { /* class cho nút khám phá */
+    position: fixed; /* cố định */
+    bottom: 20px; /* cách đáy 20px */
+    left: 20px; /* cách trái 20px */
+    display: flex; /* flex layout */
+    align-items: center; /* căn giữa dọc */
+    gap: 10px; /* khoảng cách giữa nội dung */
+    background: linear-gradient(135deg, #0de73c 0%, hsl(205, 87%, 37%) 100%); /* gradient tím -> đen */
+    color: white; /* chữ trắng */
+    border: none; /* không viền */
+    padding: 10px 20px; /* padding */
+    border-radius: 28px; /* bo góc */
+    font-size: 16px; /* cỡ chữ */
+    font-weight: 500; /* độ đậm chữ */
+    cursor: pointer; /* con trỏ khi hover */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4); /* bóng tím nhạt */
+    z-index: 100; /* trên bản đồ */
+    transition: all 0.3s ease; /* chuyển động mượt */
+} /* đóng .explore-button */
+
+.explore-button:hover { /* khi hover */
+    transform: translateY(-3px); /* nhích lên */
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.9); /* shadow đậm hơn */
+} /* đóng hover */
+
+.explore-button .material-icons { /* icon trong nút */
+    font-size: 24px; /* kích thước icon */
+} /* đóng selector */
+
+ /* ===== NÚT TÌM ĐƯỜNG ===== */ /* khối nút route */
+.route-button { /* class cho nút route */
+    position: fixed; /* cố định */
+    bottom: 80px; /* cách đáy 80px */
+    left: 20px; /* cách trái 20px */
+    display: flex; /* flex layout */
+    align-items: center; /* căn giữa dọc */
+    gap: 10px; /* khoảng cách giữa phần tử */
+    background: linear-gradient(135deg,#0de73c 0%, hsl(205, 87%, 37%)  100%); /* gradient tím -> đen */
+    color: white; /* chữ trắng */
+    border: none; /* không viền */
+    padding: 10px 43px; /* padding */
+    border-radius: 28px; /* bo góc */
+    font-size: 16px; /* cỡ chữ */
+    font-weight: 500; /* chữ đậm vừa phải */
+    cursor: pointer; /* con trỏ */
+    box-shadow: 0 4px 12px rgba(14, 14, 14, 0.4); /* bóng tím */
+    z-index: 100; /* trên map */
+    transition: all 0.3s ease; /* chuyển động */
+} /* đóng .route-button */
+
+.route-button:hover { /* hover cho route-button */
+    transform: translateY(-3px); /* nhích lên */
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.9); /* shadow lớn hơn */
+} /* đóng hover */
+
+.route-button .material-icons { /* icon bên trong */
+    font-size: 24px; /* kích thước icon */
+} /* đóng selector */
+
+ /* ===== MODAL ===== */ /* phần modal */
+.modal { /* overlay modal */
+    display: none; /* mặc định ẩn */
+    position: fixed; /* cố định toàn màn */
+    top: 0; /* trên cùng */
+    left: 0; /* trái */
+    width: 100%; /* chiếm full */
+    height: 100%; /* chiếm full cao */
+    background: rgba(0, 0, 0, 0.5); /* nền mờ */
+    z-index: 2000; /* rất trên cùng */
+    justify-content: center; /* căn giữa ngang */
+    align-items: center; /* căn giữa dọc */
+    animation: fadeIn 0.3s ease; /* animation fadeIn */
+} /* đóng .modal */
+
+.modal.show { /* khi show */
+    display: flex; /* hiện modal */
+} /* đóng .modal.show */
+
+@keyframes fadeIn { /* animation fadeIn */
+    from { opacity: 0; } /* bắt đầu mờ */
+    to { opacity: 1; } /* kết thúc rõ */
+} /* đóng @keyframes */
+
+.modal-content { /* hộp nội dung modal */
+    background: white; /* nền trắng */
+    width: 90%; /* chiếm 90% chiều ngang */
+    max-width: 900px; /* giới hạn rộng */
+    max-height: 85vh; /* giới hạn chiều cao */
+    border-radius: 16px; /* bo góc */
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3); /* bóng đổ lớn */
+    display: flex; /* flex layout */
+    flex-direction: column; /* hướng dọc */
+    animation: slideUp 0.3s ease; /* animation slideUp */
+} /* đóng .modal-content */
+
+@keyframes slideUp { /* animation slideUp */
+    from {
+        opacity: 0; /* bắt đầu mờ */
+        transform: translateY(50px); /* bắt đầu dịch xuống */
+    }
+    to {
+        opacity: 1; /* kết thúc rõ */
+        transform: translateY(0); /* vị trí gốc */
+    }
+} /* đóng @keyframes */
+
+.modal-header { /* header modal */
+    display: flex; /* flex layout */
+    justify-content: space-between; /* khoảng cách hai đầu */
+    align-items: center; /* căn giữa dọc */
+    padding: 24px 28px; /* padding */
+    border-bottom: 1px solid #e0e0e0; /* đường phân cách */
+} /* đóng .modal-header */
+
+.modal-header h2 { /* tiêu đề h2 trong header */
+    font-size: 24px; /* cỡ chữ */
+    color: #202124; /* màu chữ */
+    font-weight: 400; /* độ đậm */
+} /* đóng selector */
+
+.close-modal { /* nút đóng modal */
+    background: transparent; /* nền trong suốt */
+    border: none; /* không viền */
+    cursor: pointer; /* con trỏ pointer */
+    padding: 8px; /* padding */
+    border-radius: 50%; /* bo tròn */
+    transition: background 0.2s ease; /* chuyển background */
+} /* đóng .close-modal */
+
+.close-modal:hover { /* hover close button */
+    background: #f1f3f4; /* nền nhạt khi hover */
+} /* đóng hover */
+
+.close-modal .material-icons { /* icon đóng */
+    font-size: 24px; /* kích thước icon */
+    color: #5f6368; /* màu xám */
+} /* đóng selector */
+
+ /* Form tìm kiếm điểm đến */ /* chú thích block */
+#destination-search-form { /* form tìm điểm đến */
+    padding: 24px 28px; /* padding */
+    border-bottom: 1px solid #e0e0e0; /* đường đáy */
+} /* đóng form */
+
+.destination-input-wrapper { /* wrapper input */
+    display: flex; /* flex */
+    align-items: center; /* căn giữa dọc */
+    background: #f1f3f4; /* nền xám nhạt */
+    border-radius: 24px; /* bo góc */
+    padding: 4px 4px 4px 20px; /* padding trái lớn */
+    gap: 12px; /* khoảng cách nội dung */
+} /* đóng wrapper */
+
+.destination-input-wrapper .material-icons { /* icon trong wrapper */
+    color: #1A73E8; /* màu xanh */
+    font-size: 24px; /* cỡ icon */
+} /* đóng selector */
+
+#destination-input { /* input điểm đến */
+    flex: 1; /* chiếm không gian */
+    border: none; /* không viền */
+    outline: none; /* không outline */
+    background: transparent; /* nền trong suốt */
+    padding: 12px 0; /* padding trên/dưới */
+    font-size: 16px; /* cỡ chữ */
+    color: #202124; /* màu chữ */
+} /* đóng #destination-input */
+
+#destination-input::placeholder { /* placeholder input */
+    color: #979da3; /* màu placeholder */
+} /* đóng placeholder */
+
+.search-submit-btn { /* nút submit tìm (cần hiển thị tím) */
+    background:linear-gradient(135deg, #810de7 0%, #080808 100%); /* gradient hiện tại */
+    border: none; /* không viền */
+    color: white; /* chữ trắng */
+    padding: 10px; /* padding */
+    border-radius: 50%; /* bo tròn thành nút tròn */
+    cursor: pointer; /* con trỏ */
+    display: flex; /* flex bên trong */
+    align-items: center; /* căn giữa nội dung */
+    justify-content: center; /* căn giữa ngang */
+    transition: background 0.2s ease; /* chuyển background mượt */
+} /* đóng .search-submit-btn */
+
+.search-submit-btn:hover { /* hover cho nút submit */
+    background: #5a17a6; /* màu hover đơn giản */
+} /* đóng hover */
+
+.search-submit-btn .material-icons { /* icon trong nút submit */
+    font-size: 24px; /* kích thước icon */
+} /* đóng selector */
+
+.search-submit-btn .material-icons { /* (duplicate) */
+    font-size: 24px; /* (lặp lại) */
+} /* đóng selector (lặp) */
+
+ /* Nút pin tất cả */ /* block pin all */
+.pin-all-container { /* container phần pin all */
+    padding: 16px 28px; /* padding */
+    border-bottom: 1px solid #e0e0e0; /* đường đáy */
+} /* đóng .pin-all-container */
+
+.pin-all-btn { /* nút pin tất cả */
+    width: 100%; /* chiếm full */
+    background: linear-gradient(135deg, #FBBC04 0%, #f9ab00 100%); /* gradient vàng */
+    border: none; /* không viền */
+    color: white; /* chữ trắng */
+    padding: 14px 24px; /* padding */
+    border-radius: 24px; /* bo góc */
+    font-size: 15px; /* cỡ chữ */
+    font-weight: 500; /* chữ hơi đậm */
+    cursor: pointer; /* con trỏ */
+    display: flex; /* flex */
+    align-items: center; /* căn giữa dọc */
+    justify-content: center; /* căn giữa ngang */
+    gap: 10px; /* khoảng cách giữa nội dung */
+    transition: all 0.2s ease; /* chuyển động */
+    box-shadow: 0 2px 8px rgba(251, 188, 4, 0.3); /* bóng vàng nhạt */
+} /* đóng .pin-all-btn */
+
+.pin-all-btn:hover { /* hover pin-all-btn */
+    background: linear-gradient(135deg, #f9ab00 0%, #ea8600 100%); /* gradient hover */
+    box-shadow: 0 4px 12px rgba(251, 188, 4, 0.4); /* shadow to hơn */
+    transform: translateY(-1px); /* nhích lên nhẹ */
+} /* đóng hover */
+
+.pin-all-btn .material-icons { /* icon pin all */
+    font-size: 20px; /* kích thước icon */
+} /* đóng selector */
+
+.pin-count { /* hiển thị số pin */
+    background: rgba(255, 255, 255, 0.3); /* nền bán trong suốt */
+    padding: 2px 8px; /* padding nhỏ */
+    border-radius: 12px; /* bo góc */
+    font-size: 13px; /* cỡ chữ */
+    font-weight: 700; /* chữ đậm */
+} /* đóng .pin-count */
+
+ /* Phân trang pin địa điểm */ /* block phân trang */
+.pagination-controls { /* controls phân trang */
+    display: flex; /* flex */
+    align-items: center; /* căn giữa dọc */
+    justify-content: space-between; /* cách đều */
+    gap: 12px; /* khoảng cách */
+    margin-top: 12px; /* khoảng cách trên */
+} /* đóng .pagination-controls */
+
+.page-btn { /* nút trang */
+    background: white; /* nền trắng */
+    border: 1px solid #dadce0; /* viền xám nhạt */
+    color: #1A73E8; /* chữ xanh */
+    padding: 8px 16px; /* padding */
+    border-radius: 20px; /* bo góc */
+    font-size: 14px; /* cỡ chữ */
+    font-weight: 500; /* chữ hơi đậm */
+    cursor: pointer; /* con trỏ */
+    display: flex; /* flex */
+    align-items: center; /* căn giữa dọc */
+    gap: 4px; /* khoảng cách */
+    transition: all 0.2s ease; /* chuyển động */
+} /* đóng .page-btn */
+
+.page-btn:hover:not(:disabled) { /* hover khi không disabled */
+    background: #f1f3f4; /* nền nhạt */
+    border-color: #1A73E8; /* đổi viền thành xanh */
+} /* đóng selector */
+
+.page-btn:disabled { /* trạng thái disabled */
+    color: #5f6368; /* màu xám */
+    border-color: #e0e0e0; /* viền nhạt */
+    cursor: not-allowed; /* con trỏ cấm */
+    opacity: 0.5; /* mờ đi */
+} /* đóng :disabled */
+
+.page-btn .material-icons { /* icon trong page-btn */
+    font-size: 18px; /* cỡ icon */
+} /* đóng selector */
+
+.page-info { /* thông tin trang */
+    font-size: 14px; /* cỡ chữ */
+    color: #5f6368; /* màu xám */
+    font-weight: 500; /* chữ hơi đậm */
+    min-width: 50px; /* chiều rộng tối thiểu */
+    text-align: center; /* canh giữa */
+} /* đóng .page-info */
+
+ /* Loading spinner */ /* block loading */
+.loading { /* container loading */
+    display: none; /* ẩn mặc định */
+    flex-direction: column; /* hướng dọc */
+    align-items: center; /* căn giữa ngang */
+    justify-content: center; /* căn giữa dọc */
+    padding: 40px; /* padding */
+    gap: 16px; /* khoảng cách */
+} /* đóng .loading */
+
+.loading.show { /* khi show class */
+    display: flex; /* hiển thị flex */
+} /* đóng .loading.show */
+
+.spinner { /* vòng xoay */
+    width: 40px; /* độ rộng */
+    height: 40px; /* độ cao */
+    border: 4px solid #e0e0e0; /* viền sáng */
+    border-top-color: #1A73E8; /* phần trên màu xanh để xoay */
+    border-radius: 50%; /* tròn */
+    animation: spin 1s linear infinite; /* quay vô hạn */
+} /* đóng .spinner */
+
+@keyframes spin { /* animation quay */
+    to { transform: rotate(360deg); } /* kết thúc quay 360deg */
+} /* đóng @keyframes */
+
+.loading p { /* đoạn văn trong loading */
+    color: #5f6368; /* màu chữ */
+    font-size: 14px; /* cỡ chữ */
+} /* đóng selector */
+
+ /* ===== KẾT QUẢ ===== */ /* block kết quả */
+.results-container { /* container chứa kết quả */
+    flex: 1; /* chiếm không gian trong flex */
+    overflow-y: auto; /* cuộn theo chiều dọc */
+    padding: 20px 28px; /* padding */
+} /* đóng .results-container */
+
+ /* Thông báo lỗi */ /* block lỗi */
+.error-message { /* hộp thông báo lỗi */
+    background: #fef7e0; /* nền vàng nhạt */
+    border-left: 4px solid #f9ab00; /* viền trái vàng */
+    padding: 16px; /* padding */
+    border-radius: 8px; /* bo góc */
+    display: flex; /* flex */
+    align-items: center; /* căn giữa dọc */
+    gap: 12px; /* khoảng cách */
+    margin-bottom: 16px; /* khoảng cách dưới */
+} /* đóng .error-message */
+
+.error-message .material-icons { /* icon lỗi */
+    color: #f9ab00; /* màu vàng */
+    font-size: 24px; /* cỡ icon */
+} /* đóng selector */
+
+.error-message p { /* đoạn văn lỗi */
+    color: #5f6368; /* màu chữ */
+    font-size: 14px; /* cỡ chữ */
+    line-height: 1.5; /* khoảng cách dòng */
+} /* đóng selector */
+
+ /* Thông báo không có kết quả */ /* block no-results */
+.no-results { /* hộp không có kết quả */
+    text-align: center; /* căn giữa */
+    padding: 40px 20px; /* padding */
+    color: #5f6368; /* màu chữ */
+} /* đóng .no-results */
+
+.no-results .material-icons { /* icon no-results */
+    font-size: 64px; /* lớn */
+    color: #dadce0; /* màu nhạt */
+    margin-bottom: 16px; /* cách dưới */
+} /* đóng selector */
+
+.no-results h3 { /* tiêu đề no-results */
+    font-size: 18px; /* cỡ chữ */
+    font-weight: 400; /* trọng lượng chữ */
+    margin-bottom: 8px; /* khoảng cách dưới */
+} /* đóng selector */
+
+.no-results p { /* đoạn văn no-results */
+    font-size: 14px; /* cỡ chữ */
+} /* đóng selector */
+
+ /* Item địa điểm */ /* block result item */
+.result-item { /* mỗi item kết quả */
+    background: white; /* nền trắng */
+    border: 1px solid #e0e0e0; /* viền xám */
+    border-radius: 12px; /* bo góc */
+    padding: 16px; /* padding */
+    margin-bottom: 16px; /* cách dưới */
+    cursor: pointer; /* con trỏ pointer */
+    transition: all 0.2s ease; /* chuyển động */
+    display: flex; /* flex layout */
+    gap: 16px; /* khoảng cách giữa cột */
+    position: relative; /* để ::after định vị tương đối */
+} /* đóng .result-item */
+
+.result-item:hover { /* hover item */
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1); /* shadow */
+    transform: translateY(-2px); /* nhích lên */
+    border-color: #1A73E8; /* đổi viền khi hover */
+} /* đóng hover */
+
+.result-item::after { /* pseudo nhắc nhở */
+    content: 'Click để xem trên bản đồ'; /* nội dung text */
+    position: absolute; /* định vị tuyệt đối */
+    top: 8px; /* từ trên 8px */
+    right: 12px; /* từ phải 12px */
+    background: #1A73E8; /* nền xanh */
+    color: white; /* chữ trắng */
+    padding: 4px 10px; /* padding */
+    border-radius: 12px; /* bo góc */
+    font-size: 11px; /* cỡ chữ nhỏ */
+    opacity: 0; /* ẩn mặc định */
+    transition: opacity 0.2s ease; /* chuyển opacity */
+    pointer-events: none; /* không tương tác */
+} /* đóng ::after */
+
+.result-item:hover::after { /* khi hover hiện pseudo */
+    opacity: 1; /* hiện */
+} /* đóng selector */
+
+.result-image { /* ảnh item */
+    width: 120px; /* rộng 120px */
+    height: 120px; /* cao 120px */
+    border-radius: 8px; /* bo góc ảnh */
+    object-fit: cover; /* cắt ảnh theo vùng */
+    flex-shrink: 0; /* không co nhỏ trong flex */
+} /* đóng .result-image */
+
+.result-info { /* thông tin item */
+    flex: 1; /* chiếm phần còn lại */
+    display: flex; /* flex */
+    flex-direction: column; /* hướng dọc */
+    gap: 8px; /* khoảng cách */
+} /* đóng .result-info */
+
+.result-header { /* header trong result */
+    display: flex; /* flex */
+    justify-content: space-between; /* cách đều */
+    align-items: flex-start; /* căn đầu trên */
+    gap: 12px; /* khoảng cách */
+} /* đóng .result-header */
+
+.result-name { /* tên địa điểm */
+    font-size: 18px; /* cỡ chữ */
+    font-weight: 500; /* chữ hơi đậm */
+    color: #202124; /* màu chữ */
+    margin: 0; /* bỏ margin mặc định của h1/h2 */
+    flex: 1; /* chiếm không gian */
+} /* đóng .result-name */
+
+.result-rating { /* badge rating */
+    display: flex; /* flex nội dung */
+    align-items: center; /* căn giữa dọc */
+    gap: 4px; /* khoảng cách */
+    background: #1A73E8; /* nền xanh */
+    color: white; /* chữ trắng */
+    padding: 4px 10px; /* padding */
+    border-radius: 12px; /* bo góc */
+    font-size: 14px; /* cỡ chữ */
+    font-weight: 500; /* chữ hơi đậm */
+    white-space: nowrap; /* không xuống hàng */
+} /* đóng .result-rating */
+
+.result-rating .material-icons { /* icon rating */
+    font-size: 16px; /* cỡ icon */
+} /* đóng selector */
+
+.result-meta { /* metadata */
+    display: flex; /* flex */
+    gap: 16px; /* khoảng cách */
+    font-size: 14px; /* cỡ chữ */
+    color: #5f6368; /* màu xám */
+    flex-wrap: wrap; /* cho wrap khi nhỏ */
+} /* đóng .result-meta */
+
+.result-meta span { /* span trong meta */
+    display: flex; /* flex */
+    align-items: center; /* căn giữa dọc */
+    gap: 4px; /* khoảng cách */
+} /* đóng selector */
+
+.result-meta .material-icons { /* icon meta */
+    font-size: 16px; /* cỡ icon */
+} /* đóng selector */
+
+.result-summary { /* mô tả ngắn */
+    font-size: 14px; /* cỡ chữ */
+    color: #5f6368; /* màu xám */
+    line-height: 1.5; /* chiều cao dòng */
+    margin: 0; /* bỏ margin */
+} /* đóng .result-summary */
+
+.result-footer { /* chân item */
+    display: flex; /* flex */
+    justify-content: space-between; /* cách đều */
+    align-items: center; /* căn giữa dọc */
+    gap: 12px; /* khoảng cách */
+} /* đóng .result-footer */
+
+.result-address { /* địa chỉ item */
+    font-size: 13px; /* cỡ chữ nhỏ */
+    color: #5f6368; /* màu xám */
+    display: flex; /* flex */
+    align-items: center; /* căn giữa dọc */
+    gap: 4px; /* khoảng cách */
+    flex: 1; /* chiếm không gian */
+} /* đóng .result-address */
+
+.result-address .material-icons { /* icon địa chỉ */
+    font-size: 16px; /* cỡ icon */
+    color: #EA4335; /* màu đỏ */
+} /* đóng selector */
+
+.open-maps-btn { /* nút mở maps */
+    background: transparent; /* nền trong suốt */
+    border: 1px solid #dadce0; /* viền xám */
+    color: #5f6368; /* màu chữ */
+    padding: 6px; /* padding */
+    border-radius: 50%; /* bo tròn */
+    cursor: pointer; /* con trỏ */
+    display: flex; /* flex */
+    align-items: center; /* căn giữa dọc */
+    justify-content: center; /* căn giữa ngang */
+    transition: all 0.2s ease; /* chuyển động */
+    flex-shrink: 0; /* không co nhỏ */
+} /* đóng .open-maps-btn */
+
+.open-maps-btn:hover { /* hover open maps */
+    background: #f1f3f4; /* nền nhạt */
+    border-color: #1A73E8; /* viền xanh */
+    color: #1A73E8; /* chữ xanh */
+} /* đóng hover */
+
+.open-maps-btn .material-icons { /* icon trong nút */
+    font-size: 18px; /* cỡ icon */
+} /* đóng selector */
+
+.open-maps-btn .material-icons { /* duplicate */
+    font-size: 18px; /* duplicate */
+} /* đóng duplicate */
+
+.open-maps-btn .material-icons { /* duplicate */
+    font-size: 18px; /* duplicate */
+} /* đóng duplicate */
+
+ /* ===== NOTIFICATION ===== */ /* block notification */
+.notification { /* hộp notification */
+    position: fixed; /* cố định */
+    bottom: 100px; /* cách đáy */
+    left: 50%; /* căn giữa ngang */
+    transform: translateX(-50%) translateY(20px); /* dịch xuống và căn giữa */
+    background: #202124; /* nền tối */
+    color: white; /* chữ trắng */
+    padding: 12px 24px; /* padding */
+    border-radius: 24px; /* bo góc */
+    display: flex; /* flex */
+    align-items: center; /* căn giữa dọc */
+    gap: 10px; /* khoảng cách */
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3); /* shadow */
+    z-index: 3000; /* rất trên cùng */
+    opacity: 0; /* ẩn theo mặc định */
+    transition: all 0.3s ease; /* chuyển động */
+    font-size: 14px; /* cỡ chữ */
+    max-width: 90%; /* giới hạn chiều rộng */
+} /* đóng .notification */
+
+.notification.show { /* khi show */
+    opacity: 1; /* hiện */
+    transform: translateX(-50%) translateY(0); /* dịch lên vị trí */
+} /* đóng .notification.show */
+
+.notification .material-icons { /* icon trong notification */
+    font-size: 20px; /* cỡ icon */
+    color: #FBBC04; /* màu vàng */
+    flex-shrink: 0; /* không co nhỏ */
+} /* đóng selector */
+
+.notification-message { /* khu vực tin nhắn */
+    flex: 1; /* chiếm không gian */
+} /* đóng .notification-message */
+
+ /* Notification có button */ /* block action */
+.notification-action { /* hành động kèm notification */
+    padding: 16px 24px; /* padding */
+    border-radius: 16px; /* bo góc */
+    max-width: 600px; /* giới hạn */
+} /* đóng .notification-action */
+
+.notification-btn { /* nút trong notification */
+    background: #1A73E8; /* nền xanh */
+    border: none; /* không viền */
+    color: white; /* chữ trắng */
+    padding: 8px 20px; /* padding */
+    border-radius: 20px; /* bo góc */
+    font-size: 13px; /* cỡ chữ */
+    font-weight: 500; /* chữ hơi đậm */
+    cursor: pointer; /* con trỏ */
+    transition: all 0.2s ease; /* chuyển động */
+    white-space: nowrap; /* không xuống hàng */
+    flex-shrink: 0; /* không co nhỏ */
+} /* đóng .notification-btn */
+
+.notification-btn:hover { /* hover notification-btn */
+    background: #1557b0; /* nền xanh đậm */
+    transform: scale(1.05); /* phóng to nhẹ */
+} /* đóng hover */
+
+ /* ===== FORM TÌM ĐƯỜNG ===== */ /* block route form */
+.route-form-container { /* container form định tuyến */
+    padding: 24px 28px; /* padding */
+    border-bottom: 1px solid #e0e0e0; /* đường đáy */
+    display: flex; /* flex layout */
+    flex-direction: column; /* hướng dọc */
+    gap: 12px; /* khoảng cách */
+} /* đóng .route-form-container */
+
+.route-input-group { /* nhóm input trong route form */
+    display: flex; /* flex */
+    align-items: center; /* căn giữa dọc */
+    gap: 12px; /* khoảng cách */
+} /* đóng .route-input-group */
+
+.route-point-marker { /* marker cho điểm bắt đầu/đích */
+    width: 32px; /* kích thước */
+    height: 32px; /* kích thước */
+    border-radius: 50%; /* tròn */
+    display: flex; /* flex */
+    align-items: center; /* căn giữa dọc */
+    justify-content: center; /* căn giữa ngang */
+    font-weight: 700; /* chữ đậm */
+    font-size: 14px; /* cỡ chữ */
+    flex-shrink: 0; /* không co nhỏ */
+} /* đóng .route-point-marker */
+
+.origin-marker { /* marker origin */
+    background: #EA4335; /* đỏ */
+    color: white; /* chữ trắng */
+} /* đóng .origin-marker */
+
+.destination-marker { /* marker destination */
+    background: #34A853; /* xanh lá */
+    color: white; /* chữ trắng */
+} /* đóng .destination-marker */
+
+.route-input { /* input cho route */
+    flex: 1; /* chiếm không gian */
+    border: 1px solid #dadce0; /* viền xám */
+    outline: none; /* không outline */
+    background: white; /* nền trắng */
+    padding: 12px 16px; /* padding */
+    font-size: 15px; /* cỡ chữ */
+    color: #202124; /* màu chữ */
+    border-radius: 8px; /* bo góc */
+    transition: all 0.2s ease; /* chuyển động */
+} /* đóng .route-input */
+
+.route-input:focus { /* khi input focus */
+    border-color: #1A73E8; /* đổi viền xanh */
+    box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.1); /* halo nhẹ */
+} /* đóng :focus */
+
+.route-input::placeholder { /* placeholder route-input */
+    color: #5f6368; /* màu placeholder */
+} /* đóng placeholder */
+
+.swap-points-btn { /* nút đổi vị trí điểm */
+    align-self: center; /* tự canh giữa */
+    background: white; /* nền trắng */
+    border: 1px solid #dadce0; /* viền */
+    color: #5f6368; /* chữ xám */
+    padding: 8px; /* padding */
+    border-radius: 50%; /* tròn */
+    cursor: pointer; /* con trỏ */
+    display: flex; /* flex */
+    align-items: center; /* căn giữa dọc */
+    justify-content: center; /* căn giữa ngang */
+    transition: all 0.2s ease; /* chuyển động */
+    margin-left: 44px; /* cách trái */
+} /* đóng .swap-points-btn */
+
+.swap-points-btn:hover { /* hover swap */
+    background: #f1f3f4; /* nền nhạt */
+    border-color: #1A73E8; /* viền xanh */
+    color: #1A73E8; /* chữ xanh */
+} /* đóng hover */
+
+.swap-points-btn .material-icons { /* icon swap */
+    font-size: 24px; /* cỡ icon */
+} /* đóng selector */
+
+.find-route-btn { /* nút tìm đường */
+    background: #1A73E8; /* nền xanh */
+    border: none; /* không viền */
+    color: white; /* chữ trắng */
+    padding: 12px 24px; /* padding */
+    border-radius: 24px; /* bo góc */
+    font-size: 15px; /* cỡ chữ */
+    font-weight: 500; /* chữ hơi đậm */
+    cursor: pointer; /* con trỏ */
+    display: flex; /* flex */
+    align-items: center; /* căn giữa dọc */
+    justify-content: center; /* căn giữa ngang */
+    gap: 8px; /* khoảng cách */
+    transition: all 0.2s ease; /* chuyển động */
+    margin-top: 8px; /* cách trên */
+} /* đóng .find-route-btn */
+
+.find-route-btn:hover { /* hover find-route */
+    background: #174ea6; /* nền xanh đậm */
+    box-shadow: 0 2px 8px rgba(26, 115, 232, 0.3); /* shadow */
+} /* đóng hover */
+
+.find-route-btn .material-icons { /* icon find-route */
+    font-size: 20px; /* cỡ icon */
+} /* đóng selector */
+
+ /* Gợi ý địa điểm */ /* block suggestions */
+.route-suggestions { /* container gợi ý */
+    padding: 20px 28px; /* padding */
+    max-height: 400px; /* giới hạn chiều cao */
+    overflow-y: auto; /* cuộn dọc nếu overflow */
+} /* đóng .route-suggestions */
+
+.route-suggestions h3 { /* tiêu đề gợi ý */
+    font-size: 16px; /* cỡ chữ */
+    font-weight: 500; /* chữ hơi đậm */
+    color: #202124; /* màu chữ */
+    margin-bottom: 16px; /* khoảng cách dưới */
+} /* đóng selector */
+
+.suggestions-list { /* danh sách gợi ý */
+    display: flex; /* flex */
+    flex-direction: column; /* hướng dọc */
+    gap: 8px; /* khoảng cách */
+} /* đóng .suggestions-list */
+
+.suggestion-item { /* từng mục gợi ý */
+    background: white; /* nền trắng */
+    border: 1px solid #e0e0e0; /* viền */
+    border-radius: 8px; /* bo góc */
+    padding: 12px 16px; /* padding */
+    cursor: pointer; /* con trỏ */
+    transition: all 0.2s ease; /* chuyển động */
+    display: flex; /* flex */
+    align-items: center; /* căn giữa dọc */
+    gap: 12px; /* khoảng cách */
+} /* đóng .suggestion-item */
+
+.suggestion-item:hover { /* hover suggestion item */
+    background: #f8f9fa; /* nền nhẹ */
+    border-color: #1A73E8; /* viền xanh */
+} /* đóng hover */
+
+.suggestion-item .material-icons { /* icon suggestion */
+    color: #EA4335; /* màu đỏ */
+    font-size: 20px; /* cỡ icon */
+} /* đóng selector */
+
+.suggestion-info { /* info suggestion */
+    flex: 1; /* chiếm không gian */
+} /* đóng .suggestion-info */
+
+.suggestion-name { /* tên suggestion */
+    font-size: 14px; /* cỡ chữ */
+    font-weight: 500; /* chữ hơi đậm */
+    color: #202124; /* màu chữ */
+    margin-bottom: 2px; /* cách dưới nhỏ */
+} /* đóng .suggestion-name */
+
+.suggestion-address { /* địa chỉ suggestion */
+    font-size: 12px; /* cỡ chữ nhỏ */
+    color: #5f6368; /* màu xám */
+} /* đóng .suggestion-address */
+
+ /* ===== SCROLLBAR ===== */ /* style scrollbar */
+.results-container::-webkit-scrollbar { /* thanh cuộn webkit */
+    width: 8px; /* chiều rộng thanh */
+} /* đóng selector */
+
+.results-container::-webkit-scrollbar-track { /* track scrollbar */
+    background: transparent; /* nền trong suốt */
+} /* đóng selector */
+
+.results-container::-webkit-scrollbar-thumb { /* thumb scrollbar */
+    background: #dadce0; /* màu thumb */
+    border-radius: 4px; /* bo góc */
+} /* đóng selector */
+
+.results-container::-webkit-scrollbar-thumb:hover { /* hover thumb */
+    background: #bdc1c6; /* màu khi hover */
+} /* đóng selector */
+
+ /* ===== RESPONSIVE ===== */ /* media queries */
+@media (max-width: 768px) { /* khi màn nhỏ hơn 768px */
+    .search-container { /* search container responsive */
+        width: 95%; /* rộng 95% */
+        top: 16px; /* cách trên nhỏ hơn */
+    } /* đóng selector */
+    
+    .explore-button { /* explore responsive */
+        bottom: 20px; /* đáy 20px */
+        left: 80px; /* cách trái 80px */
+        padding: 14px 20px; /* padding nhỏ hơn */
+        font-size: 14px; /* cỡ chữ nhỏ hơn */
+    } /* đóng selector */
+    
+    .route-button { /* route button responsive */
+        bottom: 20px; /* đáy 20px */
+        left: 300px; /* vị trí trái khác (có thể cần điều chỉnh) */
+        padding: 14px 20px; /* padding */
+        font-size: 14px; /* cỡ chữ */
+    } /* đóng selector */
+    
+    .modal-content { /* modal responsive */
+        width: 95%; /* rộng 95% */
+        max-height: 90vh; /* giới hạn cao hơn */
+    } /* đóng selector */
+    
+    .result-item { /* item responsive */
+        flex-direction: column; /* chuyển thành cột */
+    } /* đóng selector */
+    
+    .result-image { /* ảnh responsive */
+        width: 100%; /* ảnh chiếm full */
+        height: 200px; /* cao 200px */
+    } /* đóng selector */
+    
+    .result-header { /* header responsive */
+        flex-direction: column; /* xếp dọc */
+        gap: 8px; /* khoảng cách */
+    } /* đóng selector */
+    
+    .notification { /* notification responsive */
+        bottom: 80px; /* đáy thấp hơn */
+        font-size: 13px; /* chữ nhỏ hơn */
+        padding: 12px 16px; /* padding */
+        max-width: 95%; /* rộng tối đa */
+    } /* đóng selector */
+    
+    .notification-action { /* action responsive */
+        flex-direction: column; /* xếp dọc */
+        align-items: stretch; /* kéo dãn */
+        text-align: center; /* canh giữa text */
+    } /* đóng selector */
+    
+    .notification-btn { /* notification btn responsive */
+        width: 100%; /* chiếm full */
+        margin-top: 8px; /* cách trên */
+    } /* đóng selector */
+} /* đóng @media */

@@ -1,0 +1,240 @@
+<!DOCTYPE html> <!-- Khai báo đây là tài liệu HTML5 -->
+<html lang="vi"> <!-- Mở thẻ HTML, ngôn ngữ trang là tiếng Việt -->
+<head> <!-- Phần đầu chứa thông tin meta và liên kết tài nguyên -->
+    <meta charset="UTF-8"> <!-- Đặt bảng mã ký tự là UTF-8 (hỗ trợ tiếng Việt) -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Tối ưu hiển thị cho thiết bị di động -->
+    <title>Khám phá địa điểm - Google Travel Style</title> <!-- Tiêu đề trang hiển thị trên tab trình duyệt -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- Google Material Icons: Thư viện icon của Google -->
+    
+    <!-- Liên kết đến file CSS -->
+    <link rel="stylesheet" href="../CSS/style.css">
+    <link rel="stylesheet" href="map-styles.css">
+
+    <!-- MarkerClusterer - Nhóm marker khi zoom out -->
+    
+    <!-- Map handler - load trước Google Maps -->
+     <link href="https://api.mapbox.com/mapbox-gl-js/v3.4.0/mapbox-gl.css" rel="stylesheet" />
+  <script src="https://api.mapbox.com/mapbox-gl-js/v3.4.0/mapbox-gl.js"></script>
+  <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.1/mapbox-gl-geocoder.css" />
+<script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.1/mapbox-gl-geocoder.min.js"></script>
+    <!-- Google Maps API và các thư viện - đảm bảo callback initMap có sẵn -->
+
+    <!-- Google Maps API và các thư viện - đảm bảo callback initMap có sẵn -->
+    
+    <!-- Thư viện turf.js để tính toán khoảng cách và diện tích -->
+</head>
+
+<body> <!-- Phần thân trang, chứa toàn bộ nội dung hiển thị -->
+    
+     <button class="back-btn" id="backBtn" type="button">Back</button>
+   
+    <!-- ==================== THANH TÌM KIẾM ==================== -->
+    <div class="search-container"> <!-- Thẻ bao toàn bộ thanh tìm kiếm -->
+        <div class="search-wrapper"> <!-- Khung chứa ô nhập và biểu tượng tìm kiếm -->
+            <span class="material-icons search-icon">search</span> <!-- Icon kính lúp -->
+            
+            <form id="map-search-form"> <!-- Form nhập để tìm kiếm trên bản đồ -->
+                <input 
+                    type="text"
+
+                    id="map-search-input" 
+                    placeholder="Tìm kiếm địa điểm trên bản đồ..." 
+                    autocomplete="off" 
+                >
+                 <!--id để js truy cập , placeholder hiện tạm thời ,autocomplete tự động điền thông tin -->
+            </form>
+        </div>
+        
+        <!-- Khu vực hiển thị địa chỉ tìm được -->
+        <div id="found-address" class="found-address"> <!-- Ban đầu có thể ẩn, JS sẽ hiển thị -->
+            <span class="material-icons">location_on</span> <!-- Icon địa điểm -->
+            <span class="material-icons close-icon" id="close-address">close</span> <!-- Nút X để đóng -->
+            <span id="address-text"></span> <!-- Nơi JS chèn tên địa điểm tìm thấy -->
+        </div>
+    </div>
+
+    <!-- ==================== NÚT KHÁM PHÁ ĐIỂM ĐẾN ==================== -->
+    <button class="explore-button" id="explore-btn"> <!-- Nút chính mở modal gợi ý -->
+        <span class="material-icons">explore</span> <!-- Icon la bàn -->
+        <span>Khám phá điểm đến</span> <!-- Chữ hiển thị -->
+    </button>
+
+    <!-- ==================== NÚT TÌM ĐƯỜNG ĐI ==================== -->
+    <button class="route-button" id="route-btn"> <!-- Nút mở modal tìm đường -->
+        <span class="material-icons">directions</span> <!-- Icon mũi tên chỉ đường -->
+        <span>Tìm đường đi</span> <!-- Văn bản -->
+    </button>
+    <div class="content">
+        <div id="map"></div>
+        <div id="locationInfo" class="location-info"></div>
+    </div>
+    <!-- ==================== MODAL GỢI Ý ĐỊA ĐIỂM ==================== -->
+    <div class="modal" id="explore-modal"> <!-- Hộp thoại hiển thị gợi ý -->
+        <div class="modal-content"> <!-- Phần nội dung chính của modal -->
+            <div class="modal-header"> <!-- Tiêu đề của modal -->
+                <h2>Gợi ý địa điểm du lịch</h2> <!-- Tiêu đề -->
+                <button class="close-modal" id="close-modal"> <!-- Nút đóng modal -->
+                    <span class="material-icons">close</span> <!-- Icon dấu X -->
+                </button>
+            </div>
+            
+            <!-- Form nhập tên thành phố muốn tìm -->
+            <form id="destination-search-form"> <!-- Form tìm địa điểm -->
+                <div class="destination-input-wrapper"> <!-- Khung ô nhập -->
+                    <span class="material-icons">flight_takeoff</span> <!-- Icon máy bay -->
+                    <input 
+                        type="text" 
+                        id="destination-input" 
+                        placeholder="Nhập tên tỉnh/thành phố (VD: Hồ Chí Minh, Đà Nẵng...)"
+                        autocomplete="off" 
+                    >
+                    <button type="submit" class="search-submit-btn"> <!-- Nút gửi form -->
+                        <span class="material-icons">search</span> <!-- Icon tìm kiếm -->
+                    </button>
+                </div>
+            </form>
+            
+            <!-- Vùng chứa nút “Pin tất cả địa điểm” -->
+            <div class="pin-all-container" id="pin-all-container" style="display: none;"> <!-- Ẩn khi chưa có kết quả -->
+                <button class="pin-all-btn" id="pin-all-btn"> <!-- Nút pin địa điểm -->
+                    <span class="material-icons">map</span> <!-- Icon bản đồ -->
+                    <span>Pin 2 địa điểm lên bản đồ</span> <!-- Chữ mô tả -->
+                    <span class="pin-count" id="pin-count">0</span> <!-- Số lượng địa điểm đã pin -->
+                </button>
+                
+                <!-- Phân trang hiển thị danh sách nhiều kết quả -->
+                <div class="pagination-controls" id="pagination-controls" style="display: none;"> <!-- Ẩn khi chưa có dữ liệu -->
+                    <button class="page-btn" id="prev-page-btn" disabled> <!-- Nút lùi trang -->
+                        <span class="material-icons">chevron_left</span>
+                        <span>Trước</span>
+                    </button>
+                    <span class="page-info" id="page-info">1 / 4</span> <!-- Hiển thị số trang -->
+                    <button class="page-btn" id="next-page-btn"> <!-- Nút qua trang -->
+                        <span>Tiếp</span>
+                        <span class="material-icons">chevron_right</span>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Loading spinner hiển thị khi đang tải -->
+            <div class="loading" id="loading-spinner">
+                <div class="spinner"></div> <!-- Hình tròn xoay -->
+                <p>Đang tìm kiếm địa điểm...</p> <!-- Thông báo đang tải -->
+            </div>
+            
+            <!-- Vùng hiển thị kết quả hoặc lỗi -->
+            <div class="results-container" id="results-container">
+                <!-- JS sẽ chèn danh sách kết quả tại đây -->
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== MODAL TÌM ĐƯỜNG ĐI ==================== -->
+    <div class="modal" id="route-modal"> <!-- Hộp thoại tìm đường -->
+        <div class="modal-content"> <!-- Nội dung chính -->
+            <div class="modal-header"> <!-- Phần tiêu đề -->
+                <h2>Tìm đường đi</h2> <!-- Tiêu đề -->
+                <button class="close-modal" id="close-route-modal"> <!-- Nút đóng -->
+                    <span class="material-icons">close</span>
+                </button>
+            </div>
+            
+            <!-- Khu nhập điểm đi và điểm đến -->
+            <div class="route-form-container"> <!-- Form tìm đường -->
+                <div class="route-input-group"> <!-- Nhóm nhập điểm đi -->
+                    <div class="route-point-marker origin-marker">A</div> <!-- Ký hiệu A -->
+                    <input 
+                        type="text" 
+                        id="origin-input" 
+                        placeholder="Chọn điểm đi..." 
+                        autocomplete="off"
+                        class="route-input"
+                    >
+                </div>
+                
+                <button class="swap-points-btn" id="swap-points-btn" title="Đổi điểm đi/đến"> <!-- Nút hoán đổi A <-> B -->
+                    <span class="material-icons">swap_vert</span>
+                </button>
+                
+                <div class="route-input-group"> <!-- Nhóm nhập điểm đến -->
+                    <div class="route-point-marker destination-marker">B</div> <!-- Ký hiệu B -->
+                    <input 
+                        type="text" 
+                        id="destination-input-route" 
+                        placeholder="Chọn điểm đến..." 
+                        autocomplete="off"
+                        class="route-input"
+                    >
+                </div>
+                
+                <button class="find-route-btn" id="find-route-btn"> <!-- Nút tìm đường -->
+                    <span class="material-icons">navigation</span>
+                    <span>Tìm đường</span>
+                </button>
+            </div>
+            
+            <!-- Khu gợi ý địa điểm sẵn có -->
+            <div class="route-suggestions" id="route-suggestions">
+                <h3>Hoặc chọn từ danh sách địa điểm:</h3> <!-- Tiêu đề phụ -->
+                <div class="suggestions-list" id="suggestions-list">
+                    <!-- JS sẽ tải danh sách gợi ý tại đây -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+      <!-- ==================== KHUNG ==================== -->
+  <div class="article-container">
+    <div class="article" data-lat="20.9517" data-lng="107.0766">
+        <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e" alt="">
+        <h3>Bãi biển mát mẻ  – Hành trình khám phá</h3>
+        <span class="material-icons">location_on</span>
+    </div>
+    
+    <div class="article" data-lat="21.0285" data-lng="105.8542">
+        <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5" alt="">
+        <h3>Quán ăn miền quê – Hương vị quê hương</h3>
+        <span class="material-icons">location_on</span>
+    </div>
+    
+    <div class="article" data-lat="22.3484" data-lng="103.8243">
+        <img src="https://images.unsplash.com/photo-1501785888041-af3ef285b470" alt="">
+        <h3>Cắm trại trên đỉnh núi – Trải nghiệm đáng nhớ</h3>
+        <span class="material-icons">location_on</span>
+    </div>
+</div>
+    <!-- ==================== KHUNG GOOGLE MAP ==================== -->
+    
+
+   
+   <script>mapboxgl.accessToken = 'pk.eyJ1IjoidGhhbmd0NjM4OSIsImEiOiJjbWhucHh6Y3gwMndhMm1xNm50ZWJjMTY0In0.9jJsnAduLheG0sBDlP3qAQ';
+    const map = new mapboxgl.Map({
+      container: 'map',
+      style: 'mapbox://styles/mapbox/standard',
+      center: [108.220, 16.067], // Đà Nẵng [lng, lat]
+      zoom: 12
+    });
+
+    // Marker demo
+    map.on('load', () => {
+      new mapboxgl.Marker().setLngLat([108.220, 16.067]).addTo(map);
+    });
+
+    const geocoder = new MapboxGeocoder({
+  accessToken: mapboxgl.accessToken,
+  mapboxgl, language: 'vi', countries: 'vn',
+  marker: false, types: 'place,poi,address'
+});
+document.getElementById('geocoder').appendChild(geocoder.onAdd(map));
+geocoder.on('result', (e) => map.flyTo({ center: e.result.center, zoom: 14 }));
+  
+</script>
+    <script src="../JS/script.js"></script> <!-- File chứa toàn bộ logic tương tác -->
+
+
+
+
+
+</body>
+</html> <!-- Kết thúc tài liệu -->

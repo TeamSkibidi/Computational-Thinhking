@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hồ sơ người dùng</title>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <style>
+        :root {
+            --primary: #4f46e5; /* Màu tím xanh hiện đại */
+            --primary-hover: #4338ca;
+            --bg-body: #f3f4f6;
+            --bg-card: #ffffff;
+            --text-main: #111827;
+            --text-muted: #6b7280;
+            --border: #e5e7eb;
+            --danger: #ef4444;
+            --success: #10b981;
+        }
+
+        /* --- Reset CSS --- */
+        * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            line-height: 1.5;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- 1. Navbar --- */
+        .navbar {
+            height: 64px;
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 32px;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+        .brand { font-size: 20px; font-weight: 700; color: var(--primary); display: flex; align-items: center; gap: 8px; }
+        .user-menu { display: flex; align-items: center; gap: 12px; cursor: pointer; }
+        .user-menu img { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; }
+        .user-menu span { font-weight: 500; font-size: 14px; }
+
+        /* --- 2. Layout chính --- */
+        .container {
+            max-width: 1100px;
+            margin: 32px auto;
+            width: 100%;
+            padding: 0 20px;
+            display: flex;
+            gap: 32px;
+            flex: 1;
+        }
+
+        /* --- 3. Sidebar --- */
+        .sidebar {
+            width: 260px;
+            flex-shrink: 0;
+        }
+        .nav-links { list-style: none; background: var(--bg-card); padding: 16px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .nav-links li { margin-bottom: 4px; }
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            color: var(--text-muted);
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .nav-link:hover { background-color: #f9fafb; color: var(--text-main); }
+        .nav-link.active { background-color: #eef2ff; color: var(--primary); }
+        .nav-link i { font-size: 20px; }
+
+        /* --- 4. Content Area --- */
+        .main-content { flex: 1; }
+        
+        .content-section { display: none; animation: fadeIn 0.3s ease; }
+        .content-section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        .card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            padding: 32px;
+            margin-bottom: 24px;
+        }
+
+        .section-title { font-size: 18px; font-weight: 600; margin-bottom: 8px; color: var(--text-main); }
+        .section-desc { font-size: 14px; color: var(--text-muted); margin-bottom: 24px; }
+        .divider { height: 1px; background: var(--border); margin: 24px 0; }
+
+        /* --- Form Elements --- */
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+        .full-width { grid-column: span 2; }
+        
+        .form-group { display: flex; flex-direction: column; gap: 6px; }
+        .form-group label { font-size: 14px; font-weight: 500; color: #374151; }
+        
+        .input-wrapper { position: relative; }
+        .form-control {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border 0.2s;
+        }
+        .form-control:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); }
+        .form-control[disabled] { background-color: #f9fafb; color: #9ca3af; cursor: not-allowed; }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 500;
+            font-size: 14px;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+            gap: 8px;
+        }
+        .btn-primary { background-color: var(--primary); color: white; }
+        .btn-primary:hover { background-color: var(--primary-hover); }
+        .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text-main); }
+        .btn-outline:hover { background: #f9fafb; border-color: #d1d5db; }
+
+        /* --- Avatar Upload --- */
+        .avatar-upload { display: flex; align-items: center; gap: 24px; margin-bottom: 24px; }
+        .avatar-preview { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 2px solid #e5e7eb; }
+        .upload-actions h4 { font-size: 16px; margin-bottom: 4px; }
+        .upload-actions p { font-size: 12px; color: var(--text-muted); margin-bottom: 12px; }
+
+        /* --- Toggle Switch --- */
+        .switch-group { display: flex; justify-content: space-between; align-items: center; padding: 16px 0; border-bottom: 1px solid #f3f4f6; }
+        .switch-info h4 { font-size: 14px; font-weight: 600; }
+        .switch-info p { font-size: 13px; color: var(--text-muted); }
+        
+        .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #e5e7eb; transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--primary); }
+        input:checked + .slider:before { transform: translateX(20px); }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container { flex-direction: column; }
+            .sidebar { width: 100%; }
+            .form-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <a href="#" class="brand"><i class="ph ph-nut"></i> UserSettings</a>
+        <div class="user-menu">
+            <span>Nguyễn Văn A</span>
+            <img src="../image/avatar.png" alt="Avatar">
+        </div>
+    </nav>
+
+    <div class="container">
+        <aside class="sidebar">
+            <ul class="nav-links">
+                <li>
+                    <a href="#" class="nav-link active" onclick="switchTab('tab-general', this)">
+                        <i class="ph ph-user"></i> Thông tin chung
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="nav-link" onclick="switchTab('tab-security', this)">
+                        <i class="ph ph-shield-check"></i> Bảo mật & Đăng nhập
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="nav-link" onclick="switchTab('tab-notifications', this)">
+                        <i class="ph ph-bell"></i> Thông báo
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="nav-link" style="color: var(--danger);" onclick="logout()">
+                        <i class="ph ph-sign-out"></i> Đăng xuất
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <main class="main-content">
+            
+            <div id="tab-general" class="content-section active">
+                <div class="card">
+                    <h2 class="section-title">Hồ sơ cá nhân</h2>
+                    <p class="section-desc">Quản lý thông tin hiển thị với cộng đồng.</p>
+
+                    <div class="avatar-upload">
+                        <img src="../image/avatar.png" alt="" class="avatar-preview">
+                        <div class="upload-actions">
+                            <h4>Ảnh đại diện</h4>
+                            <p>JPG, GIF hoặc PNG. Tối đa 5MB.</p>
+                            <button class="btn btn-outline">Tải ảnh lên</button>
+                        </div>
+                    </div>
+
+                    <div class="divider"></div>
+
+                    <form class="form-grid">
+                        <div class="form-group">
+                            <label>Họ và tên đệm</label>
+                            <input type="text" class="form-control" value="Nguyễn Văn">
+                        </div>
+                        <div class="form-group">
+                            <label>Tên</label>
+                            <input type="text" class="form-control" value="A">
+                        </div>
+                        <div class="form-group">
+                            <label>Email hiển thị</label>
+                            <input type="email" class="form-control" value="contact@nguyenvana.com">
+                        </div>
+                        <div class="form-group">
+                            <label>Số điện thoại</label>
+                            <input type="text" class="form-control" value="0912 345 678">
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Giới thiệu ngắn (Bio)</label>
+                            <textarea class="form-control" rows="3">Lập trình viên Frontend đam mê UI/UX.</textarea>
+                        </div>
+                    </form>
+                    
+                    <div class="divider"></div>
+                    <div style="text-align: right;">
+                        <button class="btn btn-primary">Lưu thay đổi</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-security" class="content-section">
+                <div class="card">
+                    <h2 class="section-title">Đăng nhập & Bảo mật</h2>
+                    <p class="section-desc">Quản lý mật khẩu và xác thực 2 lớp.</p>
+
+                    <div class="form-group" style="margin-bottom: 24px;">
+                        <label>Email đăng nhập</label>
+                        <div style="display: flex; gap: 10px;">
+                            <input type="email" class="form-control" value="nguyenvana@gmail.com" disabled>
+                            <button class="btn btn-outline">Đổi Email</button>
+                        </div>
+                    </div>
+
+                    <div class="divider"></div>
+
+                    <h3 class="section-title">Đổi mật khẩu</h3>
+                    <form class="form-grid" style="grid-template-columns: 1fr;">
+                        <div class="form-group">
+                            <label>Mật khẩu hiện tại</label>
+                            <input type="password" class="form-control" placeholder="••••••••">
+                        </div>
+                        <div class="form-group">
+                            <label>Mật khẩu mới</label>
+                            <input type="password" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label>Xác nhận mật khẩu mới</label>
+                            <input type="password" class="form-control">
+                        </div>
+                    </form>
+                    <div style="margin-top: 20px; text-align: right;">
+                        <button class="btn btn-primary">Cập nhật mật khẩu</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2 class="section-title">Xác thực 2 bước (2FA)</h2>
+                    <div class="switch-group">
+                        <div class="switch-info">
+                            <h4>Tin nhắn văn bản (SMS)</h4>
+                            <p>Sử dụng số điện thoại để nhận mã OTP.</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="switch-group" style="border: none;">
+                        <div class="switch-info">
+                            <h4>Ứng dụng Authenticator</h4>
+                            <p>Sử dụng Google Authenticator hoặc Authy.</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-notifications" class="content-section">
+                <div class="card">
+                    <h2 class="section-title">Cài đặt thông báo</h2>
+                    <p class="section-desc">Chọn cách chúng tôi liên lạc với bạn.</p>
+
+                    <div class="switch-group">
+                        <div class="switch-info">
+                            <h4>Thông báo qua Email</h4>
+                            <p>Nhận email về các hoạt động tài khoản.</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="switch-group">
+                        <div class="switch-info">
+                            <h4>Thông báo đẩy (Push)</h4>
+                            <p>Nhận thông báo trên trình duyệt.</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script>
+        function switchTab(tabId, element) {
+            // 1. Xóa class active ở tất cả menu
+            document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
+            
+            // 2. Thêm class active vào menu vừa bấm
+            element.classList.add('active');
+
+            // 3. Ẩn tất cả nội dung
+            document.querySelectorAll('.content-section').forEach(section => section.classList.remove('active'));
+
+            // 4. Hiện nội dung tương ứng
+            document.getElementById(tabId).classList.add('active');
+        }
+
+        function logout() {
+            if(confirm('Bạn có chắc muốn đăng xuất không?')) {
+                alert('Đã đăng xuất thành công!');
+            }
+        }
+
+        // Giả lập nút Save
+        const saveBtns = document.querySelectorAll('.btn-primary');
+        saveBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                // Hiệu ứng button loading (giả lập)
+                const originalText = btn.innerText;
+                btn.innerText = 'Đang lưu...';
+                btn.style.opacity = '0.7';
+                
+                setTimeout(() => {
+                    btn.innerText = originalText;
+                    btn.style.opacity = '1';
+                    alert('Đã cập nhật thông tin thành công!');
+                }, 800);
+            });
+        });
+    </script>
+</body>
+</html>

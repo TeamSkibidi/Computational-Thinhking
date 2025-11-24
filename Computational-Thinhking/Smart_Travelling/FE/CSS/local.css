@@ -1,0 +1,185 @@
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ /* 1. Cài đặt chung */
+        body {
+            padding-top: 100px; 
+            height: 100vh;
+            display: grid;
+            place-items: center;
+            background: url('../image/hhhh.png');
+            font-family: Arial, sans-serif;
+            margin: 0;
+            overflow: hidden;
+            background-position: center;
+            background-size: cover;
+            background-repeat: no-repeat;
+        }
+
+        /* 2. Header */
+        .site-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 15px 30px; 
+            background-color: #ec6b1b; 
+            z-index: 1000; 
+            box-shadow: 0 2px 10px rgba(228, 73, 17, 0.2);
+            box-sizing: border-box; 
+            display: flex;
+            justify-content: space-between; 
+            align-items: center; 
+        }
+        .site-header h1 {
+            color: rgb(29, 14, 5);
+            font-size: 1.5rem;
+            margin: 0;
+        }
+
+        /* 3. Menu điều hướng */
+        .category-nav ul {
+            list-style: none; 
+            margin: 0;
+            padding: 0;
+            display: flex; 
+            gap: 10px; 
+            align-items: center; /* **MỚI THÊM:** Căn giữa thanh tìm kiếm */
+        }
+        
+        /* Style cho các nút <a> */
+        .category-nav li a {
+            display: block;
+            padding: 10px 20px;
+            background-color: #333; 
+            color: white; 
+            text-decoration: none; 
+            border-radius: 20px; 
+            font-weight: bold;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+        .category-nav li a:hover {
+            background-color: #555; 
+        }
+        .category-nav li a.active {
+            background-color: #333; 
+            color: white; 
+        }
+
+        /* **MỚI THÊM:** Style cho thanh tìm kiếm */
+        /* **MỚI THÊM:** Style cho thanh tìm kiếm */
+.category-nav li.search-bar {
+    padding: 0 30px; /* Chỉ giữ khoảng cách nhỏ */
+}
+     .category-nav .input {
+    padding: 10px 15px;
+    border-radius: 20px;
+    border: none;
+    background-color: #333;
+    color: white;
+    font-size: 0.9rem;
+
+    /* **THÊM VÀO:** Đặt chiều rộng cho thanh tìm kiếm */
+    width: 350px; 
+    box-sizing: border-box; /* Đảm bảo padding không làm nó to thêm */
+}
+        .category-nav .input::placeholder {
+            color: #aaa;
+        }
+
+
+        /* --- (CSS cho thẻ card và các phần khác giữ nguyên) --- */
+
+        .app-container {
+            display: flex;
+            align-items: center;
+            gap: 50px;
+            padding: 20px;
+        }
+        .card-container {
+            position: relative;
+            width: 450px;
+            right :100px;
+            bottom: 60px;
+            height: 350px;
+            flex-shrink: 0; 
+        }
+        .card {
+            position: absolute;
+            width: 450px;
+            height: 350px;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            cursor: pointer;
+            background-size: cover;
+            background-position: center;
+            opacity: 0;
+            transform: scale(0.8);
+        }
+        .card:last-child {
+            transform: translate(0, 0) rotate(0deg) scale(1);
+            opacity: 1; z-index: 3;
+        }
+        .card:nth-last-child(2) {
+            transform: translate(0, -20px) rotate(-6deg) scale(0.95);
+            opacity: 1; z-index: 2;
+        }
+        .card:nth-last-child(3) {
+            transform: translate(0, 20px) rotate(6deg) scale(0.9);
+            opacity: 1; z-index: 1;
+        }
+        .card.is-exiting-forward {
+            transform: translateY(-100vh) rotate(15deg) !important;
+            opacity: 0 !important;
+        }
+        .card.is-entering-backward {
+            transform: translateY(-100vh) rotate(15deg) !important;
+            opacity: 0 !important;
+            transition: none; 
+        }
+        .text-container {
+            width: 300px;
+            position: relative;
+             right :50px;
+            bottom: 60px;
+
+        }
+        .text-content {
+            opacity: 0;
+            transform: translateX(30px);
+            transition: all 0.5s ease-out;
+            display: none; 
+        }
+        .text-content.is-active {
+            opacity: 1;
+            transform: translateX(0);
+            display: block; 
+        }
+        .navigation-controls {
+            position: fixed;
+            bottom: 500px;
+            right : 500px;
+            display: flex;
+            gap: 20px;
+            z-index: 100;
+        }
+        .navigation-controls button {
+            padding: 15px 30px;
+            font-size: 1rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 30px;
+            background-color: #c7c7c7;
+            color: #1a1a1a;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }

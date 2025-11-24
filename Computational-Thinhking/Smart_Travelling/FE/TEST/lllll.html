@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Khám Phá Địa Điểm Ăn Uống</title>
+    
+
+   <style>
+/* ===== RESET CƠ BẢN ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  font-family: 'Inter', sans-serif;
+  background-color: #f3f4f6;
+  color: #1f2937;
+  line-height: 1.6;
+  scroll-behavior: smooth;
+}
+
+/* ===== CONTAINER CHUNG ===== */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+/* ===== HEADER & NAVBAR ===== */
+header {
+  background-color: #ffffff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+header nav {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1.25rem 0;
+}
+
+header a {
+  text-decoration: none;
+}
+
+.text-orange-600 {
+  color: #ea580c;
+}
+
+header .text-2xl {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+header .text-gray-700 {
+  color: #374151;
+  font-weight: 600; 
+  transition: color 0.3s ease;
+}
+
+header .text-gray-700:hover {
+  color: #ea580c;
+}
+
+.flex {
+  display: flex;
+}
+
+.space-x-4 > *:not(:last-child) {
+  margin-right: 1.5rem; 
+}
+
+/* ===== HERO SECTION ===== */
+section.bg-cover {
+  background-image: url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1770');
+  background-size: cover;
+  background-position: center;
+  height: 300px; /* 256px */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+section.bg-cover::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0,0,0,0.55);
+}
+
+section.bg-cover > div {
+  position: relative;
+  text-align: center;
+  color: white;
+}
+
+section h1 {
+  font-size: 2.25rem; /* 36px */
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
+@media (min-width: 768px) {
+  section h1 {
+    font-size: 3rem; /* 48px */
+  }
+}
+
+/* ===== THANH TÌM KIẾM ===== */
+.relative {
+  position: relative;
+ 
+}
+
+/* TỐI ƯU 3: Thêm icon vào ô tìm kiếm */
+.search-icon {
+  position: absolute;
+  left: 0.75rem; /* 12px */
+  top: 50%;
+  transform: translateY(-50%);
+  color: #9ca3af; /* gray-400 */
+  pointer-events: none; /* Cho phép click xuyên qua icon */
+}
+
+input[type="text"] {
+  width: 100%;
+  padding: 1rem 1.25rem; 
+  /* TỐI ƯU 3: Thêm padding trái cho icon */
+  padding-left: 3rem; 
+  /* TỐI ƯU 1: Thêm padding phải để không che nút Tìm */
+  padding-right: 6rem; /* Khoảng cách đủ cho nút */
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  
+}
+
+
+
+/* TỐI ƯU 1: CSS cho nút nằm trong ô tìm kiếm */
+.search-button-wrapper {
+  position: absolute;
+  right: 0.25rem; /* 4px */
+  top: 50%;
+  transform: translateY(-50%);
+  height: calc(100% - 0.5rem); /* Chiều cao gần bằng input */
+  display: flex; /* Dùng flex để căn giữa chữ */
+  align-items: center;
+}
+
+button.bg-orange-600 {
+  background-color: #ea580c;
+  color: white;
+  border: none;
+  /* TỐI ƯU 1: Tăng padding cho nút Tìm */
+  padding: 0.75rem 1.5rem; 
+  border-radius: 0.375rem; /* 6px, nhỏ hơn input một chút để tạo khoảng cách */
+  font-weight: 600; 
+  cursor: pointer;
+  transition: all 0.3s ease;
+  height: 100%; /* Đảm bảo nút chiếm hết chiều cao wrapper */
+}
+
+
+/* ===== MAIN CONTENT ===== */
+main {
+  padding: 2.5rem 0; 
+}
+
+/* DANH MỤC NÚT LỌC */
+.flex-wrap {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.gap-3 {
+  gap: 0.75rem;
+}
+
+button.px-4 {
+  padding: 0.6rem 1.1rem; 
+  background-color: white;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  color: #374151;
+  font-size: 0.9rem;
+  font-weight: 600; 
+  transition: all 0.3s ease;
+}
+
+button.px-4:hover {
+  background-color: #ea580c;
+  color: white;
+  border-color: #ea580c;
+  transform: translateY(-2px);
+}
+
+button.px-4.active {
+    background-color: #ea580c;
+    color: white;
+    border-color: #ea580c;
+}
+
+/* ===== GRID ĐỊA ĐIỂM ===== */
+.grid {
+  display: grid;
+  gap: 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .grid.sm\:grid-cols-2 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .grid.lg\:grid-cols-3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* ===== CARD ===== */
+.bg-white {
+  background-color: white;
+}
+
+.rounded-lg {
+  border-radius: 0.75rem;
+  /* TỐI ƯU 6: Thêm overflow để hiệu ứng zoom ảnh không bị tràn */
+  overflow: hidden;
+}
+
+.shadow-lg {
+  box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+  transition: all 0.3s ease-out;
+}
+
+.shadow-lg:hover {
+  box-shadow: 0 10px 20px rgba(0,0,0,0.12);
+  transform: translateY(-5px);
+}
+
+img.object-cover {
+  object-fit: cover;
+  width: 100%;
+  height: 12rem;
+  /* TỐI ƯU 6: Thêm transition cho ảnh */
+  transition: transform 0.3s ease-out;
+}
+
+/* TỐI ƯU 6: Thêm hiệu ứng zoom ảnh khi hover card */
+.shadow-lg:hover img.object-cover {
+  transform: scale(1.05);
+}
+
+
+.p-5 {
+  padding: 1.25rem;
+}
+
+.text-xl {
+  font-size: 1.25rem;
+}
+
+.text-gray-900 {
+  color: #111827;
+}
+
+.text-gray-600 {
+  color: #4b5563;
+}
+
+.line-clamp-2 {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    /* SỬA LỖI 7: Thêm lại line-clamp */
+   
+    overflow: hidden;
+    text-overflow: ellipsis;
+    height: 3.2em; /* 1.6 (line-height) * 2 (dòng) */
+}
+
+
+.text-sm {
+  font-size: 0.875rem;
+}
+
+.text-lg {
+  font-size: 1.125rem;
+}
+
+.text-gray-500 {
+  color: #6b7280;
+}
+
+.bg-orange-100 {
+  background-color: #fff7ed;
+  color: #c2410c; 
+}
+
+.text-orange-800 {
+  color: #9a3412; 
+}
+
+.bg-blue-100 {
+  background-color: #eff6ff;
+  color: #1e40af;
+}
+
+.text-blue-800 {
+  color: #1e40af;
+}
+
+.bg-gray-50 {
+  background-color: #f9fafb;
+}
+
+.border-t {
+  border-top: 1px solid #e5e7eb;
+}
+
+.text-xs {
+  font-size: 0.75rem;
+  font-weight: 600; 
+}
+
+/* ===== FOOTER ===== */
+footer {
+  background-color: #111827; 
+  color: #d1d5db;
+  padding: 2.5rem 0;
+  text-align: center;
+  margin-top: 3rem;
+}
+
+footer p {
+  margin: 0.25rem 0;
+}
+
+footer .text-sm {
+  font-size: 0.875rem;
+  color: #9ca3af;
+}
+
+/* ==== BỔ SUNG CÁC CLASS CƠ BẢN ==== */
+.text-center {
+  text-align: center;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.mt-10 {
+  margin-top: 2.5rem; /* 40px */
+}
+
+</style>
+
+</head>
+<body class="bg-gray-100">
+
+    <header class="bg-white shadow-md sticky top-0 z-10">
+        <nav class="container mx-auto px-6 flex justify-between items-center">
+            <a href="#" class="text-2xl font-bold text-orange-600">FoodFinder</a>
+        </nav>
+    </header>
+
+    <section class="bg-cover bg-center">
+        <div class="h-full flex flex-col justify-center items-center">
+            <div class="w-full max-w-lg px-4">
+                <div class="relative">
+                    <div class="search-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="20" height="20">
+                            <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                    <input type="text" class="w-full py-3 px-4 " placeholder="Tìm kiếm nhà hàng, món ăn, địa điểm...">
+                    <div class="search-button-wrapper">
+                        <button class="bg-orange-600 text-white font-semibold hover:bg-orange-700">
+                            Tìm
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <main class="container mx-auto px-6 py-8">
+        
+        <section class="mb-8">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4 text-center">Danh mục</h2>
+            <div class="flex flex-wrap gap-3 justify-center">
+                <button class="px-4 py-2 bg-white rounded-lg shadow border border-gray-200 text-gray-700 hover:bg-orange-600 hover:text-white active">Tất cả</button>
+                <button class="px-4 py-2 bg-white rounded-lg shadow border border-gray-200 text-gray-700 hover:bg-orange-600 hover:text-white">🍜 Phở</button>
+                <button class="px-4 py-2 bg-white rounded-lg shadow border border-gray-200 text-gray-700 hover:bg-orange-600 hover:text-white">🍚 Cơm</button>
+                <button class="px-4 py-2 bg-white rounded-lg shadow border border-gray-200 text-gray-700 hover:bg-orange-600 hover:text-white">🥖 Bánh mì</button>
+                <button class="px-4 py-2 bg-white rounded-lg shadow border border-gray-200 text-gray-700 hover:bg-orange-600 hover:text-white">☕ Cà phê</button>
+                <button class="px-4 py-2 bg-white rounded-lg shadow border border-gray-200 text-gray-700 hover:bg-orange-600 hover:text-white">🧋 Trà sữa</button>
+            </div>
+        </section>
+
+        <section>
+            <h2 class="text-2xl font-semibold text-gray-800 mb-6 text-center">Địa điểm nổi bật</h2>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                
+                <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                    <img src="https://images.pexels.com/photos/1279330/pexels-photo-1279330.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Ảnh Phở" class="w-full h-48 object-cover">
+                    <div class="p-5">
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">Phở Thìn 13 Lò Đúc</h3>
+                        <p class="text-gray-600 text-sm mb-4 line-clamp-2">Nổi tiếng với món phở tái lăn độc đáo, nước dùng béo ngậy và thơm lừng. Món ăn này đã trở thành biểu tượng ẩm thực Hà Nội.</p>
+                        <div class="flex justify-between items-center mb-4">
+                            <span class="text-lg font-bold text-orange-600">4.5/5 ⭐</span>
+                            <span class="text-sm text-gray-500">1.2km</span>
+                        </div>
+                        <span class="text-xs bg-orange-100 text-orange-800 px-2 py-1 rounded-full">Món Việt</span>
+                        <span class="text-xs bg-gray-100 text-gray-800 px-2 py-1 rounded-full ml-1">Truyền thống</span>
+                    </div>
+                    <div class="px-5 py-3 bg-gray-50 border-t border-gray-200">
+                        <p class="text-sm text-gray-600 truncate">13 P. Lò Đúc, Ngô Thì Nhậm, Hai Bà Trưng, Hà Nội</p>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                    <img src="https://images.pexels.com/photos/262978/pexels-photo-262978.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Ảnh Cơm Tấm" class="w-full h-48 object-cover">
+                    <div class="p-5">
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">Cơm Tấm Cây Thị</h3>
+                        <p class="text-gray-600 text-sm mb-4 line-clamp-2">Chuỗi cơm tấm nổi tiếng với sườn bì chả được nêm nếm đậm đà, chuẩn vị Sài Gòn. Hạt cơm tơi xốp và thơm ngon.</p>
+                        <div class="flex justify-between items-center mb-4">
+                            <span class="text-lg font-bold text-orange-600">4.2/5 ⭐</span>
+                            <span class="text-sm text-gray-500">2.5km</span>
+                        </div>
+                        <span class="text-xs bg-orange-100 text-orange-800 px-2 py-1 rounded-full">Món Việt</span>
+                        <span class="text-xs bg-gray-100 text-gray-800 px-2 py-1 rounded-full ml-1">Bình dân</span>
+                    </div>
+                    <div class="px-5 py-3 bg-gray-50 border-t border-gray-200">
+                        <p class="text-sm text-gray-600 truncate">48 Hàng Buồm, Hoàn Kiếm, Hà Nội</p>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                    <img src="https://images.pexels.com/photos/312418/pexels-photo-312418.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Ảnh Cà phê" class="w-full h-48 object-cover">
+                    <div class="p-5">
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">Highlands Coffee</h3>
+                        <p class="text-gray-600 text-sm mb-4 line-clamp-2">Không gian lý tưởng để làm việc và gặp gỡ bạn bè, nổi tiếng với Phin Sữa Đá và các loại trà thanh mát.</p>
+                        <div class="flex justify-between items-center mb-4">
+                            <span class="text-lg font-bold text-orange-600">4.0/5 ⭐</span>
+                            <span class="text-sm text-gray-500">500m</span>
+                        </div>
+                        <span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">Đồ uống</span>
+                        <span class="text-xs bg-gray-100 text-gray-800 px-2 py-1 rounded-full ml-1">Chuỗi</span>
+                    </div>
+                    <div class="px-5 py-3 bg-gray-50 border-t border-gray-200">
+                        <p class="text-sm text-gray-600 truncate">Tầng 1, Vincom Center, 191 Bà Triệu, Hà Nội</p>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="text-center mt-10">
+                <button class="bg-orange-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-orange-700">
+                    Xem Thêm Nhiều Địa Điểm
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-gray-800 text-gray-300 mt-12">
+        <div class="container mx-auto px-6 py-8 text-center">
+            <p>&copy; 2025 FoodFinder. Bảo lưu mọi quyền.</p>
+            <p class="text-sm text-gray-500">Một sản phẩm demo được tạo bởi Gemini.</p>
+        </div>
+    </footer>
+
+</body>
+</html>
