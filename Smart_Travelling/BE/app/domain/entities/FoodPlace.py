@@ -1,6 +1,6 @@
 from typing import Optional, List
 from pydantic import BaseModel, Field
-from Models.Address import Address
+from .Address import Address
 
 class FoodPlace(BaseModel):
     id: Optional[int] = Field(None, description="ID duy nhất của địa điểm")
@@ -39,3 +39,4 @@ class FoodPlace(BaseModel):
     @classmethod
     def from_json(cls, data: dict) -> "FoodPlace":
         return cls(**data)
+
