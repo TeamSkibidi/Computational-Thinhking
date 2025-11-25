@@ -24,14 +24,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
             // 1. Kiểm tra bỏ trống
             if (email === "" || password === "" || repassword === "") {
-                alert("Vui lòng nhập đầy đủ Email, Username và Password!");
+                alert("Vui lòng nhập đầy đủ Username và Password!");
                 return; // QUAN TRỌNG: Lệnh này dừng chương trình, giữ người dùng ở lại trang để nhập tiếp.
-            }
-
-            // 2. Kiểm tra Email có hợp lệ không (phải có @)
-            if (!email.includes("@")) {
-                alert("Email không hợp lệ (thiếu @)!");
-                return; // Dừng lại, cho nhập lại
             }
 
             // 3. Kiểm tra Mật khẩu quá ngắn
