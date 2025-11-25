@@ -6,8 +6,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const backBtn = document.getElementById('backBtn');         // Nút Back
 
     const emailInput = document.getElementById('email');
-    const usernameInput = document.getElementById('username');
-    const passwordInput = document.getElementById('password');
+    const passInput = document.getElementById('password');
+    const repasswordInput = document.getElementById('repassword');
 
     // --- PHẦN 1: XỬ LÝ ĐĂNG KÝ (Logic sai thì nhập lại) ---
     if (registerBtn) {
@@ -17,13 +17,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
             // Lấy giá trị người dùng nhập
             const email = emailInput.value.trim();
-            const username = usernameInput.value.trim();
-            const password = passwordInput.value.trim();
+            const password = passInput.value.trim();
+            const repassword = repasswordInput.value.trim();
 
             // --- BẮT ĐẦU KIỂM TRA (VALIDATION) ---
 
             // 1. Kiểm tra bỏ trống
-            if (email === "" || username === "" || password === "") {
+            if (email === "" || password === "" || repassword === "") {
                 alert("Vui lòng nhập đầy đủ Email, Username và Password!");
                 return; // QUAN TRỌNG: Lệnh này dừng chương trình, giữ người dùng ở lại trang để nhập tiếp.
             }
@@ -41,6 +41,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 passwordInput.focus();    // Đưa con trỏ chuột vào ô mật khẩu
                 return; // Dừng lại, cho nhập lại
             }
+             if (password !== repassword) {
+            alert("Mật khẩu nhập lại không khớp!");
+            repassInput.value = "";
+            repassInput.focus();
+            return;
+        }
 
             // --- NẾU ĐÚNG HẾT MỌI THỨ ---
             alert("Đăng ký thành công! Đang chuyển hướng...");
