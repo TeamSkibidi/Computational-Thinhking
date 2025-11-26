@@ -1,12 +1,9 @@
 import json
 from datetime import date, datetime, timedelta
 from typing import List, Optional
-
-import aiomysql
-
 from app.domain.entities.event import Event
 from app.application.interfaces.EventRepository import EventRepository
-from app.infrastructure.database.connection import get_connection
+
 
 
 class MySQLEventRepository(EventRepository):
