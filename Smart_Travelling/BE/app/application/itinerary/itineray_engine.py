@@ -2,9 +2,9 @@ from dataclasses import dataclass
 from typing import List
 from typing import Optional, Tuple
 from datetime import timedelta
-from app.domain.entities.PlaceLite import PlaceLite
-from app.domain.entities..FoodPlace import FoodPlace
-from app.domain.entities..accommodation import Accommodation
+from app.domain.entities.place_lite import PlaceLite
+from app.domain.entities.food_place import FoodPlace
+from app.domain.entities.accommodation import Accommodation
 from app.domain.entities.nightstay import NightStay
 from app.utils.tag_utils import apply_tag_filter, tag_score
 from app.application.itinerary.trip_context import TripContext, UserPreferences
@@ -14,6 +14,7 @@ from app.domain.entities.itinerary_spot import ItinerarySpot
 from app.api.schemas.itinerary_request import ItineraryRequest
 from app.config.settings import IMAGE_BASE_URL
 from app.api.schemas.itinerary_response import DayItineraryResponse, BlockItemResponse, CostSummaryResponse
+
 
 @dataclass
 class BlockItem:
