@@ -2,11 +2,10 @@
 # Requirements cho FastAPI
 # ===========================
 # Cài đặt: pip install -r requirements.txt
-
+mysql
 fastapi==0.104.1
 uvicorn[standard]==0.24.0
 pydantic==2.5.0
 
 fastapi[all]
 unidecode
-aiomysql

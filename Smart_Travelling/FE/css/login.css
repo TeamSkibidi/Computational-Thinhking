@@ -30,7 +30,7 @@ body {
     min-height: 100vh; /* Đảm bảo bao phủ hết chiều cao */
     
     /* Đưa khung login sang phải */
-    justify-content: flex-end; 
+    justify-content: center; 
     align-items: center; /* Căn giữa theo chiều dọc */
     
     /* Khoảng cách từ lề phải màn hình vào khung login */
