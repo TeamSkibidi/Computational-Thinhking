@@ -1,7 +1,7 @@
 """Place repository interface - Clean Architecture"""
 from abc import ABC, abstractmethod
 from typing import List, Optional
-from app.domain.entities.PlaceLite import PlaceLite
+from app.domain.entities.place_lite import PlaceLite
 
 
 class IPlaceRepository(ABC):

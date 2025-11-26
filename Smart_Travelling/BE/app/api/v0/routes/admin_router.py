@@ -18,7 +18,7 @@ def list_users():
 
 
 # ADMIN – KHÓA USER
-@router.put("/users/deactivate/{user_id}")
+@router.post("/users/deactivate/{user_id}")
 def deactivate_user(user_id: int):
     try:
         user_service.admin_deactivate_user(user_id)
@@ -29,7 +29,7 @@ def deactivate_user(user_id: int):
 
 
 # ADMIN – MỞ KHÓA USER
-@router.put("/users/activate/{user_id}")
+@router.post("/users/activate/{user_id}")
 def activate_user(user_id: int):
     try:
         user_service.admin_activate_user(user_id)
@@ -40,7 +40,7 @@ def activate_user(user_id: int):
 
 
 # ADMIN – XOÁ USER
-@router.delete("/users/delete/{user_id}")
+@router.post("/users/delete/{user_id}")
 def delete_user(user_id: int):
     try:
         user_service.admin_delete_user(user_id)

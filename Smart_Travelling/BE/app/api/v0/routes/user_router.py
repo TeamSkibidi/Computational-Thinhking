@@ -23,7 +23,7 @@ def get_profile(user_id: int):
 
 
 # CẬP NHẬT THÔNG TIN USER
-@router.put("/update-info")
+@router.post("/update-info")
 def update_info(data: Dict):
     try:
         user_service.update_user_info(
@@ -37,7 +37,7 @@ def update_info(data: Dict):
 
 
 # ĐỔI MẬT KHẨU
-@router.put("/change-password")
+@router.post("/change-password")
 def change_password(data: Dict):
     try:
         user_service.change_password(

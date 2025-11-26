@@ -1,0 +1,150 @@
+/* --- 1. CÀI ĐẶT NỀN (GIỮ NGUYÊN) --- */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    height: 100vh;
+    width: 100%;
+    /* Cho phép cuộn nếu màn hình quá nhỏ so với khung login */
+    overflow: auto; 
+    
+    background-image: url('https://images.unsplash.com/photo-1501785888041-af3ef285b470');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    /* Giữ ảnh nền đứng im khi cuộn */
+    background-attachment: fixed; 
+}
+
+/* Ẩn khối ảnh cũ trong HTML */
+.image-side { display: none; }
+
+/* --- 2. KHUNG BAO NGOÀI (CĂN VỊ TRÍ) --- */
+.main-container {
+    display: flex;
+    width: 100%;
+    min-height: 100vh; /* Đảm bảo bao phủ hết chiều cao */
+    
+    /* Đưa khung login sang phải */
+    justify-content: flex-end; 
+    align-items: center; /* Căn giữa theo chiều dọc */
+    
+    /* Khoảng cách từ lề phải màn hình vào khung login */
+    padding-right: 100px; 
+}
+
+/* --- 3. KHUNG LOGIN (KÍCH THƯỚC CỐ ĐỊNH) --- */
+.login-side {
+    /* --- KHÓA CỨNG KÍCH THƯỚC TẠI ĐÂY --- */
+    width: 450px;  /* Chiều rộng cố định */
+    height: 700px; /* Chiều cao cố định */
+    
+    /* Ngăn không cho khung bị co lại khi màn hình nhỏ */
+    flex-shrink: 0; 
+    
+    background-color: rgba(224, 229, 236, 0.95);
+    border-radius: 30px;
+    
+    /* Đổ bóng */
+    
+       box-shadow: 10px 10px 20px #000000, 
+                -10px -10px 20px #ffffff;
+    
+    /* Căn chỉnh nội dung bên trong */
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Các phần tử con nằm giữa khung theo chiều dọc */
+    align-items: center;     /* Các phần tử con nằm giữa khung theo chiều ngang */
+    padding: 0 40px; /* Padding trái phải cố định */
+    
+    position: relative;
+    backdrop-filter: blur(5px);
+}
+
+/* --- 4. CÁC THÀNH PHẦN CON (CŨNG CỐ ĐỊNH) --- */
+.login-wrapper {
+    width: 100%; /* Chiếm hết chiều rộng phần padding cho phép */
+    /* Không set max-width nữa để nó theo kích thước cha */
+}
+
+.logo {
+    font-size: 32px; /* Cỡ chữ cố định */
+    color: #444;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 40px; /* Khoảng cách cố định */
+}
+
+.login-card h2 {
+    color: #333;
+    font-size: 36px; /* Cỡ chữ to rõ */
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.input-field {
+    width: 100%;
+    height: 50px; /* Chiều cao ô nhập liệu cố định */
+    padding: 0 20px;
+    margin-bottom: 25px; /* Khoảng cách giữa các ô cố định */
+    border: none;
+    border-radius: 50px;
+    background: #e0e5ec;
+    font-size: 16px;
+    outline: none;
+    box-shadow: inset 6px 6px 10px #a3b1c6, 
+                inset -6px -6px 10px #ffffff;
+}
+
+.button-group {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.neumorph-btn {
+    width: 100%; /* Nút co giãn theo khung */
+    height: 50px; /* Chiều cao nút cố định */
+    border: none;
+    border-radius: 50px;
+    background: #e0e5ec;
+    font-weight: bold;
+    font-size: 16px;
+    color: #555;
+    cursor: pointer;
+    box-shadow: 6px 6px 10px #a3b1c6, 
+                -6px -6px 10px #ffffff;
+    transition: all 0.2s ease;
+}
+
+.neumorph-btn:hover { transform: translateY(-2px); color: #000; }
+.neumorph-btn:active { transform: translateY(0); box-shadow: inset 4px 4px 8px #a3b1c6, inset -4px -4px 8px #ffffff; }
+
+/* Nút Back */
+.back-btn {
+    position: fixed;
+    top: 30px; left: 30px; z-index: 100;
+    width: 100px; height: 45px; /* Kích thước nút back cố định */
+    border: none; border-radius: 12px;
+    font-weight: bold; font-size: 16px; cursor: pointer; color: #efeaea;
+    background: transparent;
+       box-shadow: 10px 10px 20px #000000, 
+                -10px -10px 20px #f9f8f8;
+}
+
+/* --- 5. XỬ LÝ KHI MÀN HÌNH QUÁ NHỎ (Mobile) --- */
+/* Vì bạn muốn cố định kích thước, nên trên điện thoại ta chỉ đưa nó vào giữa 
+   chứ KHÔNG làm nhỏ nó lại. Người dùng sẽ phải cuộn nếu màn hình quá bé */
+@media (max-width: 900px) {
+    .main-container {
+        justify-content: center; /* Đưa vào giữa màn hình */
+        padding-right: 0;        /* Bỏ khoảng cách lề phải */
+        padding-top: 20px;
+        padding-bottom: 20px;
+    }
+}

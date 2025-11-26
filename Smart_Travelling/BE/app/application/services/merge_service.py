@@ -1,4 +1,4 @@
-from app.domain.entities.PlaceLite import PlaceLite
+from app.domain.entities.place_lite import PlaceLite
 from app.domain.entities.Address import Address
 import re
 from typing import Any

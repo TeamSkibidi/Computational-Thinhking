@@ -1,7 +1,7 @@
 from typing import List, Dict
 import asyncio
 
-from app.domain.entities.PlaceLite import PlaceLite  # hoặc place_lite nếu tên file là snake_case
+from app.domain.entities.place_lite import PlaceLite  # hoặc place_lite nếu tên file là snake_case
 from app.application.interfaces.place_repository import IPlaceRepository
 from app.application.services.search_place import search_places
 from app.application.services.place_pipeline import get_place_info
