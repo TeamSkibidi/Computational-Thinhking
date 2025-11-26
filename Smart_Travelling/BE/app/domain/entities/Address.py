@@ -2,6 +2,7 @@ from typing import Optional
 from pydantic import BaseModel, Field
 
 class Address(BaseModel):
+    id: Optional[int] = Field(None, example=1)
     houseNumber: Optional[str] = Field(None, example="26 or 32/14")
     street: Optional[str] = Field(None, example = "Thiên phước")
     ward: Optional[str] = Field(None, example="Phường 9")
