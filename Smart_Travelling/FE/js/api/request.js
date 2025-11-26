@@ -1,45 +1,59 @@
-// request.js thì đây là hàm gọi chung của các api khác
-// các file authApi/ userApi/ adminApi sẽ dùng lại hàm này
+// request.js - Hàm gọi API chung cho authApi, userApi, adminApi
 
-// địa chỉ backend FastAPI
-export const BASE_URL = "http://localhost:8000";
-// export: là biến này để cho các file khác dùng
-// vd: file khác dùng
-// import {BASE_URL} from "./request.js"
+// Địa chỉ backend FastAPI
+export const BASE_URL = "http://localhost:8000/api/v0";
 
 /**
- *{string} path: đường dẫn api, vd: /auth/login
-  {string} method: GET|POST
-  {object|null} body: dữ liệu gửi lên nếu có
+ * Gọi API với fetch
+ * @param {string} path - Đường dẫn API, vd: /auth/login
+ * @param {string} method - HTTP method: GET, POST, PUT, DELETE
+ * @param {object|null} body - Dữ liệu gửi lên (nếu có)
+ * @returns {Promise<object>} Response JSON từ backend
+ * @throws {Error} Nếu có lỗi từ backend hoặc network
  */
 
-export async function request(path, method = "GET", body = null){
-    // options cấu hình cho fetch sẽ gửi xuống
+
+export async function request(path, method = "GET", body = null) {
+    // Cấu hình request
     const options = {
         method: method,
         headers: {
             "Content-Type": "application/json"
         }
-    };  
-    
-    
-    //nếu có body  thì chuyển sang dạng JSON string
-    if(body != null){
-        options.body = JSON.stringify(body);        // Chuyển obj Js thành chuỗi JSON
+    };
+
+    // Nếu có body thì chuyển sang JSON string
+    if (body !== null) {
+        options.body = JSON.stringify(body);
     }
 
-    //gọi fetch
-    const res = await fetch(BASE_URL + path, options);  //await laf chowf cho backend trar veef
+    try {
+        // Gọi API
+        const res = await fetch(BASE_URL + path, options);
+        
+        //Kiểm tra HTTP status code
+        if (!res.ok) {
+            // Nếu server trả lỗi HTTP (4xx, 5xx)
+            const errorText = await res.text();
+            throw new Error(
+                `HTTP ${res.status}: ${errorText || res.statusText}`
+            );
+        }
 
+        // Parse JSON response
+        const json = await res.json();
 
+        // Kiểm tra status trong response body
+        if (json.status === "error_message") {
+            throw new Error(json.error_message || "Unknown error");
+        }
 
-    // sau khi laays xong bắt đầu lấy các thông tin từ be gửi lên
-    const json = await res.json();
+        // Trả về data
+        return json;
 
-    if(json.status == "error_message"){
-        throw new Error(json.error_message);
+    } catch (error) {
+        // Log error để debug ở trang f12
+        console.error(`API Error [${method} ${path}]:`, error.message);
+        throw error; // Re-throw để caller xử lý
     }
-
-    // không lỗi thì trả dữ liệu về
-    return json;
 }
