@@ -36,7 +36,7 @@ export async function request(path, method = "GET", body = null){
     // sau khi laays xong bắt đầu lấy các thông tin từ be gửi lên
     const json = await res.json();
 
-    if(json.status == "erroe_message"){
+    if(json.status == "error_message"){
         throw new Error(json.error_message);
     }
 
