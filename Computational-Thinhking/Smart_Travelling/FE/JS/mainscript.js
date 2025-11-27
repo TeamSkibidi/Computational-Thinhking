@@ -2,10 +2,14 @@ const admin = document.getElementById("admin");
 
 // Check if the element exists to avoid errors
 if (admin) {
-    // Use 'admin' here, not 'backBtn'
-    admin.addEventListener('click', function() {
-        window.location.href = "../test1.html";
-    });
+  // If the element is an anchor and already has href, rely on that (works without JS too).
+  // But also add a click handler as an explicit fallback.
+  admin.addEventListener('click', function(e) {
+    // If the element is an <a> tag, default behavior will handle navigation.
+    // For safety, prevent default and navigate programmatically to ensure consistent behavior.
+    e.preventDefault();
+    window.location.href = '../HTML/user.html';
+  });
 }
  
  
