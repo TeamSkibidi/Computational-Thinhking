@@ -14,7 +14,11 @@ CREATE TABLE IF NOT EXISTS places (
   rating DECIMAL(3,2) COMMENT 'Rating from 0.00 to 5.00',
   review_count INT DEFAULT 0,
   popularity INT DEFAULT 0,
+  category VARCHAR(100) COMMENT 'Category of the place (e.g., restaurant, attraction)',
+  dwell INT COMMENT 'Suggested visit duration in minutes',
   image_name VARCHAR(255),
+  image_url TEXT COMMENT 'Direct URL to the image',
+  tags TEXT COMMENT 'Comma-separated list of tags',
   address_id BIGINT,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -42,4 +46,5 @@ ALTER TABLE places
   ADD CONSTRAINT chk_rating CHECK (rating >= 0 AND rating <= 5),
   ADD CONSTRAINT chk_price CHECK (price_vnd >= 0),
   ADD CONSTRAINT chk_review_count CHECK (review_count >= 0),
-  ADD CONSTRAINT chk_popularity CHECK (popularity >= 0);
+  ADD CONSTRAINT chk_popularity CHECK (popularity >= 0 AND popularity <= 100),
+  ADD CONSTRAINT chk_dwell CHECK (dwell >= 0);
