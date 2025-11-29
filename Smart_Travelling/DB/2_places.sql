@@ -12,11 +12,13 @@ CREATE TABLE IF NOT EXISTS places (
   closeTime CHAR(5),
   priceVND BIGINT,
   address_id BIGINT,
-  phone VARCHAR(50),
+  phone VARCHAR(50) NULL,
   image_name VARCHAR(255),
   dwell INT,
+  
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
   CONSTRAINT fk_place_address FOREIGN KEY (address_id)
     REFERENCES addresses(id)
     ON DELETE SET NULL
