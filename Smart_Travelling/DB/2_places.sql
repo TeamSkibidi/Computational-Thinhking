@@ -13,7 +13,6 @@ CREATE TABLE IF NOT EXISTS places (
   priceVND BIGINT,
   address_id BIGINT,
   phone VARCHAR(50),
-  category ENUM('visit','eat','hotel') NOT NULL DEFAULT 'visit',
   image_name VARCHAR(255),
   dwell INT,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
