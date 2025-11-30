@@ -15,6 +15,7 @@ CREATE TABLE IF NOT EXISTS places (
   phone VARCHAR(50) NULL,
   image_name VARCHAR(255),
   dwell INT,
+  category ENUM('visit','eat','hotel') NOT NULL DEFAULT 'visit',
   
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
