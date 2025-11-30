@@ -14,7 +14,7 @@ def row_to_place_lite(row) -> PlaceLite:
         city=row["city"],
         lat=row["lat"],
         lng=row["lng"],
-        url=row.get("maps_url"),
+        url=row.get("url"),
     )
     tags = row.get("tags")
     if isinstance(tags, str):
