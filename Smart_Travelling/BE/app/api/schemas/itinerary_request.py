@@ -10,6 +10,7 @@ class BlockTimeConfig(BaseModel):
     end: Optional[time] = None
 
 class ItineraryRequest(BaseModel):
+    
     city: str
     start_date: date
     num_days : int = Field(..., ge=1, le=30)

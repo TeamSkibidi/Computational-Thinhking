@@ -1,21 +1,22 @@
 CREATE TABLE IF NOT EXISTS places (
   id BIGINT PRIMARY KEY AUTO_INCREMENT,
   name VARCHAR(255) NOT NULL,
+  priceVND BIGINT,
   summary VARCHAR(160),
   description TEXT,
+  openTime CHAR(5),
+  closeTime CHAR(5),
+  phone VARCHAR(50),
   rating DECIMAL(3,2),
   reviewCount INT DEFAULT 0,
   popularity INT DEFAULT 0,
   image_url VARCHAR(500),
   tags JSON,
-  openTime CHAR(5),
-  closeTime CHAR(5),
-  priceVND BIGINT,
-  address_id BIGINT,
-  phone VARCHAR(50),
   category ENUM('visit','eat','hotel') NOT NULL DEFAULT 'visit',
-  image_name VARCHAR(255),
   dwell INT,
+
+  address_id BIGINT,
+
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   CONSTRAINT fk_place_address FOREIGN KEY (address_id)

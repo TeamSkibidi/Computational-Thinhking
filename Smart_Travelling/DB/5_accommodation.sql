@@ -2,30 +2,20 @@ USE travel;
 
 CREATE TABLE IF NOT EXISTS accommodation (
   id BIGINT PRIMARY KEY AUTO_INCREMENT,
-
-  -- Core (Place)
   name VARCHAR(255) NOT NULL,
+  priceVND BIGINT,
   summary VARCHAR(160),
   description TEXT,
   rating DECIMAL(3,2),
   reviewCount INT DEFAULT 0,
   popularity INT DEFAULT 0,
   image_url VARCHAR(500),
-  phone VARCHAR(50),
   tags JSON,
-  openTime CHAR(5),             -- HH:MM
-  closeTime CHAR(5),            -- HH:MM
-  priceVND BIGINT,
-  image_name VARCHAR(255),
-  -- Address FK (nếu bạn có bảng addresses)
-  address_id BIGINT,
-
-  -- Phân loại chung
-  category ENUM('visit','eat','Hotel') NOT NULL DEFAULT 'visit',
-
-  -- Accommodation-specific (stay)
+  category ENUM('visit','eat','hotel') NOT NULL DEFAULT 'hotel',
   capacity INT,                 
   num_guest INT,
+
+  address_id BIGINT,
 
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
