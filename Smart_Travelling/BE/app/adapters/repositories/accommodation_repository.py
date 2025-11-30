@@ -1,3 +1,4 @@
+import json
 from typing import List
 from app.domain.entities.accommodation import Accommodation
 from app.infrastructure.database.connectdb import get_db
@@ -13,20 +14,27 @@ def row_to_accommodation(row) -> Accommodation:
         city=row["city"],
         lat=row["lat"],
         lng=row["lng"],
-        url=row.get("maps_url"),
     )
+    tags = row.get("tags")
+    if isinstance(tags, str):
+        try:
+            tags = json.loads(tags)
+        except json.JSONDecodeError:
+            tags = []
     return Accommodation(
         name=row["name"],
-        capacity=row.get("capacity"),
-        priceVND=row["price_vnd"],
+        priceVND=row["priceVND"],
         summary=row["summary"],
+        description=row["description"],
         phone=row["phone"],
         rating=row["rating"],
-        reviewCount=row["review_count"],
+        reviewCount=row["reviewCount"],
         popularity=row["popularity"],
-        category="hotel",
-        tags=row.get("tags"),
+        image_url=row.get("image_url"),
+        tags=tags or [],
         num_guest=row.get("num_guest"),
+        capacity=row.get("capacity"),
+        category=row["category"],
         address=addr,
     )
 async def fetch_accommodations_by_city(city: str) -> List[Accommodation]:
@@ -36,8 +44,6 @@ async def fetch_accommodations_by_city(city: str) -> List[Accommodation]:
         return [];
 
     cursor = db.cursor(dictionary=True)
-
-
     
     sql = """
     SELECT
@@ -45,17 +51,15 @@ async def fetch_accommodations_by_city(city: str) -> List[Accommodation]:
         h.name,
         h.priceVND,
         h.summary,
+        h.description,
         h.phone,
         h.rating,
-        h.openTime,
-        h.closeTime,
         h.reviewCount,
         h.popularity,
         h.capacity,
+        h.image_url,
         h.tags,
         h.category,
-        h.image_name,
-        h.image_url,
         h.num_guest,
         a.house_number,
         a.street,

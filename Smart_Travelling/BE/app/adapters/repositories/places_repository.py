@@ -14,7 +14,6 @@ def row_to_place_lite(row) -> PlaceLite:
         city=row["city"],
         lat=row["lat"],
         lng=row["lng"],
-        url=row.get("maps_url"),
     )
     tags = row.get("tags")
     if isinstance(tags, str):
@@ -25,7 +24,7 @@ def row_to_place_lite(row) -> PlaceLite:
     return PlaceLite(
         id=row["id"],
         name=row["name"],
-        priceVnd=row["priceVND"],
+        priceVND=row["priceVND"],
         summary=row["summary"],
         description=row["description"],
         openTime=row["openTime"],   
@@ -34,11 +33,10 @@ def row_to_place_lite(row) -> PlaceLite:
         rating=row["rating"],
         reviewCount=row["reviewCount"],
         popularity=row["popularity"],
-        category=row["category"],    
-        dwell=row.get("dwell"),        
-        imageName=row["image_name"],
-        imageUrl=f"{IMAGE_BASE_URL}{row['image_name']}" if row["image_name"] else None,
+        image_url=row.get("image_url"),
         tags=tags or [],
+        dwell=row.get("dwell"),        
+        category=row["category"],    
         address=addr,
     )
 async def fetch_place_lites_by_city(city: str) -> List[PlaceLite]:
@@ -64,11 +62,10 @@ async def fetch_place_lites_by_city(city: str) -> List[PlaceLite]:
         p.rating,
         p.reviewCount,
         p.popularity,
-        p.category,
-        p.image_name,
         p.image_url,
-        p.dwell,  
         p.tags,    
+        p.dwell,  
+        p.category,
         a.house_number,
         a.street,
         a.ward,
@@ -82,8 +79,8 @@ async def fetch_place_lites_by_city(city: str) -> List[PlaceLite]:
       AND p.category = 'visit';
     """
     cursor.execute(sql, (city,))
-
     rows = cursor.fetchall()
+
 
     cursor.close()
     db.close()
