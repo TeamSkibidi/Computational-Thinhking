@@ -1,3 +1,4 @@
+import json
 from typing import List
 from app.domain.entities.food_place import FoodPlace
 from app.domain.entities.Address import Address
@@ -13,22 +14,29 @@ def row_to_food_place(row) -> FoodPlace:
         city=row["city"],
         lat=row["lat"],
         lng=row["lng"],
-        url=row.get("maps_url"),
     )
+    tags = row.get("tags")
+    if isinstance(tags, str):
+        try:
+            tags = json.loads(tags)
+        except json.JSONDecodeError:
+            tags = []
     return FoodPlace(
         id=row["id"],
         name=row["name"],
-        category="eat",
+        priceVND=row["priceVND"],
         summary=row["summary"],
-        cuisine=row.get("cuisine"),
-        priceVNDPerPerson=row["price_vnd_per_person"],
-        rating=row["rating"],
-        reviewCount=row["review_count"],
-        popularity=row["popularity"],
-        openTime=row["open_time"],
-        closeTime=row["close_time"],
+        description=row["description"],
+        openTime=row["openTime"],
+        closeTime=row["closeTime"],
         phone=row["phone"],
-        tags=row.get("tags"),  
+        rating=row["rating"],
+        reviewCount=row["reviewCount"],
+        popularity=row["popularity"],
+        image_url=row.get("image_url"),
+        tags=tags or [],  
+        cuisine=row.get("cuisine_type"),
+        category=row["category"],
         address=addr,
     )
 
@@ -45,21 +53,19 @@ async def fetch_food_places_by_city(city: str) -> List[FoodPlace]:
     SELECT
         f.id,
         f.name,
+        f.priceVND,
         f.summary,
         f.description,
-        f.priceVND,
-        f.rating,
-        f.reviewCount,
-        f.image_url,
-        f.popularity,
-        f.openTime,
+        f.rating, 
+        f.openTime,      
         f.closeTime,
         f.phone,
+        f.reviewCount,
+        f.popularity,
+        f.image_url,
         f.tags,       
-        f.image_name, 
         f.category,
         f.cuisine_type,
-        f.menu_url,
         a.house_number,
         a.street,
         a.ward,

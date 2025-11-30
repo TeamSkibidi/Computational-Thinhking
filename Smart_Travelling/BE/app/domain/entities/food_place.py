@@ -5,7 +5,6 @@ from .place import Place
 class FoodPlace(Place):
     cuisine_type: Optional[str] = Field(None, description="Loại ẩm thực: Á, Âu, Chay...")
     category: str = "eat"
-    phone: Optional[str] = None
     menu_url: Optional[str] = None
     
     def save(self) -> dict:
