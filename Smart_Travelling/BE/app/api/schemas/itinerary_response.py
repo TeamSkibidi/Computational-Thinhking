@@ -1,4 +1,4 @@
-from datetime import Date
+from datetime import date
 from typing import List, Dict
 from pydantic import BaseModel, Field
 
@@ -27,7 +27,7 @@ class CostSummaryResponse(BaseModel):
 class DayItineraryResponse(BaseModel):
 
     city: str = Field(..., example="Hanoi")
-    date: Date = Field(..., example="2025-12-20")
+    date: date
 
     """ Ứng với mỗi buổi sẽ có 1 danh sách các hoạt động cho nhaaa"""
     blocks: Dict[str, List[BlockItemResponse]] = Field(

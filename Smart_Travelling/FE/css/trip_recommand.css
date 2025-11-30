@@ -1,0 +1,497 @@
+:root {
+    /* Palette Teal - Primary */
+    --primary: #0d9488;       /* teal-600 */
+    --primary-hover: #0f766e; /* teal-700 */
+    --primary-light: #ccfbf1; /* teal-100 */
+    --primary-bg: #f0fdfa;    /* teal-50 */
+    
+    /* Modern Grayscale */
+    --slate-50: #f8fafc;
+    --slate-100: #f1f5f9;
+    --slate-200: #e2e8f0;
+    --slate-300: #cbd5e1;
+    --slate-400: #94a3b8;
+    --slate-500: #64748b;
+    --slate-600: #475569;
+    --slate-700: #334155;
+    --slate-800: #1e293b;
+    --slate-900: #0f172a;
+    
+    /* Status Colors */
+    --white: #ffffff;
+    --amber-500: #f59e0b; --amber-100: #fef3c7;
+    --orange-500: #f97316; --orange-100: #ffedd5;
+    --blue-500: #3b82f6; --blue-100: #dbeafe;
+    --indigo-500: #6366f1; --indigo-100: #e0e7ff;
+    --purple-500: #a855f7; --purple-100: #f3e8ff;
+    --rose-500: #f43f5e; --rose-100: #ffe4e6;
+
+    /* Shadows & Glass */
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    /* Shadow màu Teal khi hover */
+    --shadow-glow: 0 20px 25px -5px rgba(13, 148, 136, 0.15), 0 8px 10px -6px rgba(13, 148, 136, 0.1);
+    
+    /* Advanced Glass Effect */
+    --glass-bg: rgba(255, 255, 255, 0.7);
+    --glass-border: 1px solid rgba(255, 255, 255, 0.4);
+    --glass-highlight: 1px solid rgba(255, 255, 255, 0.8);
+}
+
+/* --- Global Reset & Typography --- */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* Custom Selection Color */
+::selection {
+    background-color: var(--primary-light);
+    color: var(--primary-hover);
+}
+
+/* Custom Scrollbar (Nâng cấp) */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+::-webkit-scrollbar-thumb {
+    background-color: var(--slate-300);
+    border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background-color: var(--slate-400);
+}
+
+body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background-color: var(--slate-50);
+    color: var(--slate-800);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    -webkit-font-smoothing: antialiased;
+    padding-bottom: env(safe-area-inset-bottom); /* Fix cho iPhone X trở lên */
+}
+
+.serif-font { font-family: 'Playfair Display', serif; }
+
+/* --- Animations --- */
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-enter {
+    animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    opacity: 0;
+}
+.delay-1 { animation-delay: 0.1s; }
+.delay-2 { animation-delay: 0.2s; }
+.delay-3 { animation-delay: 0.3s; }
+
+/* --- Layout Utilities --- */
+.container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    width: 100%;
+}
+
+.main-content {
+    flex-grow: 1;
+    position: relative;
+    z-index: 10;
+    padding-bottom: 6rem;
+    margin-top: -3rem;
+}
+
+@media (min-width: 768px) {
+    body { 
+        padding-right: 90px;
+    }
+}
+
+/* --- Gooey Nav (Glassmorphism Nâng cao) --- */
+.gooey-nav {
+    position: fixed;
+    top: 50%;
+    right: 0;
+    transform: translateY(-50%);
+    width: 70px;
+    height: auto;
+    /* Hiệu ứng kính thật hơn */
+    background: rgba(255, 255, 255, 0.65);
+    backdrop-filter: blur(16px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    
+    border-radius: 24px 0 0 24px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-right: none;
+    box-shadow: -5px 0 25px rgba(0,0,0,0.05);
+    z-index: 100;
+    padding: 1.5rem 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    transition: width 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+    overflow: hidden;
+}
+
+.gooey-nav:hover {
+    width: 220px;
+    align-items: flex-start;
+}
+
+.nav-item {
+    position: relative;
+    width: 100%;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    color: var(--slate-500);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    padding-left: 24px;
+}
+
+/* Indicator Active */
+.nav-item::before {
+    content: '';
+    position: absolute;
+    left: 8px;
+    top: 10px;
+    bottom: 10px;
+    width: 4px;
+    background: var(--primary);
+    border-radius: 4px;
+    transform: scaleY(0);
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.nav-item:hover, .nav-item.active {
+    color: var(--primary);
+    background: linear-gradient(90deg, rgba(204, 251, 241, 0.5) 0%, transparent 100%);
+}
+
+.nav-item.active::before {
+    transform: scaleY(1);
+}
+
+.nav-item i {
+    font-size: 1.25rem;
+    min-width: 24px;
+    text-align: center;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.nav-item:hover i { transform: scale(1.15) rotate(5deg); }
+
+.nav-text {
+    position: absolute;
+    left: 60px;
+    white-space: nowrap;
+    opacity: 0;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transform: translateX(10px);
+    transition: all 0.3s ease;
+}
+
+.gooey-nav:hover .nav-text {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* --- Hero Section (Gradient Mask) --- */
+.hero {
+    position: relative;
+    height: 380px;
+    background-color: var(--slate-900);
+    overflow: hidden;
+    /* Masking mượt hơn để hòa trộn với nền trắng */
+    mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
+}
+
+.hero-bg {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    opacity: 0.8;
+    transition: transform 10s ease;
+}
+.hero:hover .hero-bg { transform: scale(1.05); }
+
+.hero-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(to top, var(--slate-900) 0%, rgba(15, 23, 42, 0.2) 100%);
+}
+
+.hero-content {
+    position: absolute; bottom: 4rem; left: 0; width: 100%;
+    padding: 0 2rem;
+}
+
+.hero-title {
+    font-size: clamp(2.5rem, 6vw, 4rem);
+    color: var(--white);
+    margin-bottom: 0.5rem;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+    /* Text Gradient nhẹ */
+    background: linear-gradient(to right, #fff 30%, #ccfbf1 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* --- Day Navigation (Sticky & Frosted) --- */
+.day-nav-container {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border-radius: 1rem;
+    border: var(--glass-border);
+    border-top: var(--glass-highlight); /* Highlight cạnh trên */
+    padding: 1rem;
+    margin-bottom: 2.5rem;
+    position: sticky;
+    top: 1rem;
+    z-index: 40;
+    box-shadow: var(--shadow-lg);
+    overflow-x: auto;
+    scrollbar-width: none; 
+}
+.day-nav-container::-webkit-scrollbar { display: none; }
+
+.day-nav-list {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-width: max-content;
+    gap: 0.5rem;
+}
+
+.step-connector {
+    flex-grow: 1;
+    height: 2px;
+    background: var(--slate-200);
+    margin: 0 8px;
+    border-radius: 2px;
+}
+
+.step-pill {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    min-width: 80px;
+    padding: 0.6rem 1.2rem;
+    border-radius: 1rem;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--slate-500);
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.step-pill:hover {
+    background: var(--slate-100);
+    color: var(--primary);
+    transform: translateY(-2px);
+}
+
+.step-pill.active {
+    background: var(--primary);
+    color: var(--white);
+    box-shadow: 0 8px 15px -3px rgba(13, 148, 136, 0.4);
+    transform: translateY(-2px) scale(1.05);
+}
+
+.step-label { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; opacity: 0.9; margin-bottom: 2px; }
+.step-date { font-size: 0.9rem; font-weight: 700; }
+
+/* --- Timeline & Cards --- */
+.timeline-container { display: flex; flex-direction: column; gap: 2.5rem; }
+
+.session-header { 
+    display: flex; align-items: center; gap: 1.25rem; 
+    margin-top: 1rem; margin-bottom: 1rem;
+    position: relative;
+}
+
+.session-icon {
+    width: 3.5rem; height: 3.5rem; border-radius: 1rem;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--white);
+    border: 1px solid var(--slate-100);
+    box-shadow: var(--shadow-md);
+    z-index: 10; font-size: 1.25rem;
+    position: relative;
+}
+
+.session-title { 
+    font-size: 1.5rem; font-weight: 800; color: var(--slate-800); 
+    letter-spacing: -0.03em;
+}
+
+.timeline-item-wrapper { position: relative; padding-left: 4rem; padding-bottom: 2.5rem; }
+
+/* Dòng kẻ dọc thông minh hơn */
+.timeline-line-vertical {
+    position: absolute; 
+    left: 1.7rem; /* Căn giữa dot */
+    top: 2rem;    /* Bắt đầu từ giữa dot hiện tại */
+    bottom: -2rem; /* Kết thúc ở giữa dot tiếp theo */
+    width: 2px;
+    background: var(--slate-200);
+    z-index: 0;
+}
+/* Dòng cuối cùng mờ dần */
+.timeline-item-wrapper:last-child .timeline-line-vertical {
+    background: linear-gradient(to bottom, var(--slate-200) 0%, transparent 80%);
+}
+
+.timeline-dot {
+    position: absolute; left: 1.2rem; top: 1.5rem; 
+    width: 1.2rem; height: 1.2rem;
+    border-radius: 50%; 
+    border: 3px solid var(--white); 
+    background: var(--primary);
+    box-shadow: 0 0 0 2px var(--primary-light);
+    z-index: 10;
+    transition: transform 0.3s ease;
+}
+
+/* Hiệu ứng pulse khi hover vào item timeline */
+.timeline-item-wrapper:hover .timeline-dot {
+    transform: scale(1.2);
+    box-shadow: 0 0 0 4px var(--primary-light);
+}
+
+/* --- Card Improvements --- */
+.card {
+    background: var(--white);
+    border-radius: 1rem;
+    border: 1px solid var(--slate-100);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    /* Fix lỗi nháy hình trên 1 số trình duyệt */
+    transform: translateZ(0); 
+}
+
+@media (min-width: 640px) {
+    .card { flex-direction: row; height: 160px; }
+}
+
+.card:hover {
+    transform: translateY(-6px);
+    /* Bóng đổ màu Teal phát sáng */
+    box-shadow: var(--shadow-glow);
+    border-color: rgba(13, 148, 136, 0.2);
+}
+
+.card-img-wrapper {
+    position: relative; flex-shrink: 0; overflow: hidden;
+}
+
+@media (min-width: 640px) { .card-img-wrapper { width: 220px; height: 100%; } }
+
+.card-img {
+    width: 100%; height: 180px; object-fit: cover;
+    transition: transform 0.6s ease;
+}
+@media (min-width: 640px) { .card-img { height: 100%; } }
+
+.card:hover .card-img { transform: scale(1.08); }
+
+.card-content { 
+    padding: 1.25rem; flex-grow: 1; 
+    display: flex; flex-direction: column; justify-content: center;
+}
+
+.time-badge {
+    font-size: 0.75rem; font-weight: 700; color: var(--primary);
+    background: var(--primary-bg); padding: 0.25rem 0.75rem;
+    border-radius: 2rem; 
+    display: inline-flex; align-items: center; gap: 4px;
+    margin-bottom: 0.5rem; width: fit-content;
+}
+
+.card-title { font-size: 1.25rem; font-weight: 700; margin-bottom: 0.5rem; line-height: 1.3; }
+
+.card-meta { margin-top: auto; display: flex; gap: 1.5rem; font-size: 0.85rem; color: var(--slate-500); }
+.card-meta-item { display: flex; align-items: center; }
+.card-meta-item i { color: var(--slate-400); margin-right: 6px; }
+
+/* Icon action button on card */
+.card-action {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: var(--slate-50);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--slate-400);
+    transition: all 0.2s;
+    cursor: pointer;
+    margin-left: auto;
+    opacity: 0.7;
+}
+.card:hover .card-action { 
+    background: var(--primary); 
+    color: var(--white); 
+    opacity: 1;
+    transform: scale(1.1);
+    box-shadow: 0 4px 10px rgba(13, 148, 136, 0.3);
+}
+
+/* --- Responsive & Mobile Fixes --- */
+@media (max-width: 768px) {
+    .gooey-nav {
+        top: auto; bottom: 0; right: 0; left: 0;
+        width: 100%; 
+        /* Tính toán chiều cao để tránh đè lên thanh Home bar của iPhone */
+        height: calc(65px + env(safe-area-inset-bottom));
+        padding-bottom: env(safe-area-inset-bottom);
+        
+        flex-direction: row; justify-content: space-around;
+        border-radius: 20px 20px 0 0;
+        border: none; 
+        border-top: 1px solid rgba(255,255,255,0.4);
+        padding-top: 5px;
+        transform: none; /* Reset transform center */
+    }
+    
+    .gooey-nav:hover { width: 100%; height: calc(65px + env(safe-area-inset-bottom)); }
+    
+    .nav-item { flex-direction: column; justify-content: center; padding: 0; height: 100%; }
+    .nav-item i { margin-bottom: 4px; font-size: 1.1rem; }
+    .nav-text { display: none; }
+    
+    /* Chuyển indicator xuống dưới cùng trên mobile */
+    .nav-item::before { 
+        top: auto; bottom: 0; left: 50%; 
+        width: 30px; height: 4px; 
+        transform: translateX(-50%) scaleX(0); 
+        transition: transform 0.2s; 
+    }
+    .nav-item.active::before { transform: translateX(-50%) scaleX(1); }
+    
+    body { padding-right: 0; padding-bottom: 80px; }
+    
+    /* Thu nhỏ card trên mobile */
+    .card-title { font-size: 1.1rem; }
+    .timeline-item-wrapper { padding-left: 3rem; }
+    .timeline-line-vertical { left: 1.2rem; }
+    .timeline-dot { left: 0.7rem; }
+}
+
+/* --- Utilities --- */
+.bg-gradient-teal { background: linear-gradient(135deg, var(--primary), var(--primary-hover)); color: white; border: none; }
+.bg-gradient-amber { background: linear-gradient(135deg, var(--amber-500), #d97706); color: white; border: none; }
+.text-primary { color: var(--primary); }
+.text-amber { color: var(--amber-500); }
