@@ -66,10 +66,6 @@ async def fetch_place_lites_by_city(city: str) -> List[PlaceLite]:
         p.rating,
         p.reviewCount,
         p.popularity,
-<<<<<<< HEAD
-        p.category,
-=======
->>>>>>> main
         p.image_url,
         p.tags,    
         p.dwell,  

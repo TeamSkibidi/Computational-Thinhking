@@ -12,17 +12,7 @@ CREATE TABLE IF NOT EXISTS places (
   popularity INT DEFAULT 0,
   image_url VARCHAR(500),
   tags JSON,
-<<<<<<< HEAD
-  openTime CHAR(5),
-  closeTime CHAR(5),
-  priceVND BIGINT,
-  address_id BIGINT,
-  phone VARCHAR(50) NULL,
 
-  dwell INT,
-  category ENUM('visit','eat','hotel') NOT NULL DEFAULT 'visit',
-  
-=======
   category ENUM('visit','eat','hotel') NOT NULL DEFAULT 'visit',
   dwell INT,
 
