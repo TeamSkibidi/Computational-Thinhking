@@ -1,7 +1,8 @@
-# repositories/hotel_repository.py
 from typing import List
 from app.domain.entities.accommodation import Accommodation
+from app.infrastructure.database.connectdb import get_db
 from app.domain.entities.Address import Address
+from app.domain.entities.nightstay import NightStay
 
 def row_to_accommodation(row) -> Accommodation:
     addr = Address(
@@ -25,34 +26,56 @@ def row_to_accommodation(row) -> Accommodation:
         popularity=row["popularity"],
         category="hotel",
         tags=row.get("tags"),
+        num_guest=row.get("num_guest"),
         address=addr,
     )
+async def fetch_accommodations_by_city(city: str) -> List[Accommodation]:
+    # Lấy connection đến database
+    db = get_db()
+    if db is None:
+        return [];
 
-async def fetch_accommodations_by_city(pool, city: str) -> List[Accommodation]:
+    cursor = db.cursor(dictionary=True)
+
+
+    
     sql = """
     SELECT
-        p.id,
-        p.name,
-        p.price_vnd,
-        p.summary,
-        p.phone,
-        p.rating,
-        p.review_count,
-        p.popularity,
-        p.capacity,
-        p.tags,
+        h.id,
+        h.name,
+        h.priceVND,
+        h.summary,
+        h.phone,
+        h.rating,
+        h.openTime,
+        h.closeTime,
+        h.reviewCount,
+        h.popularity,
+        h.capacity,
+        h.tags,
+        h.category,
+        h.image_name,
+        h.image_url,
+        h.num_guest,
         a.house_number,
         a.street,
         a.ward,
         a.district,
         a.city,
         a.lat,
-        a.lng,
-        a.maps_url
-    FROM places p
-    JOIN addresses a ON p.address_id = a.id
-    WHERE a.city = $1
-      AND p.category = 'hotel';
+        a.lng
+    FROM accommodation h
+    JOIN addresses a ON h.address_id = a.id
+    WHERE a.city = %s
+      AND h.category = 'hotel';
     """
-    rows = await pool.fetch(sql, city)
+    cursor.execute(sql, (city,))
+
+    rows = cursor.fetchall()
+
+    
+
+    cursor.close()
+    db.close()
+    
     return [row_to_accommodation(r) for r in rows]

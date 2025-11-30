@@ -8,7 +8,7 @@ from .Address import Address
 from .place_lite import PlaceLite  # hoặc path tương ứng
 from .food_place import FoodPlace
 from .accommodation import Accommodation
-from app.utils.time_utils import time_str_to_min
+from app.utils.time_utils import time_str_to_minutes
 
 @dataclass
 class ItinerarySpot:
@@ -43,14 +43,13 @@ class ItinerarySpot:
 
 """ Hàm chuyển đổi từ các model khác sang ItinerarySpot"""
 def place_lite_to_spot(p: PlaceLite) -> ItinerarySpot:
-    # category: nếu chưa có, mặc định 'visit'
     category = p.category or "visit"
 
     lat = p.address.lat if p.address else 0.0
     lng = p.address.lng if p.address else 0.0
 
-    open_min = time_str_to_min(p.openTime) if p.openTime else None
-    close_min = time_str_to_min(p.closeTime) if p.closeTime else None
+    open_min = time_str_to_minutes(p.openTime) if p.openTime else None
+    close_min = time_str_to_minutes(p.closeTime) if p.closeTime else None
 
     return ItinerarySpot(
         id=p.id,
@@ -63,9 +62,9 @@ def place_lite_to_spot(p: PlaceLite) -> ItinerarySpot:
         rating=p.rating,
         review_count=p.reviewCount,
         popularity=p.popularity,
-        price_vnd=float(p.priceVnd) if p.priceVnd is not None else None,
+        price_vnd=float(p.priceVND) if p.priceVND is not None else None,
         dwell_min=p.dwell,  
-        image_url=p.imageUrl,
+        image_url=p.image_url,
         tags=p.tags,
     )
 
@@ -73,8 +72,8 @@ def food_place_to_spot(f: FoodPlace) -> ItinerarySpot:
     lat = f.address.lat if f.address else 0.0
     lng = f.address.lng if f.address else 0.0
 
-    open_min = time_str_to_min(f.openTime) if f.openTime else None
-    close_min = time_str_to_min(f.closeTime) if f.closeTime else None
+    open_min = time_str_to_minutes(f.openTime) if f.openTime else None
+    close_min = time_str_to_minutes(f.closeTime) if f.closeTime else None
 
     return ItinerarySpot(
         id=f.id,  
@@ -87,9 +86,9 @@ def food_place_to_spot(f: FoodPlace) -> ItinerarySpot:
         rating=f.rating,
         review_count=f.reviewCount,
         popularity=f.popularity,
-        price_vnd=f.priceVNDPerPerson,  
+        price_vnd=f.priceVND,  
         dwell_min=60,  
-        image_url=f.imageUrl,
+        image_url=f.image_url,
         tags=f.tags,
     )
 
@@ -110,6 +109,6 @@ def accommodation_to_spot(a: Accommodation) -> ItinerarySpot:
         popularity=a.popularity,
         price_vnd=a.priceVND,  
         dwell_min=None,    
-        image_url=a.imageUrl,
+        image_url=a.image_url,
         tags=a.tags,
     )

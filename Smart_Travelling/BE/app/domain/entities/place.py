@@ -11,6 +11,7 @@ class Place(BaseModel):
     reviewCount: Optional[int] = Field(0, ge = 0, example = 12102006)
     popularity: Optional[int] = Field(None, ge = 0, le = 100, example= 87)
     image_url: Optional[str] = None
+    image_name: Optional[str] = Field(None, example="place_image.png")
     tags: List[str] = Field(default_factory=list)
     openTime: Optional[str] = Field(None, pattern = r"^(([01]\d|2[0-3]):[0-5]\d)?$", example = "06:00")
     closeTime: Optional[str] = Field(None, pattern= r"^(([01]\d|2[0-3]):[0-5]\d)?$", example= "23:00")

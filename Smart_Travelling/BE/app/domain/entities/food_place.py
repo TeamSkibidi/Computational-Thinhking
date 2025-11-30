@@ -2,7 +2,7 @@ from typing import Optional
 from pydantic import Field
 from .place import Place
 
-class Food(Place):
+class FoodPlace(Place):
     cuisine_type: Optional[str] = Field(None, description="Loại ẩm thực: Á, Âu, Chay...")
     category: str = "eat"
     phone: Optional[str] = None
@@ -13,5 +13,5 @@ class Food(Place):
         return data
 
     @classmethod
-    def from_json(cls, data: dict) -> "Food":
+    def from_json(cls, data: dict) -> "FoodPlace":
         return cls(**data)

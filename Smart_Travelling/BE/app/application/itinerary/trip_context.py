@@ -1,9 +1,9 @@
 from dataclasses import dataclass
-from datetime import Date
+from datetime import date
 
 from typing import List, Optional   
 from app.api.schemas.itinerary_request import ItineraryRequest
-from app.config.settings import (
+from app.config.setting import (
     MAX_PLACES_PER_BLOCK_DEFAULT,
     MAX_LEG_DISTANCE_KM_DEFAULT,
 )
@@ -17,7 +17,7 @@ class UserPreferences:
 @dataclass
 class TripContext:
     city: str
-    date: Date
+    date: date
 
     """Thời gian bắt đầu và kết thúc của một buổi tham quan"""
     morning_start: int
@@ -54,7 +54,7 @@ class TripContext:
 
         return cls(
             city=req.city,
-            date=req.date,
+            date=req.start_date,
             morning_start=7*60 + 30,
             morning_end=11*60,
             lunch_start=11*60 + 30,

@@ -4,13 +4,14 @@ from fastapi.staticfiles import StaticFiles
 from pathlib import Path
 
 # 1) Import 3 router bạn đã viết
-from app.api.v0.routes.auth_router import router as auth_router
-from app.api.v0.routes.user_router import router as users_router
-from app.api.v0.routes.admin_router import router as admin_router
+from app.api.v0.router.auth_router import router as auth_router
+from app.api.v0.router.user_router import router as users_router
+from app.api.v0.router.admin_router import router as admin_router
+from app.api.v0.router.trip_router import router as trip_router
 
 
 # 2) Tạo app FastAPI
-app = FastAPI(title="Let's Travel API")
+app = FastAPI(title="Let's Travel Smart with us")
 
 
 # 3) Bật CORS để Frontend gọi được Backend
@@ -30,6 +31,7 @@ app.add_middleware(
 app.include_router(auth_router, prefix="/api/v0")
 app.include_router(users_router, prefix="/api/v0")
 app.include_router(admin_router, prefix="/api/v0")
+app.include_router(trip_router, prefix="/api/v0")
 
 
 # 5) Serve Frontend (nếu bạn muốn chạy chung BE + FE)
