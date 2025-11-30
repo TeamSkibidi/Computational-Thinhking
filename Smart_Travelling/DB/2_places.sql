@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS places (
   priceVND BIGINT,
   address_id BIGINT,
   phone VARCHAR(50) NULL,
-  image_name VARCHAR(255),
+
   dwell INT,
   category ENUM('visit','eat','hotel') NOT NULL DEFAULT 'visit',
   

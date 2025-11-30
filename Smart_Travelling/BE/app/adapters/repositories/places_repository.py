@@ -36,7 +36,6 @@ def row_to_place_lite(row) -> PlaceLite:
         popularity=row["popularity"],
         category=row["category"],    
         dwell=row.get("dwell"),        
-        imageName=row["image_name"],
         imageUrl=f"{IMAGE_BASE_URL}{row['image_name']}" if row["image_name"] else None,
         tags=tags or [],
         address=addr,
@@ -46,7 +45,7 @@ async def fetch_place_lites_by_city(city: str) -> List[PlaceLite]:
      # Lấy connection đến database
     db = get_db()
     if db is None:
-        return [];
+        return []
 
     cursor = db.cursor(dictionary=True)
     
@@ -65,7 +64,6 @@ async def fetch_place_lites_by_city(city: str) -> List[PlaceLite]:
         p.reviewCount,
         p.popularity,
         p.category,
-        p.image_name,
         p.image_url,
         p.dwell,  
         p.tags,    
