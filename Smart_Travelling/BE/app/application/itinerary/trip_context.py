@@ -3,11 +3,12 @@ from datetime import Date
 
 from typing import List, Optional   
 from app.api.schemas.itinerary_request import ItineraryRequest
-from app.config.settings import (
-    MAX_PLACES_PER_BLOCK_DEFAULT,
-    MAX_LEG_DISTANCE_KM_DEFAULT,
-)
-
+# from app.config.settings import (
+#     MAX_PLACES_PER_BLOCK_DEFAULT,
+#     MAX_LEG_DISTANCE_KM_DEFAULT,
+# )
+from app.config.setting import MAX_PLACES_PER_BLOCK_DEFAULT
+from app.config.setting import MAX_LEG_DISTANCE_KM_DEFAULT
 """ tag cho địa điểm """
 @dataclass
 class UserPreferences:
