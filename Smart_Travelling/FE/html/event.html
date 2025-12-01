@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lễ Hội Việt Nam</title>
+
+  <!-- Tailwind & Lucide & Fonts -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- JS của trang: NHỚ type="module" -->
+  <script type="module" src="../js/pages/event.js"></script>
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap"
+    rel="stylesheet"
+  />
+
+  <!-- CSS riêng -->
+  <link rel="stylesheet" href="../css/event.css" />
+</head>
+<body>
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <!-- Cột trái: 2 nút -->
+    <div class="nav-content flex gap-4">
+      <button class="btn-glass">
+        <i data-lucide="arrow-left"></i>
+      </button>
+      <!--button class="btn-glass"><i data-lucide="list"></i></button-->
+      <button id="filter-btn" class="btn-glass">
+        <i data-lucide="filter"></i>
+      </button>
+    </div>
+
+    <!-- Cột phải: ô "Tìm kiếm sự kiện..." + form city/date -->
+    <div class="nav-content flex items-center gap-2">
+      <!-- Ô tìm kiếm sự kiện lớn -->
+      <input
+        id="keyword-input"
+        type="text"
+        placeholder="Tìm kiếm sự kiện..."
+        class="w-72 bg-black/5 backdrop-blur-md border border-black/10 rounded-full px-5 py-2 text-gray-800 placeholder-gray-500 focus:outline-none focus:bg-white/40 focus:border-black/20 transition"
+      />
+
+      <!-- Form city + date + nút tìm lễ hội -->
+      <form id="event-search-form" class="flex items-center gap-2">
+        <div>
+          <input
+            id="city-input"
+            name="city"
+            list="city-options"
+            placeholder="Nhập thành phố..."
+            class="px-3 py-1 border border-black/10 rounded text-sm"
+          />
+          <datalist id="city-options">
+            <option value="Ha Noi">Hà Nội</option>
+            <option value="Da Nang">Đà Nẵng</option>
+            <option value="Ho Chi Minh">Hồ Chí Minh</option>
+          </datalist>
+        </div>
+
+        <input
+          type="date"
+          id="target-date-input"
+          class="px-3 py-1 border border-black/10 rounded text-sm"
+        />
+
+        <button
+          id="search-btn"
+          type="submit"
+          class="px-4 py-1 border border-black/20 rounded bg-black/5 hover:bg-black/10 transition text-sm"
+        >
+          Tìm lễ hội
+        </button>
+      </form>
+    </div>
+  </nav>
+
+  <!-- PANEL LỌC KẾT QUẢ (để ngoài nav, nhưng position: fixed nên vẫn “bay” ở góc) -->
+  <div id="filter-panel" class="filter-panel hidden">
+    <div class="filter-panel-inner">
+      <div class="filter-header">
+        <span>Lọc & sắp xếp lễ hội</span>
+      </div>
+
+      <div class="filter-section">
+        <div class="filter-title">Sắp xếp theo</div>
+
+        <label class="filter-option">
+          <input type="radio" name="sort" value="price_asc" />
+          Giá vé: thấp → cao
+        </label>
+
+        <label class="filter-option">
+          <input type="radio" name="sort" value="price_desc" />
+          Giá vé: cao → thấp
+        </label>
+
+        <label class="filter-option">
+          <input type="radio" name="sort" value="popularity_desc" />
+          Độ nổi tiếng: cao → thấp
+        </label>
+
+        <label class="filter-option">
+          <input type="radio" name="sort" value="distance_asc" />
+          Khoảng cách: gần → xa
+        </label>
+      </div>
+
+      <div class="filter-section">
+      <div class="filter-title">Phạm vi</div>
+      <label class="filter-option">
+        <input type="checkbox" id="filter-distance-5km" />
+        Chỉ hiển thị trong bán kính 5 km
+      </label>
+    </div>
+    
+      <div class="filter-footer">
+        <button id="filter-reset-btn" class="filter-btn-secondary">
+          Bỏ lọc
+        </button>
+        <button id="filter-apply-btn" class="filter-btn-primary">
+          Áp dụng
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- HIGHLIGHT EVENT THEO TÊN TÌM KIẾM -->
+  <div id="highlight-event" class="highlight-event"></div>
+
+  <!-- TOAST THÔNG BÁO NHỎ -->
+  <div id="event-toast" class="event-toast hidden"></div>
+
+  <!-- BOOK WRAPPER + LIST KẾT QUẢ -->
+  <div class="book-wrapper" id="bookWrapper">
+    <div class="book-spine"></div>
+
+    <!-- PANEL LIST KẾT QUẢ TÌM KIẾM  -->
+    <div id="event-list-container" class="event-list-container">
+      <!-- Kết quả tìm kiếm sẽ render vào đây -->
+    </div>
+
+    <div class="static-page static-left" id="staticLeft"></div>
+    <div class="static-page static-right" id="staticRight"></div>
+  </div>
+
+  <!-- OVERLAY CHI TIẾT LỄ HỘI -->
+  <div id="event-detail-overlay" class="event-detail-overlay hidden">
+    <div class="event-detail-backdrop"></div>
+    <div class="event-detail-card">
+      <button id="event-detail-close" class="event-detail-close-btn">
+        &times;
+      </button>
+      <div id="event-detail-content"></div>
+    </div>
+  </div>
+</body>
+</html>
