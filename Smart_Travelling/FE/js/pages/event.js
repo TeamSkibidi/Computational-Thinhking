@@ -25,6 +25,14 @@ const bookEvents = [
     desc: "Chào đón năm mới...",
     tags: ["Truyền thống", "Gia đình"],
     particle: "🌸",
+    detail: `
+      <p>Tết Nguyên Đán là dịp lễ lớn nhất trong năm, đánh dấu thời khắc chuyển giao giữa năm cũ và năm mới.</p>
+      <ul>
+        <li>Phong tục: chúc Tết, lì xì, hái lộc, đi chùa đầu năm...</li>
+        <li>Món ăn tiêu biểu: bánh chưng, bánh tét, dưa hành, thịt kho hột vịt...</li>
+        <li>Không khí: sum họp gia đình, nghỉ lễ dài ngày trên khắp cả nước.</li>
+      </ul>
+    `,
   },
   {
     id: 2,
@@ -36,6 +44,13 @@ const bookEvents = [
     desc: "Đêm hội trăng rằm...",
     tags: ["Trẻ em", "Văn hóa"],
     particle: "⭐",
+    detail: `
+    <p>Tết Trung Thu là ngày hội dành cho thiếu nhi với lồng đèn, múa lân và bánh trung thu.</p>
+     <ul>
+       <li>Hoạt động: rước đèn, phá cỗ, xem múa lân, xem múa rối.</li> 
+       <li>Ý nghĩa: đoàn viên, chăm sóc và bày tỏ tình cảm với trẻ nhỏ.</li>
+    </ul> ,
+    `
   },
 ];
 
@@ -216,6 +231,47 @@ function buildEventDetailHTML(e) {
     </div>
   `;
 }
+// Chi tiết cho các lễ hội trong BOOK (dữ liệu tĩnh)
+function buildBookEventDetailHTML(ev) {
+  const imgUrl = ev.img || "../images/default-event.jpg";
+  const timeText = ev.date || "Thời gian: không rõ";
+  const locText = ev.loc || "Toàn quốc";
+
+  return `
+    <div class="event-detail-body">
+      <div class="event-detail-image" style="background-image:url('${imgUrl}')"></div>
+      <div class="event-detail-info">
+        <div class="event-detail-title">${ev.name}</div>
+        <div class="event-detail-meta">${locText}</div>
+        <div class="event-detail-meta">Thời gian: ${timeText}</div>
+
+        <div class="event-detail-summary">
+          ${ev.detail || ev.desc || ""}
+        </div>
+
+        <div class="event-detail-tags">
+          ${
+            (ev.tags || [])
+              .map((t) => `<span class="event-detail-tag">${t}</span>`)
+              .join("")
+          }
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// Mở overlay chi tiết cho bookEvents
+function openBookEventDetail(index) {
+  if (!eventDetailOverlay || !eventDetailContent) return;
+  const ev = bookEvents[index];
+  if (!ev) return;
+
+  eventDetailOverlay.classList.add("show");
+  eventDetailContent.innerHTML = buildBookEventDetailHTML(ev);
+
+  if (window.lucide) lucide.createIcons();
+}
 
 async function openEventDetail(eventId) {
   if (!eventDetailOverlay || !eventDetailContent) return;
@@ -282,13 +338,18 @@ function getTextHTML(data) {
       <h1 class="text-5xl font-bold mb-6 text-[var(--theme-primary)] leading-tight">${data.name}</h1>
       <p class="text-lg leading-loose text-gray-700 text-justify">${data.desc}</p>
       <div class="mt-8">
-        <button class="px-6 py-3 bg-[var(--theme-primary)] text-white rounded shadow-lg hover:shadow-xl transition transform hover:-translate-y-1 flex items-center gap-2">
+        <!-- 👇 thêm class book-detail-btn -->
+        <button
+          type="button"
+          class="book-detail-btn px-6 py-3 bg-[var(--theme-primary)] text-white rounded shadow-lg hover:shadow-xl transition transform hover:-translate-y-1 flex items-center gap-2"
+        >
           Xem chi tiết <i data-lucide="arrow-right" width="16"></i>
         </button>
       </div>
     </div>
   `;
 }
+
 
 
 // =========================
@@ -310,6 +371,8 @@ function renderStaticPage(leftIndex, rightIndex) {
 
   staticLeft.className  = `static-page static-left ${bookEvents[leftIndex].theme}`;
   staticRight.className = `static-page static-right ${bookEvents[rightIndex].theme}`;
+
+  attachBookDetailButton();
 }
 
 
@@ -381,19 +444,36 @@ function flipToNext() {
     currentIndex = nextIndex;
     isAnimating  = false;
     lucide.createIcons();
+     attachBookDetailButton(); // 👇 sau khi lật xong, gắn lại click cho nút chi tiết trang mới
   }, 2000);
+  
 }
 
+
+
+
+// Gắn click cho nút "Xem chi tiết" trên trang sách (trang phải)
+function attachBookDetailButton() {
+  if (!staticRight) return;
+  const btn = staticRight.querySelector(".book-detail-btn");
+  if (!btn) return;
+
+  btn.addEventListener("click", () => {
+    openBookEventDetail(currentIndex);
+  });
+}
 
 // =========================
 // 13. HÀM KHỞI TẠO TRANG SÁCH
 // =========================
-
 function initBookPage() {
   if (!bookEvents.length) return;
 
   currentIndex = 0;
   renderStaticPage(currentIndex, currentIndex);
+
+  // 👇 gắn handler cho nút xem chi tiết
+  attachBookDetailButton();
 
   updateBodyTheme(bookEvents[currentIndex].theme);
   lucide.createIcons();
@@ -401,6 +481,9 @@ function initBookPage() {
 
   flipIntervalId = setInterval(flipToNext, 5000);
 }
+
+
+
 
 
 // =========================

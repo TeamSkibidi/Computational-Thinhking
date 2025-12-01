@@ -1,4 +1,3 @@
-# app/api/routers/events.py (ví dụ)
 
 from datetime import date
 from typing import List, Optional
