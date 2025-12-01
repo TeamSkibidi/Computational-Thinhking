@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import List
+from typing import List, Set
 from typing import Optional, Tuple
 from datetime import timedelta
 from app.domain.entities.place_lite import PlaceLite
@@ -12,7 +12,7 @@ from app.utils.geo_utils import haversine_km, estimate_travel_minutes
 from app.utils.time_utils import min_to_time_str
 from app.domain.entities.itinerary_spot import ItinerarySpot
 from app.api.schemas.itinerary_request import ItineraryRequest
-from app.config.settings import IMAGE_BASE_URL
+from app.config.setting import IMAGE_BASE_URL
 from app.api.schemas.itinerary_response import DayItineraryResponse, BlockItemResponse, CostSummaryResponse
 
 
@@ -21,6 +21,7 @@ class BlockItem:
     order: int
     type: str
     name: str
+    place_id: Optional[int]
     start_min: int
     end_min: int
     dwell_min: int
@@ -60,10 +61,75 @@ def visit_sort_key(spot, prefs, must_ids):
 
 """Hàm set thời gian ở lại 1 địa điểm"""
 def estimate_dwell_minutes(spot: ItinerarySpot) -> int:
-    if spot.dwell is not None:
-        return spot.dwell
+    if spot.dwell_min is not None:
+        return spot.dwell_min
 
     return 90
+
+""" Lấy ID duy nhất của 1 địa điểm """
+def get_spot_unique_id(obj) -> str | None:
+    """
+    Lấy ra ID duy nhất của 1 địa điểm.
+    obj có thể là:
+    - ItinerarySpot
+    - BlockItemResponse (có field .spot)
+    """
+    if obj is None:
+        return None
+
+    """ Nếu là BlockItemResponse có field .spot thì ưu tiên lấy từ đó """
+    spot = getattr(obj, "spot", obj)
+
+    """ Thử lấy từ các thuộc tính có thể có """
+    for attr in ("spot_id", "place_id", "id"):
+        val = getattr(spot, attr, None)
+        if val:
+            return str(val)
+
+    return None
+
+""" Lấy tập hợp ID của các địa điểm trong 1 ngày """
+def get_spot_ids_from_day(day_plan: DayItineraryResponse) -> set[str]:
+    ids: set[str] = set()
+
+    """ Giả sử day_plan.blocks là dict[str, list[BlockItemResponse]] """
+    for block_items in day_plan.blocks.values():
+        for item in block_items:
+            uid = get_spot_unique_id(item)
+            if uid:
+                ids.add(uid)
+
+    return ids
+
+"""" Hàm xoá các địa điểm trùng trong cùng 1 ngày """
+def dedup_day_items_by_name(day_plan: DayItineraryResponse,
+                            dedup_types: Set[str] | None = None) -> None:
+    """
+    Xoá các BlockItemResponse trùng tên trong cùng 1 ngày.
+    - dedup_types: set các type muốn chống trùng, ví dụ {"visit"} hoặc {"visit", "food"}
+    """
+    if dedup_types is None:
+        dedup_types = {"visit"}   
+
+    seen_keys: Set[str] = set()
+
+
+    """ Duyệt qua từng block trong ngày """
+    for block_name, items in list(day_plan.blocks.items()):
+        new_items = []
+        for item in items:
+
+            """ Kiểm tra nếu loại item cần dedup """
+            if item.type in dedup_types and item.name:
+                key = f"{item.type}:{item.name}"
+                if key in seen_keys:
+                    
+                    """ Đã thấy trùng, bỏ qua mục này """
+                    continue
+                seen_keys.add(key)
+            new_items.append(item)
+
+        day_plan.blocks[block_name] = new_items
 
 """ Lấy địa điểm nổi tiếng nhất trong danh sách địa điểm lấy ratting trước, popularity sau """
 def sort_spots_with_tags(
@@ -359,7 +425,7 @@ def build_visit_block(
             distance_from_prev_km=0.0,
             travel_from_prev_min=0,
             price_vnd=first_place.price_vnd,
-            image_url=build_image_url(first_place.image_name),
+            image_url=build_image_url(first_place.image_url),
         )
     )
 
@@ -417,7 +483,7 @@ def build_visit_block(
 
         candidate_start = last_end_time + travel_min
         candidate_end = candidate_start + dwell_min
-
+        last_place = candidate
         items.append(
             BlockItem(
                 order=len(items) + 1,
@@ -430,7 +496,7 @@ def build_visit_block(
                 distance_from_prev_km=distance_km,
                 travel_from_prev_min=travel_min,
                 price_vnd=candidate.price_vnd,
-                image_url=build_image_url(candidate.image_name),
+                image_url=build_image_url(candidate.image_url),
             )
         )
 
@@ -438,7 +504,8 @@ def build_visit_block(
         last_place = candidate
         last_end_time = candidate_end
 
-    return items
+    return items , last_place
+
 
 
 
@@ -588,8 +655,7 @@ def build_day_itinerary(
 
     cost_summary = CostSummaryResponse(
         total_attraction_cost_vnd=total_attraction_cost,
-        total_food_cost_vnd=total_food_cost,
-        total_hotel_cost_vnd=total_hotel_cost,
+        total_accommodation_cost_vnd=total_hotel_cost,
         total_trip_cost_vnd=total_attraction_cost + total_food_cost + total_hotel_cost,
     )
 
@@ -615,40 +681,63 @@ def build_trip_itinerary(
 ) -> dict:
     """
     Xây dựng lịch trình cho toàn bộ chuyến đi nhiều ngày.
-
-    - Loop i từ 0 -> num_days-1
-    - Mỗi ngày:
-        + tạo TripContext cho ngày đó (city + date_i + prefs...)
-        + build_day_itinerary -> DayItineraryResponse
-    - Giữa các ngày:
-        + từ block 'evening' tìm BlockItemResponse type='hotel'
-        + tạo NightStay (check_in = date_i, check_out = date_i+1)
-
-    Trả về dict để API trả thẳng cho FE.
+    Không lặp lại cùng 1 địa điểm (theo name) ở các NGÀY KHÁC NHAU.
     """
     days: List[DayItineraryResponse] = []
     night_stays: List[NightStay] = []
 
+    """ Theo dõi tên địa điểm đã dùng để tránh lặp lại giữa các ngày """
+    used_visit_names: Set[str] = set()
+    used_food_names: Set[str] = set()
+
+    """ Xây dựng lịch trình cho từng ngày """
     for i in range(req.num_days):
-        
         date_i = req.start_date + timedelta(days=i)
 
-        context = TripContext.from_request(req, date_i)
+        context = TripContext.from_request(req)
+        context.date = date_i
 
-        """" Xây dựng lịch trình cho NGÀY i"""
+        """ helper lọc theo tên đã dùng """
+        def keep_visit(spot: ItinerarySpot) -> bool:
+            return getattr(spot, "name", None) not in used_visit_names
+
+        def keep_food(spot: ItinerarySpot) -> bool:
+            return getattr(spot, "name", None) not in used_food_names
+
+        """ Lọc địa điểm theo tên đã dùng """
+        filtered_visit_spots = [s for s in visit_spots if keep_visit(s)]
+        filtered_food_spots = [s for s in food_spots if keep_food(s)]
+
+        """ Hotel có thể lặp lại nếu khách ở cùng 1 khách sạn nhiều đêm """
+        filtered_hotel_spots = hotel_spots
+
+        """ Xây dựng lịch trình cho ngày i """
         day_plan = build_day_itinerary(
             context=context,
-            visit_spots=visit_spots,
-            food_spots=food_spots,
-            hotel_spots=hotel_spots,
+            visit_spots=filtered_visit_spots,
+            food_spots=filtered_food_spots,
+            hotel_spots=filtered_hotel_spots,
         )
         days.append(day_plan)
-        """ Lấy thông tin khách sạn cho đêm nếu không phải ngày cuối"""
+
+
+        dedup_day_items_by_name(day_plan, dedup_types={"visit", "food"})
+
+
+        """ Cập nhật danh sách địa điểm đã dùng của các ngày TRƯỚC """
+        for block_items in day_plan.blocks.values():
+            for item in block_items:
+
+                """ Cập nhật tên địa điểm đã dùng để tránh lặp lại giữa các ngày """
+                if item.type == "visit" and item.name:
+                    used_visit_names.add(item.name)
+                # nếu muốn tránh trùng quán ăn giữa các ngày:
+                if item.type == "food" and item.name:
+                    used_food_names.add(item.name)
+
+        """ Lấy thông tin khách sạn buổi tối nếu không phải ngày cuối """
         if i < req.num_days - 1:
-            
-            """ Lấy block evening của ngày hiện tại kiểm tra có khách sạn không"""
             evening_block = day_plan.blocks.get("evening", [])
-            """ Tìm mục khách sạn trong block evening """
             hotel_item = next(
                 (b for b in evening_block if b.type == "hotel"),
                 None,
@@ -656,18 +745,19 @@ def build_trip_itinerary(
             if hotel_item is not None:
                 night_stays.append(
                     NightStay(
-                        guest_name="",             
-                        summary=hotel_item.name,   
-                        check_in=date_i,
-                        check_out=date_i + timedelta(days=1),
-                        priceVND=hotel_item.price_vnd,
+                        guest_name="",
                         num_guest=None,
-                        type_guest="",
                     )
                 )
 
     num_nights = max(req.num_days - 1, 0)
-    total_hotel_price = sum(ns.priceVND or 0 for ns in night_stays)
+    total_hotel_price = sum(getattr(ns, "priceVND", 0) or 0 for ns in night_stays)
+
+    """ debug để chắc chắn không bị trùng giữa các ngày nữa """
+    for d in days:
+        print("DAY:", d.date)
+        for block_name, items in d.blocks.items():
+            print(" ", block_name, "->", [it.name for it in items])
 
     return {
         "city": req.city,
@@ -675,8 +765,8 @@ def build_trip_itinerary(
         "num_days": req.num_days,
         "num_nights": num_nights,
         "total_hotel_price_vnd": total_hotel_price,
-        "days": [d.model_dump() for d in days],          
-        "night_stays": [ns.to_json() for ns in night_stays],  
+        "days": [d.model_dump() for d in days],
+        "night_stays": [ns.to_json() for ns in night_stays],
     }
 
 

@@ -1,11 +1,11 @@
 import json
 from typing import List
-from app.domain.entities.food_place import FoodPlace
-from app.domain.entities.Address import Address
+from app.domain.entities.accommodation import Accommodation
 from app.infrastructure.database.connectdb import get_db
-from app.config.setting import IMAGE_BASE_URL
+from app.domain.entities.Address import Address
+from app.domain.entities.nightstay import NightStay
 
-def row_to_food_place(row) -> FoodPlace:
+def row_to_accommodation(row) -> Accommodation:
     addr = Address(
         houseNumber=row["house_number"],
         street=row["street"],
@@ -21,27 +21,23 @@ def row_to_food_place(row) -> FoodPlace:
             tags = json.loads(tags)
         except json.JSONDecodeError:
             tags = []
-    return FoodPlace(
-        id=row["id"],
+    return Accommodation(
         name=row["name"],
         priceVND=row["priceVND"],
         summary=row["summary"],
         description=row["description"],
-        openTime=row["openTime"],
-        closeTime=row["closeTime"],
         phone=row["phone"],
         rating=row["rating"],
         reviewCount=row["reviewCount"],
         popularity=row["popularity"],
         image_url=row.get("image_url"),
-        tags=tags or [],  
-        cuisine=row.get("cuisine_type"),
+        tags=tags or [],
+        num_guest=row.get("num_guest"),
+        capacity=row.get("capacity"),
         category=row["category"],
         address=addr,
     )
-
-async def fetch_food_places_by_city(city: str) -> List[FoodPlace]:
-    
+async def fetch_accommodations_by_city(city: str) -> List[Accommodation]:
     # Lấy connection đến database
     db = get_db()
     if db is None:
@@ -51,21 +47,20 @@ async def fetch_food_places_by_city(city: str) -> List[FoodPlace]:
     
     sql = """
     SELECT
-        f.id,
-        f.name,
-        f.priceVND,
-        f.summary,
-        f.description,
-        f.rating, 
-        f.openTime,      
-        f.closeTime,
-        f.phone,
-        f.reviewCount,
-        f.popularity,
-        f.image_url,
-        f.tags,       
-        f.category,
-        f.cuisine_type,
+        h.id,
+        h.name,
+        h.priceVND,
+        h.summary,
+        h.description,
+        h.phone,
+        h.rating,
+        h.reviewCount,
+        h.popularity,
+        h.capacity,
+        h.image_url,
+        h.tags,
+        h.category,
+        h.num_guest,
         a.house_number,
         a.street,
         a.ward,
@@ -73,17 +68,18 @@ async def fetch_food_places_by_city(city: str) -> List[FoodPlace]:
         a.city,
         a.lat,
         a.lng
-    FROM food f
-    JOIN addresses a ON f.address_id = a.id
+    FROM accommodation h
+    JOIN addresses a ON h.address_id = a.id
     WHERE a.city = %s
-      AND f.category = 'eat';
+      AND h.category = 'hotel';
     """
     cursor.execute(sql, (city,))
 
     rows = cursor.fetchall()
 
     
+
     cursor.close()
     db.close()
     
-    return [row_to_food_place(r) for r in rows]
+    return [row_to_accommodation(r) for r in rows]

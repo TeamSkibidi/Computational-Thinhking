@@ -27,3 +27,8 @@ class EventRepository(ABC):
     @abstractmethod
     def get_by_id (self, event_id: int) -> Optional[Event]:
         pass
+
+    @abstractmethod
+    def search_events_by_name(self, keyword: str, limit: int = 5) -> List[Event]:
+        """Tìm các event theo tên (có thể gõ không dấu)."""
+        raise NotImplementedError

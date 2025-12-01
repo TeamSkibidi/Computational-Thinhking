@@ -1,8 +1,9 @@
-# repositories/places_repository.py
 from typing import List
-from app.domain.entities.PlaceLite import PlaceLite
+from app.domain.entities.place_lite import PlaceLite
 from app.domain.entities.Address import Address
-from app.config.settings import IMAGE_BASE_URL
+from app.infrastructure.database.connectdb import get_db
+from app.config.setting import IMAGE_BASE_URL
+import json
 
 def row_to_place_lite(row) -> PlaceLite:
     addr = Address(
@@ -13,58 +14,75 @@ def row_to_place_lite(row) -> PlaceLite:
         city=row["city"],
         lat=row["lat"],
         lng=row["lng"],
-        url=row.get("maps_url"),
     )
+    tags = row.get("tags")
+    if isinstance(tags, str):
+        try:
+            tags = json.loads(tags)
+        except json.JSONDecodeError:
+            tags = []
     return PlaceLite(
         id=row["id"],
         name=row["name"],
-        priceVnd=row["price_vnd"],
+        priceVND=row["priceVND"],
         summary=row["summary"],
         description=row["description"],
-        openTime=row["open_time"],   
-        closeTime=row["close_time"],
+        openTime=row["openTime"],   
+        closeTime=row["closeTime"],
         phone=row["phone"],
         rating=row["rating"],
-        reviewCount=row["review_count"],
+        reviewCount=row["reviewCount"],
         popularity=row["popularity"],
-        category=row["category"],    
+        image_url=row.get("image_url"),
+        tags=tags or [],
         dwell=row.get("dwell"),        
-        imageName=row["image_name"],
-        imageUrl=f"{IMAGE_BASE_URL}{row['image_name']}" if row["image_name"] else None,
-        tags=row.get("tags"),
+        category=row["category"],    
         address=addr,
     )
+async def fetch_place_lites_by_city(city: str) -> List[PlaceLite]:
+    
+     # Lấy connection đến database
+    db = get_db()
+    if db is None:
+        return [];
 
-async def fetch_place_lites_by_city(pool, city: str) -> List[PlaceLite]:
+    cursor = db.cursor(dictionary=True)
+    
+    
     sql = """
     SELECT
         p.id,
         p.name,
-        p.price_vnd,
+        p.priceVND,
         p.summary,
         p.description,
-        p.open_time,
-        p.close_time,
+        p.openTime,
+        p.closeTime,
         p.phone,
         p.rating,
-        p.review_count,
+        p.reviewCount,
         p.popularity,
-        p.category,
-        p.image_name,
-        p.dwell,  
+        p.image_url,
         p.tags,    
+        p.dwell,  
+        p.category,
         a.house_number,
         a.street,
         a.ward,
         a.district,
         a.city,
         a.lat,
-        a.lng,
-        a.maps_url
+        a.lng
     FROM places p
     JOIN addresses a ON p.address_id = a.id
-    WHERE a.city = $1
+    WHERE a.city = %s
       AND p.category = 'visit';
     """
-    rows = await pool.fetch(sql, city)
+    cursor.execute(sql, (city,))
+    rows = cursor.fetchall()
+
+
+    cursor.close()
+    db.close()
+
     return [row_to_place_lite(r) for r in rows]
