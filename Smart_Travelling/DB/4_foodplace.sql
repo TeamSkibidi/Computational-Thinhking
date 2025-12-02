@@ -14,8 +14,6 @@ CREATE TABLE IF NOT EXISTS food (
   popularity INT DEFAULT 0,
   image_url VARCHAR(500),
   tags JSON,
-  
-
   category ENUM('visit','eat','hotel') NOT NULL DEFAULT 'eat',
   cuisine_type VARCHAR(100),
   menu_url VARCHAR(500),
