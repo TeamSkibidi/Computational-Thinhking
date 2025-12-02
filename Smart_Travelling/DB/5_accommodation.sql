@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS accommodation (
   reviewCount INT DEFAULT 0,
   popularity INT DEFAULT 0,
   image_url VARCHAR(500),
+  phone VARCHAR(50),
   tags JSON,
   category ENUM('visit','eat','hotel') NOT NULL DEFAULT 'hotel',
   capacity INT,                 

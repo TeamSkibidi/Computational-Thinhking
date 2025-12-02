@@ -249,3 +249,37 @@ export function renderDayTimeline(dayData, direction = 'none') {
 
     if (!hasContent) container.innerHTML = `<div class="empty-state"><p>Không có hoạt động nào trong ngày này.</p></div>`;
 }
+
+
+// Trong hàm renderTagsSelection, thêm event listener cho mỗi tag:
+export async function renderTagsSelection(container, tags, activeTags = []) {
+    if (!container) return;
+    
+    container.innerHTML = '';
+    tags = JSON.parse(localStorage.getItem('tags')) || [];
+  
+    tags.forEach(tag => {
+        const btn = document.createElement('button');
+
+        btn.type = 'button';
+        btn.className = `tag-btn${activeTags.includes(tag) ? ' active' : ''}`;
+        btn.textContent = tag;
+        
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation(); // Ngăn đóng dropdown
+            btn.classList.toggle('active');
+            
+            // Cập nhật text hiển thị
+            if (typeof window.updateTagsSelectedText === 'function') {
+                window.updateTagsSelectedText();
+            }
+        });
+        
+        container.appendChild(btn);
+    });
+    
+    // Cập nhật text ban đầu
+    if (typeof window.updateTagsSelectedText === 'function') {
+        window.updateTagsSelectedText();
+    }
+}

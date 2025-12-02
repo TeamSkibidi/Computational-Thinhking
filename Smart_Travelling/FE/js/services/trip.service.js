@@ -27,3 +27,6 @@ export let currentConfig = {
 export function updateConfig(newConfig) {
     currentConfig = newConfig;
 }
+
+
+

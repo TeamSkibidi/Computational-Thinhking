@@ -11,17 +11,20 @@ import {
 } from "../ui/trip.render.js";
 
 import { tripRecommand } from "../api/recommandApi.js";
+import { getTags } from "../api/tagsApi.js";
 document.addEventListener('DOMContentLoaded', () => init());
 
 // === STATE ===
 let generatedTripData = [];
 let activeDayIndex = 0;
+let cachedTags = []; // Thêm biến lưu cache tags
 
 // === MAIN LOGIC ===
 async function init() {
     // 1. GẮN SỰ KIỆN CHO CÁC NÚT (Event Listeners)
-    
     // Nút: Tạo Lịch Trình
+    await setupTagsDropdown();
+
     const btnCreateTrip = document.getElementById('btnCreateTrip');
     if (btnCreateTrip) {
         btnCreateTrip.addEventListener('click', saveAndGenerate);
@@ -181,10 +184,30 @@ async function saveAndGenerate() {
 }
 
 // Modal Cấu Hình
-function toggleModal(show) {
+async function toggleModal(show) {
     const modal = document.getElementById('configModal');
-    if(show) {
-        initForm();
+    
+    if (show) {
+        // Fetch tags trước khi mở modal
+        try {
+            const result = await getTags();
+            // Kiểm tra cấu trúc response
+            if (result && result.data) {
+                cachedTags = result.data;
+            } else if (Array.isArray(result)) {
+                cachedTags = result;
+            } else {
+                cachedTags = AVAILABLE_TAGS; // fallback
+            }
+            localStorage.setItem("tags", JSON.stringify(cachedTags));
+        } catch (error) {
+            console.error("Failed to fetch tags:", error);
+            // Fallback: lấy từ localStorage hoặc dùng default
+            const stored = localStorage.getItem("tags");
+            cachedTags = stored ? JSON.parse(stored) : AVAILABLE_TAGS;
+        }
+        
+        await initForm();
         modal.style.display = 'flex';
         setTimeout(() => modal.classList.add('open'), 10);
         document.body.style.overflow = 'hidden';
@@ -198,23 +221,30 @@ function toggleModal(show) {
 }
 // Hàm khởi tạo form với dữ liệu hiện tại
 function initForm() {
-    // ĐIỀN dữ liệu từ currentConfig VÀO các ô input (SỬA 3 DÒNG NÀY)
+    // ĐIỀN dữ liệu từ currentConfig VÀO các ô input
     document.getElementById('inputCity').value = currentConfig.city;
     document.getElementById('inputStartDate').value = currentConfig.start_date;
     document.getElementById('inputNumDays').value = currentConfig.num_days;
 
-    // Render Tags (Giữ nguyên)
+    // Render Tags - Sử dụng cachedTags thay vì AVAILABLE_TAGS
     const tagContainer = document.getElementById('tagSelectionArea');
     tagContainer.innerHTML = '';
-    AVAILABLE_TAGS.forEach(tag => {
-        const isActive = currentConfig.preferred_tags.includes(tag);
-        const btn = document.createElement('button');
-        btn.className = `tag-btn ${isActive ? 'active' : ''}`;
-        btn.textContent = "#" + tag;
-        btn.onclick = () => btn.classList.toggle('active');
-        btn.dataset.tag = tag;
-        tagContainer.appendChild(btn);
-    });
+    
+    // Lấy tags từ cache hoặc localStorage
+    const tagsToRender = cachedTags.length > 0 
+        ? cachedTags 
+        : JSON.parse(localStorage.getItem('tags') || '[]');
+    
+    if (tagsToRender.length === 0) {
+        // Fallback nếu không có tags
+        console.warn("No tags available, using defaults");
+        AVAILABLE_TAGS.forEach(tag => renderTagButton(tagContainer, tag));
+    } else {
+        tagsToRender.forEach(tag => renderTagButton(tagContainer, tag));
+    }
+    
+    // Cập nhật text hiển thị
+    updateTagsSelectedText();
 
     // Render Time Config (Giữ nguyên)
     const timeContainer = document.getElementById('timeConfigContainer');
@@ -246,6 +276,23 @@ function initForm() {
         timeContainer.appendChild(div);
     });
 }
+function renderTagButton(container, tag) {
+    const isActive = currentConfig.preferred_tags.includes(tag);
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = `tag-btn ${isActive ? 'active' : ''}`;
+    btn.textContent = "#" + tag;
+    btn.dataset.tag = tag;
+    
+    btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        btn.classList.toggle('active');
+        updateTagsSelectedText();
+    });
+    
+    container.appendChild(btn);
+}
+
 
 // Hàm gắn sự kiện cho sidebar
 function setupSidebarEvents() {
@@ -290,8 +337,6 @@ if (localStorage.getItem('darkMode') === 'enabled') {
     document.body.classList.add('dark-mode');
 }
 
-
-
 // Hàm xử lý khi chuyển ngày
 function handleDayChange(newIndex) {
     if (newIndex < 0 || newIndex >= generatedTripData.length) return;
@@ -302,6 +347,91 @@ function handleDayChange(newIndex) {
     renderDayTimeline(generatedTripData[newIndex], direction);
     renderDayNavigator(generatedTripData, activeDayIndex, handleDayChange);
 }
+
+// === TAGS DROPDOWN FUNCTIONS ===
+function setupTagsDropdown() {
+    const trigger = document.getElementById('tagsTrigger');
+    const dropdown = document.getElementById('tagsDropdown');
+    
+    if (!trigger || !dropdown) return;
+    
+    // Toggle khi click trigger
+    trigger.addEventListener('click', (e) => {
+        e.stopPropagation();
+        toggleTagsDropdown();
+    });
+    
+    // Đóng khi click ra ngoài
+    document.addEventListener('click', (e) => {
+        if (!trigger.contains(e.target) && !dropdown.contains(e.target)) {
+            closeTagsDropdown();
+        }
+    });
+    
+    // Ngăn đóng khi click trong dropdown
+    dropdown.addEventListener('click', (e) => {
+        e.stopPropagation();
+    });
+}
+
+function toggleTagsDropdown() {
+    const trigger = document.getElementById('tagsTrigger');
+    const dropdown = document.getElementById('tagsDropdown');
+    
+    if (!trigger || !dropdown) return;
+    
+    const isOpen = dropdown.classList.contains('open');
+    
+    if (isOpen) {
+        closeTagsDropdown();
+    } else {
+        openTagsDropdown();
+    }
+}
+
+function openTagsDropdown() {
+    const trigger = document.getElementById('tagsTrigger');
+    const dropdown = document.getElementById('tagsDropdown');
+    
+    if (!trigger || !dropdown) return;
+    
+    trigger.classList.add('active');
+    dropdown.classList.add('open');
+}
+
+function closeTagsDropdown() {
+    const trigger = document.getElementById('tagsTrigger');
+    const dropdown = document.getElementById('tagsDropdown');
+    
+    if (!trigger || !dropdown) return;
+    
+    trigger.classList.remove('active');
+    dropdown.classList.remove('open');
+}
+
+function updateTagsSelectedText() {
+    const textEl = document.getElementById('tagsSelectedText');
+    if (!textEl) return;
+    
+    // Lấy các tags đã chọn
+    const selectedTags = document.querySelectorAll('#tagSelectionArea .tag-btn.active');
+    
+    if (selectedTags.length === 0) {
+        textEl.textContent = 'Chọn phong cách du lịch...';
+        textEl.classList.remove('has-selection');
+    } else if (selectedTags.length <= 3) {
+        const tagNames = Array.from(selectedTags).map(t => t.textContent.trim());
+        textEl.textContent = tagNames.join(', ');
+        textEl.classList.add('has-selection');
+    } else {
+        textEl.textContent = `Đã chọn ${selectedTags.length} phong cách`;
+        textEl.classList.add('has-selection');
+    }
+}
+
+// Export để dùng trong trip.render.js
+window.updateTagsSelectedText = updateTagsSelectedText;
+
 
 // Nút mũi tên trái/phải
 window.changeDay = (offset) => handleDayChange(activeDayIndex + offset);

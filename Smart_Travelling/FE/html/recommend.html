@@ -33,18 +33,6 @@
         <div class="nav-item" id="navItemSaved">
             <i class="fa-regular fa-bookmark"></i><span class="nav-text">Đã lưu</span>
         </div>
-        
-        <!-- Mục 4: Tài khoản -->
-        <div class="nav-item" id="navItemAccount">
-            <i class="fa-regular fa-user"></i><span class="nav-text">Tài khoản</span>
-        </div>
-        
-        <div class="nav-divider"></div>
-        
-        <!-- Mục 5: Giao diện -->
-        <div class="nav-item" id="navItemTheme">
-            <i class="fa-solid fa-moon" id="themeIcon"></i><span class="nav-text">Giao diện</span>
-        </div>
     </nav>
 
     <!-- === MAIN CONTENT === -->
@@ -71,10 +59,6 @@
                     </div>
                 </div>
             </div>
-            
-            <button onclick="toggleModal(true)" class="btn-floating-config">
-                <i class="fa-solid fa-sliders"></i>
-            </button>
         </div>
 
         <div class="container main-body">
@@ -133,9 +117,19 @@
                     </div>
                 </section>
                 
-                <section>
+                 <section>
                     <h3 class="section-title">Sở Thích</h3>
-                    <div class="tags-container" id="tagSelectionArea"></div>
+                    <div class="tags-field">
+                        <div id="tagsTrigger" class="tags-trigger">
+                            <span id="tagsSelectedText" class="tags-placeholder">Chọn phong cách du lịch...</span>
+                            <i class="fa-solid fa-chevron-down tags-arrow"></i>
+                        </div>
+                        <div id="tagsDropdown" class="tags-dropdown">
+                            <div class="tags-list" id="tagSelectionArea">
+                                <!-- Tags will be injected here by JavaScript -->
+                            </div>
+                        </div>
+                    </div>
                 </section>
 
                 <section>
