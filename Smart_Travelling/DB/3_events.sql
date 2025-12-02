@@ -5,7 +5,6 @@ CREATE TABLE IF NOT EXISTS events (
     city VARCHAR(100) NOT NULL,
     region VARCHAR(100),
     
-    
     lat DECIMAL(10, 7),
     lng DECIMAL(10, 7),
 
@@ -19,7 +18,7 @@ CREATE TABLE IF NOT EXISTS events (
     price_vnd BIGINT,
     popularity INT DEFAULT 0,
 
-    source VARCHAR(100) NOT NULL,              -- tên API / provider
+    source VARCHAR(100) NOT NULL,    
 
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -28,3 +27,4 @@ CREATE TABLE IF NOT EXISTS events (
     INDEX idx_events_city_date (city, start_datetime, end_datetime),
     INDEX idx_events_city_session (city, session)
     );
+    

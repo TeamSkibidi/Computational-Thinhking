@@ -1,20 +1,82 @@
 import { BLOCK_CONFIG } from "../services/trip.service.js";
 
+// Hàm format tiền tệ
+function formatCurrency(amount) {
+    if (amount >= 1000000) {
+        return (amount / 1000000).toFixed(1) + 'M';
+    } else if (amount >= 1000) {
+        return (amount / 1000).toFixed(0) + 'K';
+    }
+    return amount.toString();
+}
+
+// Hàm parse giá tiền từ string
+function parsePrice(priceStr) {
+    if (!priceStr) return 0;
+    if (typeof priceStr === 'number') return priceStr;
+    // Loại bỏ các ký tự không phải số
+    const numStr = priceStr.toString().replace(/[^0-9]/g, '');
+    return parseInt(numStr) || 0;
+}
+
+// Tính tổng chi phí của một ngày
+function calculateDayCost(dayData) {
+    if (!dayData || !dayData.blocks) return 0;
+    
+    let total = 0;
+    Object.values(dayData.blocks).forEach(items => {
+        if (Array.isArray(items)) {
+            items.forEach(item => {
+                total += parsePrice(item.price_vnd);
+            });
+        }
+    });
+    return total;
+}
+
+// Tính tổng chi phí toàn bộ chuyến đi
+export function calculateTotalCost(days) {
+    if (!Array.isArray(days)) return 0;
+    return days.reduce((sum, day) => sum + calculateDayCost(day), 0);
+}
+
+// Đếm tổng số điểm đến
+export function countTotalPlaces(days) {
+    if (!Array.isArray(days)) return 0;
+    let count = 0;
+    days.forEach(day => {
+        if (day.blocks) {
+            Object.values(day.blocks).forEach(items => {
+                if (Array.isArray(items)) {
+                    count += items.length;
+                }
+            });
+        }
+    });
+    return count;
+}
+
 // Render thông tin Header (Thành phố, Ngày, Tags)
-export function renderHeaderInfo(config) {
+export function renderHeaderInfo(config, days = null) {
     document.getElementById('displayCity').textContent = config.city;
     const dParts = config.start_date.split('-');
     document.getElementById('displayDate').textContent = `${dParts[2]}/${dParts[1]}/${dParts[0]}`;
     document.getElementById('displayDuration').textContent = `${config.num_days} Ngày`;
     
-    const tagContainer = document.getElementById('displayTags');
-    tagContainer.innerHTML = '';
-    config.preferred_tags.forEach(tag => {
-        const span = document.createElement('span');
-        span.className = "tag-badge";
-        span.textContent = "#" + tag;
-        tagContainer.appendChild(span);
-    });
+    // Cập nhật tổng chi phí và số điểm đến nếu có dữ liệu
+    if (days) {
+        const totalCost = calculateTotalCost(days);
+        const totalPlaces = countTotalPlaces(days);
+        
+        const displayTotal = document.getElementById('displayTotal');
+        const displayTotalCost = document.getElementById('displayTotalCost');
+        
+        if (displayTotal) displayTotal.textContent = totalPlaces;
+        if (displayTotalCost) {
+            // Format số tiền với dấu phẩy
+            displayTotalCost.textContent = totalCost.toLocaleString('vi-VN');
+        }
+    }
 }
 
 // Render thanh điều hướng ngày (Day Navigator)
@@ -57,10 +119,15 @@ export function renderDayNavigator(dataOrDays, activeIndex, onDayClick) {
         };
 
         const dateText = day.date || day.date_str || ''; // tùy server trả về
+        
+        // Tính tổng chi phí ngày
+        const dayCost = calculateDayCost(day);
+        const formattedCost = formatCurrency(dayCost);
 
         btn.innerHTML = `
             <span class="step-label">Ngày ${index + 1}</span>
             <span class="step-date">${dateText}</span>
+            <span class="step-cost">${formattedCost}</span>
         `;
         nav.appendChild(btn);
 
@@ -169,8 +236,8 @@ export function renderDayTimeline(dayData, direction = 'none') {
                             </div>
                         </div>
                         <div class="card-meta">
-                            <span class="card-meta-item"><i class="fa-regular fa-clock"></i> 60'</span>
-                            <span class="card-meta-item"><i class="fa-solid fa-money-bill-1-wave"></i> 50k</span>
+                            <span class="card-meta-item"><i class="fa-regular fa-clock"></i> ${item.dwell_min}</span>
+                            <span class="card-meta-item"><i class="fa-solid fa-money-bill-1-wave"></i> ${item.price_vnd}</span>
                         </div>
                     </div>
                 `;
