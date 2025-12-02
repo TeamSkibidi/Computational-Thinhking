@@ -18,7 +18,6 @@ class Place(BaseModel):
     tags: List[str] = Field(default_factory=list)
     address: Optional[Address] = None
     
-
     # Hàm chuyển đổi chung
     def to_dict(self) -> dict:
         return self.model_dump()

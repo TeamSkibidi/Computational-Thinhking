@@ -1,9 +1,9 @@
 from typing import List
+import json
 from app.domain.entities.place_lite import PlaceLite
 from app.domain.entities.Address import Address
 from app.infrastructure.database.connectdb import get_db
 from app.config.setting import IMAGE_BASE_URL
-import json
 
 def row_to_place_lite(row) -> PlaceLite:
     addr = Address(
@@ -21,6 +21,8 @@ def row_to_place_lite(row) -> PlaceLite:
             tags = json.loads(tags)
         except json.JSONDecodeError:
             tags = []
+    print(row["priceVND"])
+    
     return PlaceLite(
         id=row["id"],
         name=row["name"],
@@ -39,7 +41,7 @@ def row_to_place_lite(row) -> PlaceLite:
         category=row["category"],    
         address=addr,
     )
-async def fetch_place_lites_by_city(city: str) -> List[PlaceLite]:
+def fetch_place_lites_by_city(city: str) -> List[PlaceLite]:
     
      # Lấy connection đến database
     db = get_db()
