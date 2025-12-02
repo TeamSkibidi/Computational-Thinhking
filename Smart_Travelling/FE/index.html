@@ -37,6 +37,12 @@
         <span>Khám phá điểm đến</span>
     </button>
 
+    <!-- Nút Sự kiện / Lễ hội -->
+    <button class="explore-button" id="explore-btn">
+        <span class="material-icons">celebration</span>
+        <span>Sự kiện / Lễ hội</span>
+    </button>
+
     <!-- Nút Tìm đường đi -->
     <button class="route-button" id="route-btn">
         <span class="material-icons">directions</span>
@@ -166,7 +172,66 @@
             allowfullscreen
             loading="lazy">
         </iframe>
-    </div>
+
+
+    <!-- Section Sự kiện / Lễ hội -->
+    <section id="events-section" class="events-section hidden">
+        <h2>Sự kiện / Lễ hội</h2>
+
+        <div class="events-filters">
+            <label>
+                Thành phố
+                <input id="city-input" type="text" placeholder="Hà Nội, Đà Nẵng, TP.HCM..." />
+            </label>
+
+            <label>
+                Ngày
+                <input id="date-input" type="date" />
+            </label>
+
+            <label>
+                Buổi
+                <select id="session-select">
+                    <option value="">Tất cả</option>
+                    <option value="morning">Buổi sáng</option>
+                    <option value="afternoon">Buổi chiều</option>
+                    <option value="evening">Buổi tối</option>
+                    <option value="full_day">Cả ngày</option>
+                </select>
+            </label>
+
+            <label>
+                Giá tối đa (VND)
+                <input id="price-input" type="number" min="0" step="10000" />
+            </label>
+
+            <label>
+                Khoảng cách tối đa (km)
+                <input id="max-distance-input" type="number" min="1" step="1" />
+            </label>
+
+            <label class="gps-checkbox">
+                <input id="use-gps-checkbox" type="checkbox" />
+                Dùng vị trí hiện tại (GPS)
+            </label>
+
+            <button id="search-btn" class="events-search-btn">Tìm sự kiện</button>
+        </div>
+
+        <div id="events-status" class="events-status"></div>
+
+        <div id="events-list" class="events-list">
+            <!-- JS render card lễ hội vào đây -->
+        </div>
+
+        <!-- Khung chi tiết sự kiện -->
+        <div id="event-detail-section" class="event-detail-section hidden">
+            <div class="event-detail-box">
+                <button id="close-detail-btn" class="close-detail-btn">Đóng</button>
+                <div id="event-detail-container"></div>
+            </div>
+        </div>
+    </section>
 
     <!-- JavaScript File -->
     <script src="script.js"></script>

@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hồ sơ người dùng</title>
+    <link rel="stylesheet" href="../css/profile.css">
+</head>
+<body>
+
+    <!-- Nếu sau này cần navbar thì bỏ comment khối này -->
+    <!--
+    <nav class="navbar">
+        <a href="#" class="brand"><i class="ph ph-nut"></i> UserSettings</a>
+        <div class="user-menu">
+            <span>Nguyễn Văn A</span>
+            <img src="../image/avatar.png" alt="Avatar">
+        </div>
+    </nav>
+    -->
+
+    <div class="container">
+        <aside class="sidebar">
+            <ul class="nav-links">
+                <li>
+                    <a href="#" class="nav-link active" onclick="switchTab('tab-general', this)">
+                        <i class="ph ph-user"></i> Thông tin chung
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="nav-link" onclick="switchTab('tab-security', this)">
+                        <i class="ph ph-shield-check"></i> Bảo mật & Đăng nhập
+                    </a>
+                </li>
+              
+                <li>
+                    <a href="#" class="nav-link" style="color: var(--danger);" onclick="logout()">
+                        <i class="ph ph-sign-out"></i> Đăng xuất
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <main class="main-content">
+            <!-- TAB: THÔNG TIN CHUNG -->
+            <div id="tab-general" class="content-section active">
+                <div class="card">
+
+                    <!-- Username + role -->
+                    <div class="profile-header">
+                        <h2 id="profileUsername" class="profile-username">Username</h2>
+                        <span id="profileRole" class="profile-role">user</span>
+                    </div>
+
+                    
+                    <div class="divider"></div>
+
+                    <!-- EMAIL VIEW -->
+                    <div class="info-row">
+                        <div>
+                            <label>Email</label>
+                            <p id="emailText" class="info-text">Chưa có email</p>
+                        </div>
+                        <button id="editEmailBtn" type="button" class="btn btn-outline btn-sm">Chỉnh sửa</button>
+                    </div>
+
+                    <!-- EMAIL EDIT (ẩn mặc định) -->
+                    <div id="emailEditBox" class="edit-box hidden">
+                        <div id="oldEmailBox" class="old-value hidden">
+                            <label>Email cũ</label>
+                            <input id="oldEmailInput" type="email" class="form-control" disabled>
+                        </div>
+
+                        <label>Email mới</label>
+                        <input id="newEmailInput" type="email" class="form-control" placeholder="Nhập email mới">
+
+                        <div class="edit-actions">
+                            <button id="saveEmailBtn" type="button" class="btn btn-primary btn-sm">Lưu</button>
+                            <button id="cancelEmailBtn" type="button" class="btn btn-outline btn-sm">Hủy</button>
+                        </div>
+                    </div>
+
+                    <div class="divider"></div>
+
+                    <!-- PHONE VIEW -->
+                    <div class="info-row">
+                        <div>
+                            <label>Số điện thoại</label>
+                            <p id="phoneText" class="info-text">Chưa có số điện thoại</p>
+                        </div>
+                        <button id="editPhoneBtn" type="button" class="btn btn-outline btn-sm">Chỉnh sửa</button>
+                    </div>
+
+                    <!-- PHONE EDIT (ẩn mặc định) -->
+                    <div id="phoneEditBox" class="edit-box hidden">
+                        <div id="oldPhoneBox" class="old-value hidden">
+                            <label>Số điện thoại cũ</label>
+                            <input id="oldPhoneInput" type="text" class="form-control" disabled>
+                        </div>
+
+                        <label>Số điện thoại mới</label>
+                        <input id="newPhoneInput" type="text" class="form-control" placeholder="Nhập SĐT mới">
+
+                        <div class="edit-actions">
+                            <button id="savePhoneBtn" type="button" class="btn btn-primary btn-sm">Lưu</button>
+                            <button id="cancelPhoneBtn" type="button" class="btn btn-outline btn-sm">Hủy</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- TAB: BẢO MẬT & ĐĂNG NHẬP -->
+            <div id="tab-security" class="content-section">
+                <div class="card">
+                    <h2 class="section-title">Đăng nhập & Bảo mật</h2>
+                    <p class="section-desc">Quản lý mật khẩu</p>
+
+                   
+
+                    <div class="divider"></div>
+
+                    <h3 class="section-title">Đổi mật khẩu</h3>
+                    <form class="form-grid" style="grid-template-columns: 1fr;">
+                        <div class="form-group">
+                            <label>Mật khẩu hiện tại</label>
+                            <input id="oldPasswordInput" type="password" class="form-control" placeholder="••••••••">
+                        </div>
+                        <div class="form-group">
+                            <label>Mật khẩu mới</label>
+                            <input id="newPasswordInput" type="password" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label>Xác nhận mật khẩu mới</label>
+                            <input id="reNewPasswordInput" type="password" class="form-control">
+                        </div>
+                    </form>
+                    <div style="margin-top: 20px; text-align: right;">
+                        <button id="changePasswordBtn" type="button" class="btn btn-primary">Cập nhật mật khẩu</button>
+                    </div>
+                </div>
+
+            </div>
+
+            
+        </main>
+    </div>
+
+    <script type="module" src="../js/pages/profile.js"></script>
+</body>
+</html>
