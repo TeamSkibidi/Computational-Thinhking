@@ -25,11 +25,8 @@ CREATE TABLE IF NOT EXISTS events (
   price_vnd  BIGINT,
   popularity INT DEFAULT 0,
 
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-
-  -- unique theo external_id + source
-  UNIQUE KEY uq_events_external (external_id, source),
+  -- unique theo external_id 
+  UNIQUE KEY uq_events_external (external_id),
 
   -- index giống addresses (chỉ city)
   INDEX idx_events_city (city),

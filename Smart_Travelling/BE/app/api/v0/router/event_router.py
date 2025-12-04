@@ -1,12 +1,16 @@
+from typing import Dict
 
-from datetime import date
-from typing import List, Optional
-
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends
 
 from app.application.services.event_service import EventService
-from Smart_Travelling.BE.app.adapters.repositories.event_repository import MySQLEventRepository
-from app.api.schemas.event import EventOut  
+from app.adapters.repositories.event_repository import MySQLEventRepository
+from app.api.schemas.event.event_request import (
+    EventSearchByNameRequest,
+    EventListRequest,
+    EventRecommendationRequest
+)
+from app.api.schemas.event.event_response import EventOut
+from app.utils.response_format import success, error
 
 
 router = APIRouter(prefix="/events", tags=["events"])
@@ -17,62 +21,80 @@ def get_event_service() -> EventService:
     return EventService(repo)
 
 
-@router.get("/recommendations", response_model=List[EventOut])
-def get_recommendations(
-    city: str,
-    target_date: date,
-    session: Optional[str] = None,
-    price: Optional[int] = None,
-    lat: Optional[float] = Query(None, ge=-90, le=90),
-    lng: Optional[float] = Query(None, ge=-180, le=180),
-    max_distance_km: Optional[float] = Query(None, gt=0),
-    svc: EventService = Depends(get_event_service),
-):
-    events = svc.recommend_events(
-        city=city,
-        target_date=target_date,
-        session=session,
-        price=price,
-        user_lat=lat,
-        user_lng=lng,
-        max_distance_km=max_distance_km,
-    )
-    return [EventOut.from_entity(e) for e in events]
-
-
-@router.get("/search-by-name", response_model=List[EventOut])
+@router.get("/search-by-name")
 def search_events_by_name(
-    keyword: str = Query(..., min_length=1, description="Tên lễ hội cần tìm"),
-    limit: int = Query(5, ge=1, le=20),
+    params: EventSearchByNameRequest = Depends(),
     svc: EventService = Depends(get_event_service),
-):
+) -> Dict:
+    """
+    Tìm kiếm sự kiện / lễ hội theo tên.
+    """
+    try:
+        events = svc.search_events_by_name(
+            keyword=params.keyword,
+            limit=params.limit,
+        )
+        data = [EventOut.from_entity(e) for e in events]
+        return success("Tìm kiếm sự kiện thành công", data=data)
+    except ValueError as e:
+        return error(str(e))
 
-    events = svc.search_events_by_name(keyword=keyword, limit=limit)
-    return [EventOut.from_entity(e) for e in events]
+@router.get("/list_event")
+def list_events(
+    params: EventListRequest = Depends(),
+    svc: EventService = Depends(get_event_service),
+) -> Dict:
+    """
+    Liệt kê danh sách sự kiện theo city, date, session, có thể sort.
+    """
+    try:
+        events = svc.list_events(
+            city=params.city,
+            target_date=params.target_date,
+            session=params.session,
+            sort=params.sort,
+        )
+        data = [EventOut.from_entity(e) for e in events]
+        return success("Lấy danh sách sự kiện thành công", data=data)
+    except ValueError as e:
+        return error(str(e))
 
 
-@router.get("/{event_id}", response_model=EventOut)
+@router.get("/recommendations")
+def get_recommendations ( 
+    params: EventRecommendationRequest = Depends(),
+    svc: EventService = Depends(get_event_service),
+) -> Dict :
+    """
+    Liệt kê danh sách sự kiện theo city, date, session, có thể sort.
+    """
+    try:
+        events = svc.recommend_events (
+                city = params.city,
+                target_date = params.target_date,
+                session = params.session,
+                user_lng = params.lng,
+                user_lat = params.lat
+            )
+        data = [EventOut.from_entity(e) for e in events]
+        return success("Lấy danh sách sự kiện gợi ý thành công", data=data)
+    except ValueError as e:
+        return error(str(e))
+    
+
+@router.get("/detail/{event_id}")
 def get_event(
     event_id: int,
     svc: EventService = Depends(get_event_service),
-):
-    event = svc.get_event(event_id)
-    if not event:
-        raise HTTPException(status_code=404, detail="Event not found")
-    return EventOut.from_entity(event)
-
-
-
-@router.get("/", response_model=List[EventOut])
-def list_events(
-    city: str,
-    target_date: date,
-    session: Optional[str] = None,
-    sort: Optional[str] = Query(
-        None,
-        description="price_asc | price_desc | popularity_desc",
-    ),
-    svc: EventService = Depends(get_event_service),
-):
-    events = svc.list_events(city, target_date, session, sort)
-    return [EventOut.from_entity(e) for e in events]
+) -> Dict:
+    """
+    Lấy chi tiết một sự kiện cụ thể.
+    """
+    try:
+        event = svc.get_event(event_id)
+        if not event:
+            return error("Event not found")
+        data = EventOut.from_entity(event)
+        return success("Lấy chi tiết sự kiện thành công", data=data)
+    except ValueError as e:
+        return error(str(e))
