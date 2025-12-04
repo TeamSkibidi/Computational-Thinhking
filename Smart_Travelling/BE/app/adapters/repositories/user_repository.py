@@ -63,10 +63,7 @@ def create_user(data: Dict) -> bool:
     return True
 
 
-
-
 # lấy tài khoản user bằng tên
-
 def get_user_by_username(username: str) -> Optional[Dict]:
     # Mỗi lần truy vấn thì mở kết nối DB
     db = get_db()

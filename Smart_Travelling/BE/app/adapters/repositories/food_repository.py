@@ -40,7 +40,7 @@ def row_to_food_place(row) -> FoodPlace:
         address=addr,
     )
 
-async def fetch_food_places_by_city(city: str) -> List[FoodPlace]:
+def fetch_food_places_by_city(city: str) -> List[FoodPlace]:
     
     # Lấy connection đến database
     db = get_db()

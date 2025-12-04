@@ -7,7 +7,7 @@ from app.adapters.repositories.accommodation_repository import fetch_accommodati
 from app.domain.entities.itinerary_spot import place_lite_to_spot, food_place_to_spot, accommodation_to_spot
 
 
-async def get_trip_itinerary(req: ItineraryRequest):
+def get_trip_itinerary(req: ItineraryRequest):
     """
     Tạo lịch trình chuyến đi dựa trên yêu cầu của người dùng.
     - Lấy dữ liệu địa điểm, ẩm thực, chỗ ở từ user
@@ -17,9 +17,9 @@ async def get_trip_itinerary(req: ItineraryRequest):
     #  Lấy dữ liệu từ DB
 
     
-    place_lites    = await fetch_place_lites_by_city(req.city)
-    food_places    = await fetch_food_places_by_city(req.city)
-    accommodations = await fetch_accommodations_by_city(req.city)
+    place_lites    =  fetch_place_lites_by_city(req.city)
+    food_places    =  fetch_food_places_by_city(req.city)
+    accommodations =  fetch_accommodations_by_city(req.city)
     
 
     # Convert sang ItinerarySpot

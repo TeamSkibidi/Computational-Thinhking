@@ -32,11 +32,6 @@ class BlockItem:
 
 
 """------- Các hàm tiện ích cho gợi ý lịch trình -------"""
-""" Hàm xây dựng URL hình ảnh từ tên hình ảnh lưu trong DB """
-def build_image_url(image_name: str | None) -> str | None:
-    if not image_name:
-        return None
-    return f"{IMAGE_BASE_URL}{image_name}"
 
 """ Hàm loại những địa điểm mà user không muốn tránh theo danh sách id"""
 def apply_avoid(spots: list[ItinerarySpot],
@@ -50,6 +45,7 @@ def apply_avoid(spots: list[ItinerarySpot],
         if s.id is None or s.id not in avoid_set
     ]
 
+
 """ Hàm sắp xếp địa điểm tham quan dựa trên sở thích người dùng """
 def visit_sort_key(spot, prefs, must_ids):
     return (
@@ -59,12 +55,14 @@ def visit_sort_key(spot, prefs, must_ids):
         spot.popularity or 0,              # phổ biến hơn
     )
 
+
 """Hàm set thời gian ở lại 1 địa điểm"""
 def estimate_dwell_minutes(spot: ItinerarySpot) -> int:
     if spot.dwell_min is not None:
         return spot.dwell_min
 
     return 90
+
 
 """ Lấy ID duy nhất của 1 địa điểm """
 def get_spot_unique_id(obj) -> str | None:
@@ -87,6 +85,7 @@ def get_spot_unique_id(obj) -> str | None:
             return str(val)
 
     return None
+
 
 """ Lấy tập hợp ID của các địa điểm trong 1 ngày """
 def get_spot_ids_from_day(day_plan: DayItineraryResponse) -> set[str]:
@@ -123,7 +122,7 @@ def dedup_day_items_by_name(day_plan: DayItineraryResponse,
             if item.type in dedup_types and item.name:
                 key = f"{item.type}:{item.name}"
                 if key in seen_keys:
-                    
+
                     """ Đã thấy trùng, bỏ qua mục này """
                     continue
                 seen_keys.add(key)
@@ -142,6 +141,41 @@ def sort_spots_with_tags(
         key=lambda s: visit_sort_key(s, prefs, must_ids),
         reverse=True,
     )
+
+""" Tính tổng chí phí địa điểm tham quan và khách sạn trong ngày """
+def recompute_cost_summary_from_blocks(day_plan: DayItineraryResponse) -> None:
+    """Tính lại cost_summary dựa trên các block đã được dedupe."""
+    all_items = []
+    for items in day_plan.blocks.values():
+        all_items.extend(items)
+
+    total_attraction_cost = sum(
+        (item.price_vnd or 0)
+        for item in all_items
+        if item.type == "visit"
+    )
+
+    total_hotel_cost = sum(
+        (item.price_vnd or 0)
+        for item in all_items
+        if item.type == "hotel"
+    )
+
+    """ Tính tổng chi phí ăn uống """
+    total_food_cost = sum(
+        (item.price_vnd or 0)
+        for item in all_items
+        if item.type in ("eat", "food")
+    )
+
+    day_plan.cost_summary = CostSummaryResponse(
+        total_attraction_cost_vnd=total_attraction_cost,
+        total_accommodation_cost_vnd=total_hotel_cost,
+        total_trip_cost_vnd=(
+            total_attraction_cost + total_food_cost + total_hotel_cost
+        ),
+    )
+
 
 """ Lọc địa điểm phù hợp với giờ mở cửa trong ngày"""
 def filter_spots_for_block(
@@ -425,7 +459,7 @@ def build_visit_block(
             distance_from_prev_km=0.0,
             travel_from_prev_min=0,
             price_vnd=first_place.price_vnd,
-            image_url=build_image_url(first_place.image_url),
+            image_url=first_place.image_url,
         )
     )
 
@@ -496,7 +530,7 @@ def build_visit_block(
                 distance_from_prev_km=distance_km,
                 travel_from_prev_min=travel_min,
                 price_vnd=candidate.price_vnd,
-                image_url=build_image_url(candidate.image_url),
+                image_url=candidate.image_url,
             )
         )
 
@@ -505,8 +539,6 @@ def build_visit_block(
         last_end_time = candidate_end
 
     return items , last_place
-
-
 
 
 """"------- Build lịch trình cho cả ngày và chuyến đi -------"""
@@ -522,7 +554,9 @@ def build_day_itinerary(
     visit_spots = apply_avoid(visit_spots, context.avoid_place_ids)
     food_spots  = apply_avoid(food_spots, context.avoid_place_ids)
     hotel_spots = apply_avoid(hotel_spots, context.avoid_place_ids)
-    
+
+    used_visit_place_ids_in_day: set[int] = set()
+
     """ Morning """
     morning_candidates = filter_spots_for_block(
         visit_spots,
@@ -537,6 +571,11 @@ def build_day_itinerary(
         max_leg_km=context.max_leg_distance_km,
         context=context,
     )
+
+    used_visit_place_ids_in_day.update(
+        i.place_id for i in morning_items if i.place_id is not None
+    )
+
 
     """ Lunch """
     lunch_candidates = filter_spots_for_block(
@@ -566,6 +605,10 @@ def build_day_itinerary(
         context.afternoon_start,
         context.afternoon_end,
     )
+    afternoon_candidates = [
+        s for s in afternoon_candidates
+        if s.id not in used_visit_place_ids_in_day
+    ]
     afternoon_items, last_afternoon_spot = build_visit_block(
         block_start_min=context.afternoon_start,
         block_end_min=context.afternoon_end,
@@ -573,6 +616,9 @@ def build_day_itinerary(
         max_places_per_block=context.max_places_per_block,
         max_leg_km=context.max_leg_distance_km,
         context=context,
+    )
+    used_visit_place_ids_in_day.update(
+        i.place_id for i in afternoon_items if i.place_id is not None
     )
 
     """ Dinnner"""
@@ -605,6 +651,10 @@ def build_day_itinerary(
         context.evening_start,
         context.evening_end,
     )
+    evening_candidates = [
+        s for s in evening_candidates
+        if s.id not in used_visit_place_ids_in_day
+    ]
     if evening_candidates:
         evening_items, last_evening_spot = build_visit_block(
             block_start_min=context.evening_start,
@@ -613,6 +663,9 @@ def build_day_itinerary(
             max_places_per_block=1,   
             max_leg_km=context.max_leg_distance_km,
             context=context,
+        )
+        used_visit_place_ids_in_day.update(
+            i.place_id for i in evening_items if i.place_id is not None
         )
 
     """ Chọn khách sạn cho buổi tối"""
@@ -634,7 +687,7 @@ def build_day_itinerary(
             evening_items.append(h)
 
     """ Tính tổng chi phí tham quan trong ngày """
-    all_items = morning_items + lunch_items + afternoon_items + dinner_items +evening_items
+    all_items = morning_items + lunch_items + afternoon_items + dinner_items + evening_items
     total_attraction_cost = sum(
         i.price_vnd or 0
         for i in all_items
@@ -718,11 +771,13 @@ def build_trip_itinerary(
             food_spots=filtered_food_spots,
             hotel_spots=filtered_hotel_spots,
         )
-        days.append(day_plan)
 
-
+        """ Loại bỏ các địa điểm trùng trong cùng 1 ngày """
         dedup_day_items_by_name(day_plan, dedup_types={"visit", "food"})
 
+        """ Tính lại tổng chi phí sau khi dedupe """
+        recompute_cost_summary_from_blocks(day_plan)
+        days.append(day_plan)
 
         """ Cập nhật danh sách địa điểm đã dùng của các ngày TRƯỚC """
         for block_items in day_plan.blocks.values():
@@ -731,8 +786,8 @@ def build_trip_itinerary(
                 """ Cập nhật tên địa điểm đã dùng để tránh lặp lại giữa các ngày """
                 if item.type == "visit" and item.name:
                     used_visit_names.add(item.name)
-                # nếu muốn tránh trùng quán ăn giữa các ngày:
-                if item.type == "food" and item.name:
+                """ Cập nhật tên địa điểm ăn uống đã dùng """
+                if item.type == "eat" and item.name:
                     used_food_names.add(item.name)
 
         """ Lấy thông tin khách sạn buổi tối nếu không phải ngày cuối """

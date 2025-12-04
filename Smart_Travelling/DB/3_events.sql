@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS events (
   city   VARCHAR(100) NOT NULL,
   region VARCHAR(100),
 
-  -- align với bảng addresses: dùng DOUBLE cho lat/lng
+  -- align với bảng addresses
   lat DOUBLE,
   lng DOUBLE,
 
