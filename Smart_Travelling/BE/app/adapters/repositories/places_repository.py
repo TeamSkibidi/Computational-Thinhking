@@ -1,8 +1,10 @@
 from typing import List
+import json
 from app.domain.entities.place_lite import PlaceLite
 from app.domain.entities.Address import Address
 from app.infrastructure.database.connectdb import get_db
-import json
+from app.config.setting import IMAGE_BASE_URL
+
 
 
 def row_to_place_lite(row) -> PlaceLite:
@@ -25,7 +27,8 @@ def row_to_place_lite(row) -> PlaceLite:
         except json.JSONDecodeError:
             tags = []
 
-    # Map 1 dòng trong DB -> 1 PlaceLite
+    print(row["priceVND"])
+    
     return PlaceLite(
         id=row["id"],
         name=row["name"],
@@ -45,14 +48,9 @@ def row_to_place_lite(row) -> PlaceLite:
         address=addr,
     )
 
-
 def fetch_place_lites_by_city(city: str) -> List[PlaceLite]:
-    """
-    Lấy danh sách địa điểm tham quan (category = 'visit') theo thành phố.
-    Trả về list[PlaceLite].
-    """
-
-    # 1. Lấy connection tới DB
+    
+     # Lấy connection đến database
     db = get_db()
     if db is None:
         return []

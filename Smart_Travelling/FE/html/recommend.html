@@ -1,110 +1,165 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gợi ý địa điểm tham quan</title>
-  <link rel="stylesheet" href="../css/recommend.css">
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lịch Trình Thông Minh - Travel AI</title>
+    
+
+    <!-- Font Awesome (Local) -->
+    <link rel="stylesheet" href="../icons/fontawesome/css/all.min.css">
+   
+    <!-- Local Fonts -->
+    <link rel="stylesheet" href="../css/fonts.css">
+
+    <link rel="stylesheet" href="../css/trip_recommend.css">
+
 </head>
 <body>
-  <div class="app">
-    <!-- Header -->
-    <header class="header">
-      <div>
-        <h1>Gợi ý địa điểm tham quan</h1>
-        <p class="subtitle">
-          Nhập tên thành phố &amp; nhận ngẫu nhiên 5 địa điểm du lịch thú vị. 
-          Khi nhấn “Gợi ý lại”, hệ thống sẽ ưu tiên không lặp lại những nơi bạn đã xem.
-        </p>
-      </div>
-      <button class="btn btn-secondary" id="backToHomeBtn">← Về trang chính</button>
-    </header>
 
-    <!-- Search Panel -->
-    <section class="search-panel">
-      <div class="field-group">
-        <label for="cityInput">Thành phố</label>
-        <input
-          id="cityInput"
-          type="text"
-          class="input"
-          placeholder="Ví dụ: Hồ Chí Minh, Hà Nội, Đà Nẵng..."
-        />
-      </div>
+    <!-- === SIDEBAR NAVIGATION === -->
+    <nav class="gooey-nav" id="sidebarNav">
+        <div class="nav-blob" id="navBlob" style="top: 20px;"></div>
+        
+        <!-- Mục 1: Lịch trình -->
+        <div class="nav-item active" id="navItemSchedule">
+            <i class="fa-solid fa-map-location-dot"></i><span class="nav-text">Lịch trình</span>
+        </div>
+        
+        <!-- Mục 2: Cấu hình -->
+        <div class="nav-item" id="navItemConfig">
+            <i class="fa-solid fa-sliders"></i><span class="nav-text">Cấu hình</span>
+        </div>
+        
+        <!-- Mục 3: Đã lưu -->
+        <div class="nav-item" id="navItemSaved">
+            <i class="fa-regular fa-bookmark"></i><span class="nav-text">Đã lưu</span>
+        </div>
+        
+        <!-- Mục 4: Tài khoản -->
+        <div class="nav-item" id="navItemAccount">
+            <i class="fa-regular fa-user"></i><span class="nav-text">Tài khoản</span>
+        </div>
+        
+        <div class="nav-divider"></div>
+        
+        <!-- Mục 5: Giao diện -->
+        <div class="nav-item" id="navItemTheme">
+            <i class="fa-solid fa-moon" id="themeIcon"></i><span class="nav-text">Giao diện</span>
+        </div>
+    </nav>
 
-      <div class="search-actions">
-        <button class="btn btn-primary" id="recommendBtn">Gợi ý 5 địa điểm</button>
-        <button class="btn btn-ghost" id="resetSeenBtn">Xóa lịch sử gợi ý</button>
-      </div>
+    <!-- === MAIN CONTENT === -->
+    <div class="main-content">
+        <!-- Hero Section -->
+        <div class="hero">
+            <img src="https://images.unsplash.com/photo-1555921015-5532091f6026?q=80&w=1200" class="hero-bg">
+            <div class="hero-overlay"></div>
+            <div class="container hero-content">
+                <div class="hero-tag"><i class="fa-solid fa-star"></i> Trip Recommendation</div>
+                <h1 class="hero-title">Khám phá <span id="displayCity">Đà Nẵng</span></h1>
+                <div class="hero-subtitle">
+                    <i class="fa-regular fa-calendar"></i> <span id="displayDate">01/01/2024</span>
+                    <span class="mx-2">•</span>
+                    <i class="fa-solid fa-clock"></i> <span id="displayDuration">3 Ngày</span>
+                </div>
+                
+                <div class="hero-stats">
+                    <div class="stat-item">
+                        <i class="fa-solid fa-map-location-dot"></i> <span id="displayTotal">0</span> địa điểm
+                    </div>
+                    <div class="stat-item total-cost">
+                        <i class="fa-solid fa-coins"></i> <span id="displayTotalCost">0</span> VND
+                    </div>
+                </div>
+            </div>
+            
+            <button onclick="toggleModal(true)" class="btn-floating-config">
+                <i class="fa-solid fa-sliders"></i>
+            </button>
+        </div>
 
-      <p class="hint">
-        💡 Gợi ý được random, nhưng sẽ cố gắng không trùng lại với các địa điểm bạn đã xem cho đến khi hết dữ liệu.
-      </p>
+        <div class="container main-body">
+            <!-- Tags -->
+            <div class="tags-container" id="displayTags">
+                <!-- Tags will be injected here -->
+            </div>
+            
+            <!-- Day Navigator -->
+            <div class="day-nav-container">
+                <div class="day-nav-list" id="dayNavigator">
+                    <!-- Javascript will inject items here -->
+                </div>
+            </div>            
 
-      <div id="statusMessage" class="status-message"></div>
-    </section>
-
-    <!-- Loading overlay -->
-    <div id="loadingOverlay" class="loading-overlay hidden">
-      <div class="spinner"></div>
-      <span>Đang tải gợi ý...</span>
+            <!-- Timeline -->
+            <div class="timeline-container" id="timelineContainer">
+                <div class="empty-state">
+                    <i class="fa-solid fa-earth-asia" style="font-size: 3rem; color: var(--slate-200); margin-bottom: 1rem;"></i>
+                    <p style="color: var(--slate-500); font-size: 1.125rem;">Chào mừng! Hãy mở <strong style="color: var(--primary);">Cấu hình</strong> để tạo lịch trình đầu tiên của bạn.</p>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <!-- Results -->
-    <main class="results">
-      <h2 class="results-title">Danh sách địa điểm gợi ý</h2>
+    <!-- === MODAL === -->
+    <div id="configModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header" id ="inputRequest">
+                <div class="modal-title">
+                    <i class="fa-solid fa-sliders" style="color: var(--primary);"></i> Cấu Hình Chuyến Đi
+                </div>
+                <button onclick="toggleModal(false)" class="modal-close-btn"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <div class="modal-body custom-scrollbar">
+                <section>
+                    <h3 class="section-title">Thông Tin Cơ Bản</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Thành phố</label>
+                            <input type="text" id="inputCity" value="Hà Nội" class="form-input">
+                        </div>
+                        <div class="form-group">
+                            <label>Ngày bắt đầu</label>
+                            <input type="date" id="inputStartDate" class="form-input">
+                        </div>
+                        <div class="form-group">
+                            <label>Số ngày</label>
+                            <input type="number" id="inputNumDays" value="3" min="1" max="7" class="form-input">
+                        </div>
+                        <div class="form-group">
+                            <label>Số Người</label>
+                            <input type="number" id="inputNumPeople" value="1" min="1" max="10" class="form-input">
+                        </div>
+                    </div>
+                </section>
+                
+                <section>
+                    <h3 class="section-title">Sở Thích</h3>
+                    <div class="tags-container" id="tagSelectionArea"></div>
+                </section>
 
-      <div id="placesContainer" class="places-grid">
-        <!-- JS sẽ render card bằng template bên dưới -->
-      </div>
-
-      <div id="emptyMessage" class="empty-message hidden">
-        Chưa có địa điểm nào. Hãy nhập thành phố và nhấn "Gợi ý 5 địa điểm" nhé.
-      </div>
-
-      <!-- TEMPLATE CARD: chỉ khai báo 1 lần, JS sẽ clone -->
-      <template id="placeCardTemplate">
-        <div class="place-card">
-          <div class="place-header">
-            <div class="place-name js-place-name">Tên địa điểm</div>
-            <div class="place-badge js-place-id">#0</div>
-          </div>
-
-          <p class="place-summary js-place-summary">
-            Mô tả ngắn địa điểm...
-          </p>
-
-          <div class="place-meta">
-            <span class="meta-pill js-meta-rating hidden">
-              ⭐ <strong class="js-rating-value">4.5</strong>
-              <span class="js-review-count"> · 100 đánh giá</span>
-            </span>
-
-            <span class="meta-pill js-meta-price hidden">
-              💰 ~ <span class="js-price-value">100.000 VND</span>
-            </span>
-
-            <span class="meta-pill js-meta-time hidden">
-              🕒 <span class="js-time-range">08:00 - 22:00</span>
-            </span>
-
-            <span class="meta-pill js-meta-popularity hidden">
-              🔥 Độ phổ biến: <span class="js-popularity-value">80</span>
-            </span>
-          </div>
-
-          <div class="place-tags js-place-tags">
-            <!-- JS chèn tag <span class="tag">...</span> vào đây -->
-          </div>
-
-          <p class="place-address js-place-address">
-            📍 Địa chỉ chi tiết
-          </p>
+                <section>
+                    <h3 class="section-title">Khung Giờ Hoạt Động</h3>
+                    <div class="timeline-container" id="timeConfigContainer" style="gap: 0.75rem;"></div>
+                </section>
+            </div>
+            
+            
+            <div class="modal-footer">
+                <button class="btn btn-ghost" id="btnCancelConfig" onclick="toggleModal(false)">Hủy bỏ</button>
+                <button class="btn btn-primary" id="btnCreateTrip" type="button">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i> Tạo Lịch Trình
+                </button>
+            </div>
         </div>
-      </template>
-    </main>
-  </div>
+    </div>
 
-  <script type="module" src="../js/pages/recommend.js"></script>
+
+    <script type="module" src="../js/pages/trip_recommend.js"></script>
+
 </body>
 </html>
+

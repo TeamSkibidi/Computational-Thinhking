@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gợi ý địa điểm tham quan</title>
+  <link rel="stylesheet" href="../css/recommend.css">
+</head>
+<body>
+  <div class="app">
+    <!-- Header -->
+    <header class="header">
+      <div>
+        <h1>Gợi ý địa điểm tham quan</h1>
+        <p class="subtitle">
+          Nhập tên thành phố &amp; nhận ngẫu nhiên 5 địa điểm du lịch thú vị. 
+          Khi nhấn “Gợi ý lại”, hệ thống sẽ ưu tiên không lặp lại những nơi bạn đã xem.
+        </p>
+      </div>
+      <button class="btn btn-secondary" id="backToHomeBtn">← Về trang chính</button>
+    </header>
+
+    <!-- Search Panel -->
+    <section class="search-panel">
+      <div class="field-group">
+        <label for="cityInput">Thành phố</label>
+        <input
+          id="cityInput"
+          type="text"
+          class="input"
+          placeholder="Ví dụ: Hồ Chí Minh, Hà Nội, Đà Nẵng..."
+        />
+      </div>
+
+      <div class="search-actions">
+        <button class="btn btn-primary" id="recommendBtn">Gợi ý 5 địa điểm</button>
+        <button class="btn btn-ghost" id="resetSeenBtn">Xóa lịch sử gợi ý</button>
+      </div>
+
+      <p class="hint">
+        💡 Gợi ý được random, nhưng sẽ cố gắng không trùng lại với các địa điểm bạn đã xem cho đến khi hết dữ liệu.
+      </p>
+
+      <div id="statusMessage" class="status-message"></div>
+    </section>
+
+    <!-- Loading overlay -->
+    <div id="loadingOverlay" class="loading-overlay hidden">
+      <div class="spinner"></div>
+      <span>Đang tải gợi ý...</span>
+    </div>
+
+    <!-- Results -->
+    <main class="results">
+      <h2 class="results-title">Danh sách địa điểm gợi ý</h2>
+
+      <div id="placesContainer" class="places-grid">
+        <!-- JS sẽ render card bằng template bên dưới -->
+      </div>
+
+      <div id="emptyMessage" class="empty-message hidden">
+        Chưa có địa điểm nào. Hãy nhập thành phố và nhấn "Gợi ý 5 địa điểm" nhé.
+      </div>
+
+      <!-- TEMPLATE CARD: chỉ khai báo 1 lần, JS sẽ clone -->
+      <template id="placeCardTemplate">
+        <div class="place-card">
+          <div class="place-header">
+            <div class="place-name js-place-name">Tên địa điểm</div>
+            <div class="place-badge js-place-id">#0</div>
+          </div>
+
+          <p class="place-summary js-place-summary">
+            Mô tả ngắn địa điểm...
+          </p>
+
+          <div class="place-meta">
+            <span class="meta-pill js-meta-rating hidden">
+              ⭐ <strong class="js-rating-value">4.5</strong>
+              <span class="js-review-count"> · 100 đánh giá</span>
+            </span>
+
+            <span class="meta-pill js-meta-price hidden">
+              💰 ~ <span class="js-price-value">100.000 VND</span>
+            </span>
+
+            <span class="meta-pill js-meta-time hidden">
+              🕒 <span class="js-time-range">08:00 - 22:00</span>
+            </span>
+
+            <span class="meta-pill js-meta-popularity hidden">
+              🔥 Độ phổ biến: <span class="js-popularity-value">80</span>
+            </span>
+          </div>
+
+          <div class="place-tags js-place-tags">
+            <!-- JS chèn tag <span class="tag">...</span> vào đây -->
+          </div>
+
+          <p class="place-address js-place-address">
+            📍 Địa chỉ chi tiết
+          </p>
+        </div>
+      </template>
+    </main>
+  </div>
+
+  <script type="module" src="../js/pages/recommend.js"></script>
+</body>
+</html>
