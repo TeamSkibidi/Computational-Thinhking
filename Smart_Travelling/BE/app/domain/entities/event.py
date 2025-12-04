@@ -17,6 +17,6 @@ class Event:
     summary: Optional[str]
     activities: List[str]
     image_url: Optional[str]
-    price_vnd: Optional[str] # neu co gia ve vao cong 
+    price_vnd: Optional[int] # neu co gia ve vao cong 
     popularity: Optional[float]
-    source: str                 # tên API/provider
+    distance_km: Optional[float] = None                # tên API/provider

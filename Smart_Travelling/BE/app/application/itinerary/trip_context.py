@@ -7,7 +7,6 @@ from app.config.setting import (
     MAX_PLACES_PER_BLOCK_DEFAULT,
     MAX_LEG_DISTANCE_KM_DEFAULT,
 )
-
 """ tag cho địa điểm """
 @dataclass
 class UserPreferences:

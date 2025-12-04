@@ -1,0 +1,685 @@
+/* ========== EVENT PAGE========== */
+
+:root {
+    --book-width: 80vw; 
+    --book-height: 85vh;
+    --page-duration: 2s;
+
+    /* Màu mặc định (fallback) */
+    --theme-primary: #8B0000;
+    --theme-text: #FCD34D;
+    --theme-bg: #fffbf0;
+}
+
+body {
+    margin: 0;
+    overflow: hidden;
+    font-family: 'Merriweather', serif;
+    background-color: var(--theme-bg);
+    transition: background-color 2s ease;
+
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;  /* sách dính lên phía trên */
+    height: 100vh;
+
+    padding-top: 100px;       /* chừa chỗ cho navbar thôi, không quá nhiều */
+}
+
+/* --- Danh sách Sự Kiện/ Lễ Hội --- */
+/* --- Danh sách Sự Kiện/ Lễ Hội --- */
+.event-list-container {
+  width: var(--book-width);
+  height: var(--book-height);
+  margin-left: 120px;              /* trùng với book-wrapper để nằm cùng vị trí */
+  background: #ffffff;             /* trắng đặc, không trong suốt */
+  box-shadow:
+      0 30px 60px -10px rgba(0, 0, 0, 0.3),
+      0 10px 20px -5px rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+
+  padding: 32px 40px;
+  overflow-y: auto;
+  font-size: 14px;
+
+  display: none;                   /* mặc định ẩn, chỉ hiện khi enterListMode() */
+}
+
+
+
+/* Header của panel list */
+.event-list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.event-list-title-main {
+  font-weight: 600;
+  font-size: 15px;
+  color: #111827;
+}
+
+.event-list-back-btn {
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid #111827;
+  background: #fff;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.event-list-back-btn:hover {
+  background: #111827;
+  color: #fff;
+}
+
+/* card trong list */
+.event-row {
+  padding: 12px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.event-row-inner {
+  display: flex;
+  gap: 16px;
+}
+
+.event-thumb {
+  flex: 0 0 120px;              /* rộng cố định 120px */
+  height: 80px;
+  border-radius: 8px;
+  background-size: cover;
+  background-position: center;
+  background-color: #e5e7eb;    /* xám nhạt nếu chưa load được ảnh */
+}
+
+.event-info {
+  flex: 1;
+}
+
+.event-row:last-child {
+  border-bottom: none;
+}
+
+.event-row-title {
+  font-weight: 600;
+  font-size: 16px;
+  margin-bottom: 6px;
+}
+
+.event-row-field {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 3px;
+  font-size: 13px;
+}
+
+.event-label {
+  font-weight: 600;
+  color: #4b5563;
+}
+
+.event-value {
+  color: #111827;
+}
+
+.no-events-row {
+  text-align: center;
+}
+
+.no-events-row .event-row-title {
+  font-weight: 500;
+  font-size: 15px;
+  color: #6b7280; /* xám nhẹ */
+}
+
+
+/* --- THEME CLASSES (gán trực tiếp lên body) --- */
+.theme-tet {
+    --theme-primary: #D70018;
+    --theme-text: #FFD700;
+    --theme-bg: #fff0f0;
+}
+.theme-trungthu {
+    --theme-primary: #1e3a8a;
+    --theme-text: #fbbf24;
+    --theme-bg: #f0f4f8;
+}
+.theme-culture {
+    --theme-primary: #6b21a8;
+    --theme-text: #7e22ce;
+    --theme-bg: #f3e8ff;
+}
+.theme-river {
+    --theme-primary: #047857;
+    --theme-text: #059669;
+    --theme-bg: #ecfdf5;
+}
+.theme-dance {
+    --theme-primary: #b91c1c;
+    --theme-text: #fbbf24;
+    --theme-bg: #fff1f2;
+}
+
+/* --- KHUNG SÁCH CHÍNH --- */
+.book-wrapper {
+    width: var(--book-width);
+    height: var(--book-height);
+    position: relative;
+    display: flex;
+    perspective: 3000px;
+    background: #ffffff;
+    box-shadow:
+        0 30px 60px -10px rgba(0, 0, 0, 0.3),
+        0 10px 20px -5px rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+
+    margin-left: 120px; /* 👈 tăng/giảm số này để dịch sang phải nhiều/ít */
+}
+
+
+/* --- GÁY SÁCH (SPINE) --- */
+.book-spine {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 40px;
+    transform: translateX(-50%);
+    z-index: 30;
+    pointer-events: none;
+    background: linear-gradient(
+        to right,
+        rgba(0, 0, 0, 0) 0%,
+        rgba(0, 0, 0, 0.05) 20%,
+        rgba(0, 0, 0, 0.2) 45%,
+        rgba(0, 0, 0, 0.25) 50%,
+        rgba(0, 0, 0, 0.2) 55%,
+        rgba(0, 0, 0, 0.05) 80%,
+        rgba(0, 0, 0, 0) 100%
+    );
+}
+
+.book-spine::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: rgba(0, 0, 0, 0.15);
+}
+
+/* --- CẤU TRÚC TRANG TĨNH --- */
+.static-page {
+    width: 50%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    overflow: hidden;
+    background: var(--theme-bg);
+    transition: background 1s;
+}
+
+.static-left {
+    left: 0;
+    z-index: 1;
+}
+
+.static-right {
+    right: 0;
+    z-index: 1;
+}
+
+/* --- TRANG ĐANG LẬT (FLIPPER) --- */
+.flipper {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 50%;
+    height: 100%;
+    transform-origin: 0% 50%;
+    transform-style: preserve-3d;
+    z-index: 20;
+    pointer-events: none;
+}
+
+.flipper-face {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    backface-visibility: hidden;
+    overflow: hidden;
+    background: var(--theme-bg);
+    border-left: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.flipper-front {
+    z-index: 2;
+    transform: rotateY(0deg);
+}
+
+.flipper-front::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to left, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.3));
+    opacity: 0;
+    transition: opacity 0.5s;
+}
+
+.flipper-back {
+    z-index: 1;
+    transform: rotateY(180deg);
+}
+
+.flipper-back::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to right, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0));
+    opacity: 0;
+}
+
+/* --- ANIMATION TRANG LẬT --- */
+@keyframes flipStorybook {
+    0% {
+        transform: rotateY(0deg);
+    }
+    100% {
+        transform: rotateY(-180deg);
+    }
+}
+
+.is-flipping {
+    animation: flipStorybook var(--page-duration)
+        cubic-bezier(0.645, 0.045, 0.355, 1) forwards;
+}
+
+.is-flipping .flipper-front::after {
+    animation: shadowFront var(--page-duration)
+        cubic-bezier(0.645, 0.045, 0.355, 1) forwards;
+}
+
+.is-flipping .flipper-back::after {
+    animation: shadowBack var(--page-duration)
+        cubic-bezier(0.645, 0.045, 0.355, 1) forwards;
+}
+
+@keyframes shadowFront {
+    0% {
+        opacity: 0;
+    }
+    50% {
+        opacity: 0.4;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
+@keyframes shadowBack {
+    0% {
+        opacity: 0.4;
+    }
+    50% {
+        opacity: 0.1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
+/* --- CONTENT STYLES --- */
+.page-content {
+    height: 100%;
+    width: 100%;
+    position: relative;
+}
+
+.image-container {
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+}
+
+.image-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 40px;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+    color: #ffffff;
+}
+
+.text-container {
+    padding: 60px 50px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+/* --- NAVBAR --- */
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 20px 40px;
+    display: flex;
+    justify-content: space-between;
+    z-index: 100;
+    pointer-events: none;
+}
+
+.nav-content {
+    pointer-events: auto;
+}
+
+/* --- NÚT GLASS ĐEN --- */
+.btn-glass {
+    background: rgba(0, 0, 0, 0.05);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    color: #1f2937;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.3s;
+    cursor: pointer;
+}
+
+.btn-glass:hover {
+    background: #1f2937;
+    color: #ffffff;
+}
+
+/* --- HEADING FONT --- */
+h1 {
+    font-family: 'Playfair Display', serif;
+}
+
+/* --- PARTICLE (hoa, sao, lửa...) --- */
+.particle {
+    position: fixed;
+    pointer-events: none;
+    z-index: 60;
+    animation: floatDown linear forwards;
+}
+
+@keyframes floatDown {
+    to {
+        transform: translateY(100vh) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+
+/* Khi book-wrapper có class show-list:
+   - ẩn 2 trang + gáy sách
+   - hiện list container
+   - bỏ luôn shadow/khung sách cho cảm giác là 1 panel list riêng */
+.book-wrapper.show-list {
+  box-shadow: none;       /* 👈 không còn viền đổ bóng kiểu sách */
+  background: transparent;
+}
+
+.book-wrapper.show-list .static-page,
+.book-wrapper.show-list .book-spine {
+  display: none;
+}
+
+/* .book-wrapper.show-list .event-list-container {
+  display: block;
+} */
+
+
+/* ========== OVERLAY CHI TIẾT LỄ HỘI ========== */
+
+.event-detail-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: none;              /* ẩn mặc định */
+  align-items: center;
+  justify-content: center;
+}
+
+.event-detail-overlay.show {
+  display: flex;              /* khi thêm class .show sẽ hiện */
+}
+
+.event-detail-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(4px);
+}
+
+.event-detail-card {
+  position: relative;
+  max-width: 900px;
+  width: 80vw;
+  max-height: 80vh;
+  background: #fffdf7;
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.25);
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.event-detail-close-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  border: none;
+  background: rgba(0,0,0,0.05);
+  cursor: pointer;
+  font-size: 20px;
+}
+
+.event-detail-close-btn:hover {
+  background: rgba(0,0,0,0.15);
+}
+
+.event-detail-body {
+  display: flex;
+  flex-direction: row;
+}
+
+.event-detail-image {
+  flex: 0 0 40%;
+  min-height: 220px;
+  background-size: cover;
+  background-position: center;
+}
+
+.event-detail-info {
+  flex: 1;
+  padding: 24px;
+  overflow-y: auto;
+}
+
+.event-detail-title {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.event-detail-meta {
+  font-size: 14px;
+  color: #4b5563;
+  margin-bottom: 4px;
+}
+
+.event-detail-summary {
+  font-size: 14px;
+  color: #111827;
+  margin: 8px 0 12px;
+}
+
+.event-detail-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.event-detail-tag {
+  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: #f3f4f6;
+}
+
+.event-detail-fields {
+  font-size: 13px;
+  color: #374151;
+}
+
+.event-detail-field + .event-detail-field {
+  margin-top: 4px;
+}
+
+.event-detail-label {
+  font-weight: 600;
+}
+
+
+/* ========== PANEL LỌC ========== */
+
+.filter-panel.hidden {
+  display: none;
+}
+
+.filter-panel {
+  position: fixed;
+  top: 70px;      /* khoảng cách từ mép trên xuống – giữ nguyên cũng được */
+  left: 80px;     /* 👉 dịch sang dưới nút Filter bên trái */
+  right: auto;    /* nhớ xoá/ghi đè right đi */
+
+  z-index: 150;
+}
+
+.filter-panel-inner {
+  width: 260px;
+  background: #fffdf7;
+  border-radius: 16px;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(0,0,0,0.06);
+  padding: 14px 16px 12px;
+  font-size: 13px;
+  color: #111827;
+}
+
+.filter-header {
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.filter-section {
+  border-top: 1px solid #f3f4f6;
+  padding-top: 8px;
+  margin-top: 6px;
+}
+
+.filter-title {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #6b7280;
+  margin-bottom: 6px;
+}
+
+.filter-option {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 4px 0;
+  cursor: pointer;
+}
+
+.filter-option input {
+  cursor: pointer;
+}
+
+.filter-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.filter-btn-primary,
+.filter-btn-secondary {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  background: #f3f4f6;
+}
+
+.filter-btn-primary {
+  background: #111827;
+  color: white;
+  border-color: #111827;
+}
+
+.filter-btn-primary:hover {
+  background: #000;
+}
+
+.filter-btn-secondary:hover {
+  background: #e5e7eb;
+}
+
+
+/* ========== TOAST CẢNH BÁO NHỎ ========== */
+
+.event-toast {
+  position: fixed;
+  top: 80px;               /* dưới navbar một chút */
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 160;
+
+  max-width: 340px;
+  padding: 10px 14px;
+  border-radius: 999px;
+
+  font-size: 13px;
+  color: #111827;
+  background: #fef3c7;     /* vàng nhạt */
+  border: 1px solid #facc15;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+
+  display: none;
+  align-items: center;
+  gap: 6px;
+}
+
+.event-toast::before {
+  content: "⚠️";
+  font-size: 14px;
+}
+
+.event-toast.show {
+  display: flex;
+}
