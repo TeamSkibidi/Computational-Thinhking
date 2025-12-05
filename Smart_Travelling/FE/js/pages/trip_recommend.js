@@ -22,7 +22,7 @@ let cachedTags = [];
 document.addEventListener('DOMContentLoaded', () => init());
 
 async function init() {
-    console.log("🚀 Initializing...");
+    console.log("Initializing...");
     
     // Fetch tags ngay khi load trang
     await fetchAndCacheTags();
@@ -34,15 +34,15 @@ async function init() {
     // Render header mặc định
     renderHeaderInfo(currentConfig);
     
-    console.log("✅ Init complete!");
+    console.log("Init complete!");
 }
 
 // === FETCH TAGS ===
 async function fetchAndCacheTags() {
     try {
-        console.log("📡 Fetching tags from API...");
+        console.log("Fetching tags from API...");
         const result = await getTags();
-        console.log("📡 API Response:", result);
+        console.log("API Response:", result);
         
         // Xử lý các kiểu response khác nhau
         if (result && result.data && Array.isArray(result.data)) {
@@ -50,20 +50,20 @@ async function fetchAndCacheTags() {
         } else if (Array.isArray(result)) {
             cachedTags = result;
         } else {
-            console.warn("⚠️ Invalid response, using defaults");
+            console.warn("Invalid response, using defaults");
             cachedTags = [...AVAILABLE_TAGS];
         }
         
-        console.log("✅ Cached tags:", cachedTags);
+        console.log("Cached tags:", cachedTags);
         localStorage.setItem("tags", JSON.stringify(cachedTags));
         
     } catch (error) {
-        console.error("❌ Fetch tags failed:", error);
+        console.error("Fetch tags failed:", error);
         
         // Fallback
         const stored = localStorage.getItem("tags");
         cachedTags = stored ? JSON.parse(stored) : [...AVAILABLE_TAGS];
-        console.log("📦 Using fallback tags:", cachedTags);
+        console.log("Using fallback tags:", cachedTags);
     }
 }
 
@@ -97,7 +97,7 @@ function setupTagsDropdown() {
     const dropdown = document.getElementById('tagsDropdown');
     
     if (!trigger || !dropdown) {
-        console.warn("⚠️ Tags dropdown elements not found");
+        console.warn("Tags dropdown elements not found");
         return;
     }
     
@@ -123,7 +123,7 @@ async function toggleModal(show) {
     if (!modal) return;
     
     if (show) {
-        console.log("📂 Opening modal...");
+        console.log("Opening modal...");
         
         // Fetch tags nếu chưa có
         if (cachedTags.length === 0) {
@@ -149,7 +149,7 @@ async function toggleModal(show) {
 
 // === RENDER MODAL FORM ===
 function renderModalForm() {
-    console.log("🎨 Rendering form...");
+    console.log("Rendering form...");
     
     // Basic inputs
     const inputCity = document.getElementById('inputCity');
@@ -174,7 +174,7 @@ function renderTagsInDropdown() {
     const container = document.getElementById('tagSelectionArea');
     
     if (!container) {
-        console.error("❌ #tagSelectionArea not found in HTML!");
+        console.error("tagSelectionArea not found in HTML!");
         return;
     }
     
@@ -185,7 +185,7 @@ function renderTagsInDropdown() {
     const tags = cachedTags.length > 0 ? cachedTags : AVAILABLE_TAGS;
     const activeTags = currentConfig.preferred_tags || [];
     
-    console.log("🏷️ Rendering tags:", tags);
+    console.log("Rendering tags:", tags);
     
     if (tags.length === 0) {
         container.innerHTML = '<p style="color: #999; padding: 8px;">Không có tags</p>';
@@ -212,7 +212,7 @@ function renderTagsInDropdown() {
     // Update display text
     updateTagsText();
     
-    console.log("✅ Rendered", tags.length, "tags");
+    console.log("Rendered", tags.length, "tags");
 }
 
 // === UPDATE TAGS TEXT ===
@@ -273,6 +273,9 @@ function renderTimeConfig() {
 }
 
 // === HANDLE CREATE TRIP ===
+// ...existing code...
+
+// === HANDLE CREATE TRIP ===
 async function handleCreateTrip() {
     const btn = document.getElementById('btnCreateTrip');
     if (btn) {
@@ -284,21 +287,52 @@ async function handleCreateTrip() {
         const formData = collectFormData();
         updateConfig(formData);
         
+        console.log("Sending request:", formData);
+        
         const result = await tripRecommand(formData);
         
+        console.log("API Response:", result);
+        
         if (result?.data) {
-            generatedTripData = result.data.days || [];
+            // Parse days một lần duy nhất
+            let days = [];
+            if (Array.isArray(result.data.days)) {
+                days = result.data.days;
+            } else if (result.data.days && typeof result.data.days === 'object') {
+                days = Object.values(result.data.days);
+            } else if (Array.isArray(result.data)) {
+                days = result.data;
+            }
+            
+            console.log("Parsed days:", days);
+            console.log("Days count:", days.length);
+            
+            // Dùng cùng 1 biến cho tất cả
+            generatedTripData = days;
             activeDayIndex = 0;
             
-            renderHeaderInfo(currentConfig, result.data);
+            // Lưu vào localStorage
+            localStorage.setItem('trip', JSON.stringify(days));
+            
+            // Debug trước khi render
+            console.log("Calling renderHeaderInfo with:", currentConfig, generatedTripData);
+            
+            // Render với cùng 1 data
+            renderHeaderInfo(currentConfig, generatedTripData);
             renderDayNavigator(generatedTripData, activeDayIndex, switchToDay);
-            renderDayTimeline(generatedTripData[activeDayIndex]);
+            
+            if (generatedTripData.length > 0) {
+                renderDayTimeline(generatedTripData[activeDayIndex]);
+            }
             
             toggleModal(false);
+        } else {
+            console.error("No data in response");
+            alert("Không có dữ liệu trả về!");
         }
     } catch (error) {
-        console.error("❌ Create trip error:", error);
-        alert("Có lỗi xảy ra!");
+        console.error("Create trip error:", error);
+        alert("Có lỗi xảy ra: " + error.message);
     } finally {
         if (btn) {
             btn.disabled = false;

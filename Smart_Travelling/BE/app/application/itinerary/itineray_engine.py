@@ -12,6 +12,9 @@ from app.config.setting import IMAGE_BASE_URL
 from app.api.schemas.itinerary_response import DayItineraryResponse, BlockItemResponse, CostSummaryResponse
 from app.application.ai.hybrid import HybridRecommender, HybridConfig
 from app.application.itinerary.trip_context import UserPreferences
+
+
+
 @dataclass
 class BlockItem:
     order: int
@@ -26,6 +29,7 @@ class BlockItem:
     price_vnd: int | None
     image_url: str | None
 """------- Các hàm tiện ích cho gợi ý lịch trình -------"""
+
 
 """ Hàm loại những địa điểm mà user không muốn tránh theo danh sách id"""
 def apply_avoid(spots: list[ItinerarySpot],
@@ -74,7 +78,7 @@ def visit_sort_key(spot: ItinerarySpot, prefs: UserPreferences, must_ids, use_ai
         getattr(spot, 'popularity', 0) or 0,
     )
 
-
+# Preload AI scores cho tất cả spots
 def preload_ai_scores(spots: list, preferred_tags: List[str]):
     """Preload AI scores cho tất cả spots."""
     global _ai_scores_cache
@@ -99,14 +103,12 @@ def preload_ai_scores(spots: list, preferred_tags: List[str]):
     except Exception as e:
         print(f"Preload failed: {e}")
 
-
 """Hàm set thời gian ở lại 1 địa điểm"""
 def estimate_dwell_minutes(spot: ItinerarySpot) -> int:
     if spot.dwell_min is not None:
         return spot.dwell_min
 
     return 90
-
 
 """ Lấy ID duy nhất của 1 địa điểm """
 def get_spot_unique_id(obj) -> str | None:
@@ -149,7 +151,7 @@ def dedup_day_items_by_name(day_plan: DayItineraryResponse,
                             dedup_types: Set[str] | None = None) -> None:
     """
     Xoá các BlockItemResponse trùng tên trong cùng 1 ngày.
-    - dedup_types: set các type muốn chống trùng, ví dụ {"visit"} hoặc {"visit", "food"}
+    - dedup_types: set các type muốn chống trùng, ví dụ {"visit"} hoặc {"visit", "eat"}
     """
     if dedup_types is None:
         dedup_types = {"visit"}   
@@ -199,12 +201,6 @@ def recompute_cost_summary_from_blocks(day_plan: DayItineraryResponse) -> None:
         if item.type == "visit"
     )
 
-    total_hotel_cost = sum(
-        (item.price_vnd or 0)
-        for item in all_items
-        if item.type == "hotel"
-    )
-
     """ Tính tổng chi phí ăn uống """
     total_food_cost = sum(
         (item.price_vnd or 0)
@@ -215,7 +211,7 @@ def recompute_cost_summary_from_blocks(day_plan: DayItineraryResponse) -> None:
     day_plan.cost_summary = CostSummaryResponse(
         total_attraction_cost_vnd=total_attraction_cost,
         total_trip_cost_vnd=(
-            total_attraction_cost + total_food_cost + total_hotel_cost
+            total_attraction_cost + total_food_cost
         ),
     )
 
@@ -712,7 +708,7 @@ def build_trip_itinerary(
         )
 
         """ Loại bỏ các địa điểm trùng trong cùng 1 ngày """
-        dedup_day_items_by_name(day_plan, dedup_types={"visit", "food"})
+        dedup_day_items_by_name(day_plan, dedup_types={"visit", "eat"})
 
         """ Tính lại tổng chi phí sau khi dedupe """
         recompute_cost_summary_from_blocks(day_plan)

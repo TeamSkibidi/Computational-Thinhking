@@ -13,7 +13,7 @@ export const BLOCK_CONFIG = [
 
 
 export let currentConfig = {
-    city: "Hà Nội",
+    city: "TP. HCM",
     start_date: new Date().toISOString().split('T')[0],
     num_days: 3,
     preferred_tags: [],
