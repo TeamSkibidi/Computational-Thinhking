@@ -52,140 +52,120 @@ const bookEvents = [
       </ul>
     `,
   },
-  
-  // {
-  //   id: 3,
-  //   name: "Giỗ Tổ Hùng Vương",
-  //   date: "10 Tháng 3 (Âm Lịch)",
-  //   loc: "Toàn Quốc",
-  //   theme: "theme-gioto",
-  //   img: "../images/Gio_To_Hung_Vuong.jpg",
-  //   desc: "Ngày tưởng nhớ các Vua Hùng.",
-  //   tags: ["Lịch sử", "Tín ngưỡng"],
-  //   particle: "🗻",
-  //   detail: `
-  //     <p>Giỗ Tổ Hùng Vương là ngày lễ để tưởng nhớ công ơn dựng nước của các Vua Hùng.</p>
-  //     <ul>
-  //       <li>Trọng tâm diễn ra tại Đền Hùng (Phú Thọ) với lễ rước, dâng hương, tế lễ trang nghiêm.</li>
-  //       <li>Cả nước tổ chức dâng hương, hoạt động văn hóa, giáo dục lịch sử dân tộc cho thế hệ trẻ.</li>
-  //       <li>Khẩu hiệu quen thuộc: "Dù ai đi ngược về xuôi, nhớ ngày Giỗ Tổ mùng 10 tháng 3".</li>
-  //     </ul>
-  //   `,
-  // },
-  // {
-  //   id: 4,
-  //   name: "Lễ Phật Đản",
-  //   date: "15 Tháng 4 (Âm Lịch)",
-  //   loc: "Toàn Quốc",
-  //   theme: "theme-phatdan",
-  //   img: "../images/Phat_Dan.jpg",
-  //   desc: "Kỷ niệm ngày Đức Phật đản sinh.",
-  //   tags: ["Tôn giáo", "Tâm linh"],
-  //   particle: "🪷",
-  //   detail: `
-  //     <p>Lễ Phật Đản là một trong những ngày lễ lớn của Phật giáo, được tổ chức tại nhiều chùa trên cả nước.</p>
-  //     <ul>
-  //       <li>Hoạt động: tụng kinh, lễ tắm Phật, rước xe hoa, thả đèn hoa đăng tại các ngôi chùa.</li>
-  //       <li>Ý nghĩa: nhắc nhở mọi người sống hướng thiện, từ bi và yêu thương.</li>
-  //       <li>Không khí: trang nghiêm nhưng cũng rất rực rỡ với cờ phướn, đèn lồng, hoa sen.</li>
-  //     </ul>
-  //   `,
-  // },
-  // {
-  //   id: 5,
-  //   name: "Lễ Vu Lan Báo Hiếu",
-  //   date: "15 Tháng 7 (Âm Lịch)",
-  //   loc: "Toàn Quốc",
-  //   theme: "theme-vulan",
-  //   img: "../images/Vu_Lan.jpg",
-  //   desc: "Mùa báo hiếu cha mẹ, ông bà.",
-  //   tags: ["Gia đình", "Tâm linh"],
-  //   particle: "💐",
-  //   detail: `
-  //     <p>Vu Lan là mùa báo hiếu, nhắc nhở con cháu ghi nhớ công ơn sinh thành dưỡng dục của cha mẹ, tổ tiên.</p>
-  //     <ul>
-  //       <li>Phong tục: cài hoa hồng, lễ chùa, cầu siêu, làm việc thiện, sum họp gia đình.</li>
-  //       <li>Ý nghĩa: trân trọng những người thân yêu, lan tỏa tinh thần yêu thương và chia sẻ.</li>
-  //       <li>Được xem như một trong những ngày lễ giàu tính nhân văn của người Việt.</li>
-  //     </ul>
-  //   `,
-  // },
-  // {
-  //   id: 6,
-  //   name: "Giải phóng Miền Nam & Quốc tế Lao động",
-  //   date: "30 Tháng 4 - 01 Tháng 5 (Dương Lịch)",
-  //   loc: "Toàn Quốc",
-  //   theme: "theme-304-15",
-  //   img: "../images/Giai_Phong_304_15.jpg",
-  //   desc: "Kỷ niệm ngày thống nhất đất nước và tôn vinh người lao động.",
-  //   tags: ["Lịch sử", "Nghỉ lễ"],
-  //   particle: "🇻🇳",
-  //   detail: `
-  //     <p>Hai ngày lễ 30/4 và 1/5 thường được nghỉ liền kề, là dịp người dân cả nước tưởng nhớ lịch sử và nghỉ ngơi, du lịch.</p>
-  //     <ul>
-  //       <li>30/4: kỷ niệm ngày giải phóng miền Nam, thống nhất đất nước.</li>
-  //       <li>01/5: ngày Quốc tế Lao động, tôn vinh người lao động trên toàn thế giới.</li>
-  //       <li>Hoạt động: mít tinh, diễu hành, xem bắn pháo hoa, tham gia các chuyến du lịch nghỉ dưỡng.</li>
-  //     </ul>
-  //   `,
-  // },
-  // {
-  //   id: 7,
-  //   name: "Quốc khánh Việt Nam",
-  //   date: "02 Tháng 9 (Dương Lịch)",
-  //   loc: "Toàn Quốc",
-  //   theme: "theme-quockhanh",
-  //   img: "../images/Quoc_Khanh_2_9.jpg",
-  //   desc: "Ngày khai sinh nước Việt Nam Dân chủ Cộng hòa.",
-  //   tags: ["Lịch sử", "Tự hào dân tộc"],
-  //   particle: "🎆",
-  //   detail: `
-  //     <p>Quốc khánh 2/9 là ngày lễ lớn đánh dấu sự ra đời của Nhà nước Việt Nam hiện đại.</p>
-  //     <ul>
-  //       <li>Hoạt động: lễ chào cờ, mít tinh, các chương trình nghệ thuật, bắn pháo hoa tại nhiều địa phương.</li>
-  //       <li>Người dân thường kết hợp nghỉ ngơi, về quê thăm gia đình hoặc đi du lịch.</li>
-  //       <li>Không khí: ngập tràn cờ đỏ sao vàng trên khắp đường phố, quảng trường, công sở.</li>
-  //     </ul>
-  //   `,
-  // },
-  // {
-  //   id: 8,
-  //   name: "Giáng Sinh (Noel)",
-  //   date: "24 - 25 Tháng 12 (Dương Lịch)",
-  //   loc: "Toàn Quốc",
-  //   theme: "theme-noel",
-  //   img: "../images/Giang_Sinh.jpg",
-  //   desc: "Không khí mùa đông lung linh đèn màu.",
-  //   tags: ["Tôn giáo", "Giới trẻ"],
-  //   particle: "🎄",
-  //   detail: `
-  //     <p>Giáng Sinh vốn là lễ tôn giáo của người theo đạo Thiên Chúa, nhưng hiện nay đã trở thành dịp vui chơi quen thuộc với giới trẻ Việt Nam.</p>
-  //     <ul>
-  //       <li>Hoạt động: trang trí cây thông, hang đá, đi lễ nhà thờ, tặng quà, chụp ảnh check-in.</li>
-  //       <li>Các trung tâm thương mại, phố đi bộ, nhà thờ được trang hoàng rực rỡ, đông đúc.</li>
-  //       <li>Không khí: ấm áp, lãng mạn với đèn trang trí, nhạc Giáng Sinh vang khắp nơi.</li>
-  //     </ul>
-  //   `,
-  // },
-  // {
-  //   id: 9,
-  //   name: "Ngày Quốc tế Phụ nữ",
-  //   date: "08 Tháng 3 (Dương Lịch)",
-  //   loc: "Toàn Quốc",
-  //   theme: "theme-8-3",
-  //   img: "../images/Quoc_Te_Phu_Nu.jpg",
-  //   desc: "Tôn vinh phụ nữ Việt Nam và thế giới.",
-  //   tags: ["Gia đình", "Xã hội"],
-  //   particle: "🌹",
-  //   detail: `
-  //     <p>Ngày Quốc tế Phụ nữ 8/3 là dịp mọi người bày tỏ tình cảm, lòng biết ơn đối với bà, mẹ, vợ, cô giáo và những người phụ nữ xung quanh.</p>
-  //     <ul>
-  //       <li>Hoạt động: tặng hoa, quà, tổ chức văn nghệ, gặp mặt, tri ân phụ nữ tại cơ quan và gia đình.</li>
-  //       <li>Ý nghĩa: khẳng định vai trò, đóng góp quan trọng của phụ nữ trong xã hội hiện đại.</li>
-  //       <li>Không khí: rộn ràng ở trường học, công ty, đường phố với nhiều chương trình giảm giá, quà tặng dành cho chị em.</li>
-  //     </ul>
-  //   `,
-  // },
+   {
+     id: 3,
+     name: "Giỗ Tổ Hùng Vương",
+     date: "10 Tháng 3 (Âm Lịch)",
+     loc: "Toàn Quốc",
+     theme: "theme-gioto",
+     img: "../images/Hung_Vuong.jpg",
+     desc: "Ngày tưởng nhớ các Vua Hùng.",
+     tags: ["Lịch sử", "Tín ngưỡng"],
+     particle: "🗻",
+     detail: `
+       <p>Giỗ Tổ Hùng Vương là ngày lễ để tưởng nhớ công ơn dựng nước của các Vua Hùng.</p>
+       <ul>
+         <li>Trọng tâm diễn ra tại Đền Hùng (Phú Thọ) với lễ rước, dâng hương, tế lễ trang nghiêm.</li>
+         <li>Cả nước tổ chức dâng hương, hoạt động văn hóa, giáo dục lịch sử dân tộc cho thế hệ trẻ.</li>
+         <li>Khẩu hiệu quen thuộc: "Dù ai đi ngược về xuôi, nhớ ngày Giỗ Tổ mùng 10 tháng 3".</li>
+       </ul>
+     `,
+   },
+   {
+     id: 5,
+     name: "Lễ Vu Lan Báo Hiếu",
+     date: "15 Tháng 7 (Âm Lịch)",
+     loc: "Toàn Quốc",
+     theme: "theme-vulan",
+     img: "../images/Vu_Lan.jpg",
+     desc: "Mùa báo hiếu cha mẹ, ông bà.",
+     tags: ["Gia đình", "Tâm linh"],
+     particle: "💐",
+     detail: `
+       <p>Vu Lan là mùa báo hiếu, nhắc nhở con cháu ghi nhớ công ơn sinh thành dưỡng dục của cha mẹ, tổ tiên.</p>
+       <ul>
+         <li>Phong tục: cài hoa hồng, lễ chùa, cầu siêu, làm việc thiện, sum họp gia đình.</li>
+         <li>Ý nghĩa: trân trọng những người thân yêu, lan tỏa tinh thần yêu thương và chia sẻ.</li>
+         <li>Được xem như một trong những ngày lễ giàu tính nhân văn của người Việt.</li>
+       </ul>
+     `,
+   },
+   {
+     id: 6,
+     name: "Giải phóng Miền Nam & Quốc tế Lao động",
+     date: "30 Tháng 4 - 01 Tháng 5 (Dương Lịch)",
+     loc: "Toàn Quốc",
+     theme: "theme-304-15",
+     img: "../images/Giai_phong_mien_Nam.jpg",
+     desc: "Kỷ niệm ngày thống nhất đất nước và tôn vinh người lao động.",
+     tags: ["Lịch sử", "Nghỉ lễ"],
+     particle: "🇻🇳",
+     detail: `
+       <p>Hai ngày lễ 30/4 và 1/5 thường được nghỉ liền kề, là dịp người dân cả nước tưởng nhớ lịch sử và nghỉ ngơi, du lịch.</p>
+       <ul>
+         <li>30/4: kỷ niệm ngày giải phóng miền Nam, thống nhất đất nước.</li>
+         <li>01/5: ngày Quốc tế Lao động, tôn vinh người lao động trên toàn thế giới.</li>
+         <li>Hoạt động: mít tinh, diễu hành, xem bắn pháo hoa, tham gia các chuyến du lịch nghỉ dưỡng.</li>
+       </ul>
+     `,
+   },
+   {
+     id: 7,
+     name: "Quốc khánh Việt Nam",
+     date: "02 Tháng 9 (Dương Lịch)",
+     loc: "Toàn Quốc",
+     theme: "theme-quockhanh",
+     img: "../images/Quoc_Khanh.jpg",
+     desc: "Ngày khai sinh nước Việt Nam Dân chủ Cộng hòa.",
+     tags: ["Lịch sử", "Tự hào dân tộc"],
+     particle: "🎆",
+     detail: `
+       <p>Quốc khánh 2/9 là ngày lễ lớn đánh dấu sự ra đời của Nhà nước Việt Nam hiện đại.</p>
+       <ul>
+         <li>Hoạt động: lễ chào cờ, mít tinh, các chương trình nghệ thuật, bắn pháo hoa tại nhiều địa phương.</li>
+         <li>Người dân thường kết hợp nghỉ ngơi, về quê thăm gia đình hoặc đi du lịch.</li>
+         <li>Không khí: ngập tràn cờ đỏ sao vàng trên khắp đường phố, quảng trường, công sở.</li>
+       </ul>
+     `,
+   },
+   {
+     id: 8,
+     name: "Giáng Sinh (Noel)",
+     date: "24 - 25 Tháng 12 (Dương Lịch)",
+     loc: "Toàn Quốc",
+     theme: "theme-noel",
+     img: "../images/Noel.jpg",
+     desc: "Không khí mùa đông lung linh đèn màu.",
+     tags: ["Tôn giáo", "Giới trẻ"],
+     particle: "🎄",
+     detail: `
+       <p>Giáng Sinh vốn là lễ tôn giáo của người theo đạo Thiên Chúa, nhưng hiện nay đã trở thành dịp vui chơi quen thuộc với giới trẻ Việt Nam.</p>
+       <ul>
+         <li>Hoạt động: trang trí cây thông, hang đá, đi lễ nhà thờ, tặng quà, chụp ảnh check-in.</li>
+         <li>Các trung tâm thương mại, phố đi bộ, nhà thờ được trang hoàng rực rỡ, đông đúc.</li>
+         <li>Không khí: ấm áp, lãng mạn với đèn trang trí, nhạc Giáng Sinh vang khắp nơi.</li>
+       </ul>
+     `,
+   },
+   {
+     id: 9,
+     name: "Ngày Quốc tế Phụ nữ",
+     date: "08 Tháng 3 (Dương Lịch)",
+     loc: "Toàn Quốc",
+     theme: "theme-8-3",
+     img: "../images/Quoc_te_phu_nu.jpg",
+     desc: "Tôn vinh phụ nữ Việt Nam và thế giới.",
+     tags: ["Gia đình", "Xã hội"],
+     particle: "🌹",
+     detail: `
+       <p>Ngày Quốc tế Phụ nữ 8/3 là dịp mọi người bày tỏ tình cảm, lòng biết ơn đối với bà, mẹ, vợ, cô giáo và những người phụ nữ xung quanh.</p>
+       <ul>
+         <li>Hoạt động: tặng hoa, quà, tổ chức văn nghệ, gặp mặt, tri ân phụ nữ tại cơ quan và gia đình.</li>
+         <li>Ý nghĩa: khẳng định vai trò, đóng góp quan trọng của phụ nữ trong xã hội hiện đại.</li>
+         <li>Không khí: rộn ràng ở trường học, công ty, đường phố với nhiều chương trình giảm giá, quà tặng dành cho chị em.</li>
+       </ul>
+     `,
+   },
 ];
 
 
