@@ -43,7 +43,6 @@ class ItinerarySpot:
 
 """ Hàm chuyển đổi từ các model khác sang ItinerarySpot"""
 def place_lite_to_spot(p: PlaceLite) -> ItinerarySpot:
-    category = p.category or "visit"
 
     lat = p.address.lat if p.address else 0.0
     lng = p.address.lng if p.address else 0.0
@@ -83,7 +82,7 @@ def food_place_to_spot(f: FoodPlace) -> ItinerarySpot:
         lng=lng,
         open_time_min=open_min,
         close_time_min=close_min,
-        rating=f.rating,
+        rating=f.rating,    
         review_count=f.reviewCount,
         popularity=f.popularity,
         price_vnd=f.priceVND,  

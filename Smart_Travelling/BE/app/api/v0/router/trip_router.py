@@ -10,10 +10,10 @@ router = APIRouter(
 )
 
 @router.post("/trip")
-async def Recommnad_trip(req: ItineraryRequest) -> Dict:
+def Recommnad_trip(req: ItineraryRequest) -> Dict:
 
     try:
-        data = await trip_service.get_trip_itinerary(req)
+        data = trip_service.get_trip_itinerary(req)
         return success("Tạo lịch trình thành công", data=data)
     except ValueError as e:
         return error(str(e))

@@ -57,7 +57,7 @@ async function init() {
 
     // Nếu có dữ liệu, hiển thị lên màn hình
     if (generatedTripData && generatedTripData.length > 0) {
-        renderHeaderInfo(currentConfig);
+        renderHeaderInfo(currentConfig, generatedTripData);
         
         activeDayIndex = 0;
         renderDayNavigator(generatedTripData, 0, handleDayChange);
@@ -99,7 +99,7 @@ async function saveAndGenerate() {
         city: cityInput.value.trim(),
         start_date: startDateInput.value.trim(),
         num_days: parseInt(numDaysInput.value.trim()),
-        
+
         preferred_tags: [],
         avoid_tags: [],
         max_leg_distance_km: 5.0,
@@ -158,7 +158,7 @@ async function saveAndGenerate() {
             
 
         // Vẽ lại giao diện với dữ liệu mới
-        renderHeaderInfo(newConfig);
+        renderHeaderInfo(newConfig, generatedTripData);
         activeDayIndex = 0;
         renderDayNavigator(generatedTripData, 0, handleDayChange);
         renderDayTimeline(generatedTripData[0], 'fade');

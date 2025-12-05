@@ -37,7 +37,7 @@ def row_to_accommodation(row) -> Accommodation:
         category=row["category"],
         address=addr,
     )
-async def fetch_accommodations_by_city(city: str) -> List[Accommodation]:
+def fetch_accommodations_by_city(city: str) -> List[Accommodation]:
     # Lấy connection đến database
     db = get_db()
     if db is None:
