@@ -1,109 +1,106 @@
-import { request } from "./request.js"
+// eventApi.js
+// Chứa các API thuộc router /events
 
+import { request } from "./request.js";
 
 /**
  * TÌM KIẾM LỄ HỘI THEO TÊN
- * GET /events/search-by-name?keyword=...
- *
- * @param {string} keyword - Tên lễ hội người dùng gõ (có dấu hoặc không dấu)
- * @param {number} limit - Số kết quả tối đa muốn lấy (mặc định 5)
- * @returns {Promise<Array>} Mảng EventOut từ backend
+ * GET /events/search-by-name?keyword=...&limit=...
  */
 export async function searchEventByName(keyword, limit = 5) {
-  const query = new URLSearchParams({ keyword, limit }).toString();
-  const result = await request(`/events/search-by-name?${query}`, "GET");
-  return result.data; // backend trả { status, data }, mình lấy data = list events
-}
+  if (!keyword) {
+    return [];
+  }
 
+  const query = new URLSearchParams({
+    keyword,
+    limit: String(limit),
+  }).toString();
+
+  const result = await request(`/events/search-by-name?${query}`, "GET");
+  return result.data;
+}
 
 /**
  * LẤY DANH SÁCH SỰ KIỆN
- * GET /events?city=...&target_date=...&session=...
- *
- * @param {object} params
- *   {
- *     city: string,          // bắt buộc
- *     target_date: string,   // bắt buộc, format "YYYY-MM-DD"
- *   }
- * @returns {Promise<Array>} Mảng EventOut từ backend
- */
+ * GET /events?city=...&target_date=...&session=...&sort=...
+ **/
+export async function listEvents(params = {}) {
+  const { city, target_date, session, sort } = params;
 
-export async function listEvents(params = {}){
-    const {city, target_date} = params;
+  if (!city || !target_date) {
+    throw new Error("city và target_date là bắt buộc khi gọi listEvents()");
+  }
 
-    // 2 field này BE đang để bắt buộc
-    if (!city || !target_date){
-        throw new Error ("city and target_date are compulsory ")
-    }
+  const queryObj = {
+    city,
+    target_date,
+  };
 
-    const queryObj = {city, target_date};
-    const query = new URLSearchParams(queryObj).toString();
-    const path = `/events?${query}`;
+  if (session) queryObj.session = session;
+  if (sort) queryObj.sort = sort;
 
-    // BE tra ve truc tiep EventOut
-    const events = await request(path, "GET");
-    return events;
+  const query = new URLSearchParams(queryObj).toString();
+  const path = `/events/list_event?${query}`;
+
+  const result = await request(path, "GET");
+  return result.data; 
 }
+
+/**
+ * GỢI Ý SỰ KIỆN THEO KHOẢNG CÁCH / ĐỘ NỔI TIẾNG / GIÁ
+ * GET /events/recommendations?city=...&target_date=...&lat=...&lng=...&...
+ **/
+export async function getEventRecommendations(params = {}) {
+  const {
+    city,
+    target_date,
+    session,
+    lat,
+    lng,
+    max_distance_km,
+  } = params;
+
+  if (!city || !target_date) {
+    throw new Error(
+      "city và target_date là bắt buộc khi gọi getEventRecommendations()"
+    );
+  }
+
+  const queryObj = {
+    city,
+    target_date,
+  };
+
+  if (session) queryObj.session = session;
+  if (lat != null) queryObj.lat = String(lat);
+  if (lng != null) queryObj.lng = String(lng);
+  if (max_distance_km != null) queryObj.max_distance_km = String(max_distance_km);
+
+  const query = new URLSearchParams(queryObj).toString();
+  const path = `/events/recommendations?${query}`;
+
+  const result = await request(path, "GET");
+   const recs = Array.isArray(result.data) ? result.data : [];
+  console.log("[recs] parsed array length =", recs.length);
+
+  return recs;
+}
+
 
 /**
  * CHI TIẾT 1 SỰ KIỆN
  * GET /events/{event_id}
- *
  * @param {number|string} eventId
- * @returns {Promise<Object>} EventOut từ backend
+ * @returns {Promise<Object>} EventOut (result.data)
  */
+export async function getEventDetail(eventId) {
+  if (eventId == null) {
+    throw new Error("eventId là bắt buộc khi gọi getEventDetail()");
+  }
 
-export async function getEventDetail (event_id){
-    if (event_id === null || event_id === null ){
-        throw new Error("event_id is compulsory for calling getEventDetail()")
-    }
-    const event = await request(`/events/${eventId}`, "GET");
-    return event;
+  const result = await request(`/events/detail/${eventId}`, "GET");
+  return result.data;
 }
 
-/**
- * GỢI Ý SỰ KIỆN THEO KHOẢNG CÁCH / GIÁ / ĐỘ NỔI TIẾNG
- * GET /events/recommendations?city=...&target_date=...&...
- *
- * @param {object} params
- *   {
- *     city: string,              // bắt buộc
- *     target_date: string,       // bắt buộc, "YYYY-MM-DD"
- *     session?: string,
- *     price?: number,
- *     lat?: number,
- *     lng?: number,
- *     max_distance_km?: number,
- *   }
- * @returns {Promise<Array>} Mảng EventOut từ backend
- */
-export async function getEventRecommendations(params = {}){
-    const {
-        city,
-        target_date,
-        session,
-        price,
-        lat,
-        lng,
-        max_distance_km,
-    } = params;
 
-    if (!city || !target_date){
-        throw new Error ("city and target_date are compulsory for calling getEventRecommendation()");
-    }
-
-    const queryObj = { city, target_date };
-
-    if (session) queryObj.session = session;
-    if (price !== null && price !== null) queryObj.price = String(price);
-    if (lat !== null && lat !== null) queryObj.lat = String(lat);
-    if (lng !== null && lng !== null) queryObj.lng = String(lng);
-    if (max_distance_km != null) queryObj.max_distance_km = max_distance_km;
-
-
-    const query = new URLSearchParams(queryObj).toString();
-    const path = `/events/recommendations?${query}`;
-
-    const events = await request(path, "GET");
-    return events;
-}

@@ -6,13 +6,6 @@ from app.domain.entities.event import Event
 
 class EventRepository(ABC):
     @abstractmethod
-    def upsert_events(self, events: List[Event]) -> None:
-        """
-        Lưu list Event vào DB (insert hoặc update nếu đã tồn tại).
-        """
-        pass
-
-    @abstractmethod
     def get_events_for_city_date (
         self,
         city: str,
