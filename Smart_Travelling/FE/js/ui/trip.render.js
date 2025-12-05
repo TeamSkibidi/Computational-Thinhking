@@ -164,7 +164,7 @@ export function renderDayNavigator(dataOrDays, activeIndex, onDayClick) {
 
 
 // Render nội dung chi tiết của một ngày (Timeline)
-export function renderDayTimeline(dayData, direction = 'none') {
+export function renderDayTimeline(dayData, direction = 'none', onRemovePlace = null) {
     const container = document.getElementById('timelineContainer');
     
     console.log("Rendering timeline for date:", dayData.date);
@@ -202,7 +202,7 @@ export function renderDayTimeline(dayData, direction = 'none') {
             `;
             container.appendChild(sessionHeader);
 
-            items.forEach((item) => {
+            items.forEach((item, itemIndex) => {
                 // Travel Info
                 const travelMin = parsePrice(item.travel_min);
                 if (travelMin > 0) {
@@ -250,6 +250,9 @@ export function renderDayTimeline(dayData, direction = 'none') {
                 card.innerHTML = `
                     <div class="card-img-wrapper">
                         <img src="${imageUrl}" class="card-img" onerror="this.src='https://via.placeholder.com/300x200?text=No+Image'">
+                        <button class="btn-remove-place" title="Xóa khỏi lịch trình">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
                     </div>
                     <div class="card-content">
                         <div class="card-header">
@@ -269,6 +272,13 @@ export function renderDayTimeline(dayData, direction = 'none') {
                         </div>
                     </div>
                 `;
+                const btnRemove = card.querySelector('.btn-remove-place');
+                if (btnRemove && onRemovePlace) {
+                    btnRemove.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        onRemovePlace(block.id, itemIndex, item.name);
+                    });
+                }
                 wrapper.appendChild(card);
                 container.appendChild(wrapper);
             });
