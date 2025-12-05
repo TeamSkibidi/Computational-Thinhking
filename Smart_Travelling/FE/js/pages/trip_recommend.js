@@ -271,9 +271,60 @@ function renderTimeConfig() {
         container.appendChild(div);
     });
 }
+function handleRemovePlace(blockId, itemIndex, placeName) {
+    // Xác nhận trước khi xóa
+    const confirmed = confirm(`Bạn có chắc muốn xóa "${placeName}" khỏi lịch trình?`);
+    if (!confirmed) return;
+    
+    // Lấy ngày hiện tại đang xem
+    const currentDay = generatedTripData[activeDayIndex];
+    if (!currentDay || !currentDay.blocks || !currentDay.blocks[blockId]) {
+        console.error("Không tìm thấy block:", blockId);
+        return;
+    }
+    
+    // Xóa item khỏi block
+    const blockItems = currentDay.blocks[blockId];
+    if (itemIndex >= 0 && itemIndex < blockItems.length) {
+        const removedItem = blockItems.splice(itemIndex, 1)[0];
+        
+        console.log(`Đã xóa "${placeName}" khỏi ${blockId}`);
+        
+        // Lưu lại vào localStorage
+        localStorage.setItem('trip', JSON.stringify(generatedTripData));
+        
+        // Render lại UI
+        renderDayTimeline(currentDay, 'none', handleRemovePlace);
+        renderHeaderInfo(currentConfig, generatedTripData);
+        renderDayNavigator(generatedTripData, activeDayIndex, switchToDay);
+        
+        // Hiện thông báo
+        showToast(`Đã xóa "${placeName}" khỏi lịch trình`);
+    }
+}
 
-// === HANDLE CREATE TRIP ===
-// ...existing code...
+function showToast(message, duration = 3000) {
+    // Xóa toast cũ nếu có
+    const oldToast = document.querySelector('.toast-notification');
+    if (oldToast) oldToast.remove();
+    
+    const toast = document.createElement('div');
+    toast.className = 'toast-notification';
+    toast.innerHTML = `
+        <i class="fa-solid fa-check-circle"></i>
+        <span>${message}</span>
+    `;
+    document.body.appendChild(toast);
+    
+    // Animation show
+    setTimeout(() => toast.classList.add('show'), 10);
+    
+    // Tự động ẩn sau duration
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 300);
+    }, duration);
+}
 
 // === HANDLE CREATE TRIP ===
 async function handleCreateTrip() {
@@ -322,7 +373,7 @@ async function handleCreateTrip() {
             renderDayNavigator(generatedTripData, activeDayIndex, switchToDay);
             
             if (generatedTripData.length > 0) {
-                renderDayTimeline(generatedTripData[activeDayIndex]);
+                renderDayTimeline(generatedTripData[activeDayIndex], 'fade', handleRemovePlace);
             }
             
             toggleModal(false);
@@ -370,7 +421,8 @@ function switchToDay(index) {
     if (index < 0 || index >= generatedTripData.length) return;
     activeDayIndex = index;
     renderDayNavigator(generatedTripData, activeDayIndex, switchToDay);
-    renderDayTimeline(generatedTripData[activeDayIndex]);
+    //Truyền handleRemovePlace
+    renderDayTimeline(generatedTripData[activeDayIndex], 'none', handleRemovePlace);
 }
 
 function getTodayDate() {
