@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS places (
   popularity INT DEFAULT 0,
   image_url VARCHAR(500),
   tags JSON,
+
   category ENUM('visit','eat','hotel') NOT NULL DEFAULT 'visit',
   dwell INT,
 
@@ -19,6 +20,7 @@ CREATE TABLE IF NOT EXISTS places (
 
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
   CONSTRAINT fk_place_address FOREIGN KEY (address_id)
     REFERENCES addresses(id)
     ON DELETE SET NULL
