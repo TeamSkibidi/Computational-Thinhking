@@ -58,26 +58,44 @@ export function countTotalPlaces(days) {
 
 // Render thông tin Header (Thành phố, Ngày, Tags)
 export function renderHeaderInfo(config, days = null) {
+    console.log("renderHeaderInfo called with:", { config, days });
+    console.log("days is array:", Array.isArray(days));
+    console.log("ays length:", days?.length);
+    
     document.getElementById('displayCity').textContent = config.city;
     const dParts = config.start_date.split('-');
     document.getElementById('displayDate').textContent = `${dParts[2]}/${dParts[1]}/${dParts[0]}`;
     document.getElementById('displayDuration').textContent = `${config.num_days} Ngày`;
     
     // Cập nhật tổng chi phí và số điểm đến nếu có dữ liệu
-    if (days) {
+    if (days && Array.isArray(days) && days.length > 0) {
         const totalCost = calculateTotalCost(days);
         const totalPlaces = countTotalPlaces(days);
+        
+        console.log("Calculated - Places:", totalPlaces, "Cost:", totalCost);
         
         const displayTotal = document.getElementById('displayTotal');
         const displayTotalCost = document.getElementById('displayTotalCost');
         
-        if (displayTotal) displayTotal.textContent = totalPlaces;
-        if (displayTotalCost) {
-            // Format số tiền với dấu phẩy
-            displayTotalCost.textContent = totalCost.toLocaleString('vi-VN');
+        if (displayTotal) {
+            displayTotal.textContent = totalPlaces;
+            console.log("Updated #displayTotal to:", totalPlaces);
+        } else {
+            console.error("#displayTotal not found!");
         }
+        
+        if (displayTotalCost) {
+            displayTotalCost.textContent = totalCost.toLocaleString('vi-VN');
+            console.log("Updated #displayTotalCost to:", totalCost);
+        } else {
+            console.error("#displayTotalCost not found!");
+        }
+    } else {
+        console.warn("No valid days data:", days);
     }
 }
+
+
 
 // Render thanh điều hướng ngày (Day Navigator)
 export function renderDayNavigator(dataOrDays, activeIndex, onDayClick) {
@@ -146,7 +164,7 @@ export function renderDayNavigator(dataOrDays, activeIndex, onDayClick) {
 
 
 // Render nội dung chi tiết của một ngày (Timeline)
-export function renderDayTimeline(dayData, direction = 'none') {
+export function renderDayTimeline(dayData, direction = 'none', onRemovePlace = null) {
     const container = document.getElementById('timelineContainer');
     
     console.log("Rendering timeline for date:", dayData.date);
@@ -184,18 +202,20 @@ export function renderDayTimeline(dayData, direction = 'none') {
             `;
             container.appendChild(sessionHeader);
 
-            items.forEach((item) => {
+            items.forEach((item, itemIndex) => {
                 // Travel Info
-                if (item.travel_min > 0) {
+                const travelMin = parsePrice(item.travel_min);
+                if (travelMin > 0) {
+                    const distanceKm = item.distance_km || 0;
                     const travelDiv = document.createElement('div');
                     travelDiv.className = "travel-info";
                     travelDiv.innerHTML = `
                         <div class="travel-line"></div>
                         <div class="travel-badge">
                             <i class="fa-solid fa-person-walking-luggage"></i>
-                            <span>${item.travel_min} phút</span>
+                            <span>${travelMin} phút</span>
                             <div class="dot-divider"></div>
-                            <span>${item.distance_km} km</span>
+                            <span>${typeof distanceKm === 'number' ? distanceKm.toFixed(1) : distanceKm} km</span>
                         </div>
                     `;
                     container.appendChild(travelDiv);
@@ -217,30 +237,48 @@ export function renderDayTimeline(dayData, direction = 'none') {
                 if(item.type === 'eat') iconType = 'fa-utensils';
                 if(item.type === 'coffee') iconType = 'fa-mug-hot';
 
+                // Parse các giá trị an toàn
+                const priceDisplay = formatCurrency(item.price_vnd);
+                const dwellMin = parsePrice(item.dwell_min) || item.dwell_min || 'N/A';
+                const imageUrl = item.image_url || 'https://via.placeholder.com/300x200?text=No+Image';
+                const itemName = item.name || 'Không có tên';
+                const startTime = item.start || '--:--';
+                const endTime = item.end || '--:--';
+
                 const card = document.createElement('div');
                 card.className = "card";
                 card.innerHTML = `
                     <div class="card-img-wrapper">
-                        <img src="${item.image_url}" class="card-img">
+                        <img src="${imageUrl}" class="card-img" onerror="this.src='https://via.placeholder.com/300x200?text=No+Image'">
+                        <button class="btn-remove-place" title="Xóa khỏi lịch trình">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
                     </div>
                     <div class="card-content">
                         <div class="card-header">
                             <div>
                                 <div class="time-badge">
-                                    ${item.start} - ${item.end}
+                                    ${startTime} - ${endTime}
                                 </div>
-                                <h3 class="card-title">${item.name}</h3>
+                                <h3 class="card-title">${itemName}</h3>
                             </div>
                             <div class="card-icon">
                                 <i class="fa-solid ${iconType}"></i>
                             </div>
                         </div>
                         <div class="card-meta">
-                            <span class="card-meta-item"><i class="fa-regular fa-clock"></i> ${item.dwell_min}</span>
-                            <span class="card-meta-item"><i class="fa-solid fa-money-bill-1-wave"></i> ${item.price_vnd}</span>
+                            <span class="card-meta-item"><i class="fa-regular fa-clock"></i> ${dwellMin} phút</span>
+                            <span class="card-meta-item"><i class="fa-solid fa-money-bill-1-wave"></i> ${priceDisplay}</span>
                         </div>
                     </div>
                 `;
+                const btnRemove = card.querySelector('.btn-remove-place');
+                if (btnRemove && onRemovePlace) {
+                    btnRemove.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        onRemovePlace(block.id, itemIndex, item.name);
+                    });
+                }
                 wrapper.appendChild(card);
                 container.appendChild(wrapper);
             });
@@ -249,3 +287,69 @@ export function renderDayTimeline(dayData, direction = 'none') {
 
     if (!hasContent) container.innerHTML = `<div class="empty-state"><p>Không có hoạt động nào trong ngày này.</p></div>`;
 }
+
+
+// Trong hàm renderTagsSelection, thêm event listener cho mỗi tag:
+function renderTagsSelection() {
+    const container = document.getElementById('tagSelectionArea');
+    if (!container) {
+        console.error("tagSelectionArea not found!");
+        return;
+    }
+    
+    // Clear container
+    container.innerHTML = '';
+    
+    // Lấy tags để render
+    const tagsToRender = cachedTags.length > 0 ? cachedTags : AVAILABLE_TAGS;
+    const activeTags = currentConfig.preferred_tags || [];
+    
+    console.log("Rendering", tagsToRender.length, "tags");
+    console.log("Active tags:", activeTags);
+    
+    // Render từng tag
+    tagsToRender.forEach(tag => {
+        const isActive = activeTags.includes(tag);
+        
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = `tag-btn${isActive ? ' active' : ''}`;
+        btn.textContent = tag;
+        btn.dataset.tag = tag;
+        
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation(); // Ngăn đóng dropdown
+            btn.classList.toggle('active');
+            updateTagsSelectedText();
+        });
+        
+        container.appendChild(btn);
+    });
+    
+    // Cập nhật text hiển thị
+    updateTagsSelectedText();
+    
+    console.log("Tags rendered:", tagsToRender.length);
+}
+
+function updateTagsSelectedText() {
+    const textEl = document.getElementById('tagsSelectedText');
+    if (!textEl) return;
+    
+    const selectedBtns = document.querySelectorAll('#tagSelectionArea .tag-btn.active');
+    const count = selectedBtns.length;
+    
+    if (count === 0) {
+        textEl.textContent = 'Chọn phong cách du lịch...';
+        textEl.classList.remove('has-selection');
+    } else if (count <= 3) {
+        const names = Array.from(selectedBtns).map(btn => btn.textContent);
+        textEl.textContent = names.join(', ');
+        textEl.classList.add('has-selection');
+    } else {
+        textEl.textContent = `Đã chọn ${count} phong cách`;
+        textEl.classList.add('has-selection');
+    }
+}
+
+

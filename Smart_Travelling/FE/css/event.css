@@ -440,9 +440,9 @@ h1 {
   display: none;
 }
 
-/* .book-wrapper.show-list .event-list-container {
+.book-wrapper.show-list .event-list-container {
   display: block;
-} */
+}  
 
 
 /* ========== OVERLAY CHI TIẾT LỄ HỘI ========== */

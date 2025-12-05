@@ -47,85 +47,82 @@ def _row_to_event(row: Dict[str, Any]) -> Event:
         image_url=row["image_url"],
         price_vnd=row["price_vnd"],
         popularity=row["popularity"],
-        source=row["source"],
     )
 
 
 class MySQLEventRepository(EventRepository):
-    def upsert_events(self, events: List[Event]) -> None:
-        """
-        Upsert danh sách events (sync, không async/aiomysql).
-        - INSERT nếu external_id chưa tồn tại.
-        - UPDATE nếu external_id đã tồn tại (dựa trên UNIQUE KEY/PRIMARY KEY ở DB).
-        """
-        if not events:
-            return
+    # def upsert_events(self, events: List[Event]) -> None:
+    #     """
+    #     Upsert danh sách events (sync, không async/aiomysql).
+    #     - INSERT nếu external_id chưa tồn tại.
+    #     - UPDATE nếu external_id đã tồn tại (dựa trên UNIQUE KEY/PRIMARY KEY ở DB).
+    #     """
+    #     if not events:
+    #         return
 
-        db = get_db()
-        if db is None:
-            return
+    #     db = get_db()
+    #     if db is None:
+    #         return
 
-        cursor = db.cursor()
+    #     cursor = db.cursor()
 
-        sql = """
-        INSERT INTO events (
-            external_id, name, city, region,
-            lat, lng,
-            start_datetime, end_datetime, session,
-            summary, activities, image_url, price_vnd, popularity,
-            source
-        )
-        VALUES (
-            %(external_id)s, %(name)s, %(city)s, %(region)s,
-            %(lat)s, %(lng)s,
-            %(start_datetime)s, %(end_datetime)s, %(session)s,
-            %(summary)s, CAST(%(activities)s AS JSON), %(image_url)s, %(price_vnd)s, %(popularity)s,
-            %(source)s
-        )
-        ON DUPLICATE KEY UPDATE
-            name           = VALUES(name),
-            city           = VALUES(city),
-            region         = VALUES(region),
-            lat            = VALUES(lat),
-            lng            = VALUES(lng),
-            start_datetime = VALUES(start_datetime),
-            end_datetime   = VALUES(end_datetime),
-            session        = VALUES(session),
-            summary        = VALUES(summary),
-            activities     = VALUES(activities),
-            image_url      = VALUES(image_url),
-            price_vnd      = VALUES(price_vnd),
-            popularity     = VALUES(popularity),
-            updated_at     = CURRENT_TIMESTAMP;
-        """
+    #     sql = """
+    #     INSERT INTO events (
+    #         external_id, name, city, region,
+    #         lat, lng,
+    #         start_datetime, end_datetime, session,
+    #         summary, activities, image_url, price_vnd, popularity,
+            
+    #     )
+    #     VALUES (
+    #         %(external_id)s, %(name)s, %(city)s, %(region)s,
+    #         %(lat)s, %(lng)s,
+    #         %(start_datetime)s, %(end_datetime)s, %(session)s,
+    #         %(summary)s, CAST(%(activities)s AS JSON), %(image_url)s, %(price_vnd)s, %(popularity)s
+    #     )
+    #     ON DUPLICATE KEY UPDATE
+    #         name           = VALUES(name),
+    #         city           = VALUES(city),
+    #         region         = VALUES(region),
+    #         lat            = VALUES(lat),
+    #         lng            = VALUES(lng),
+    #         start_datetime = VALUES(start_datetime),
+    #         end_datetime   = VALUES(end_datetime),
+    #         session        = VALUES(session),
+    #         summary        = VALUES(summary),
+    #         activities     = VALUES(activities),
+    #         image_url      = VALUES(image_url),
+    #         price_vnd      = VALUES(price_vnd),
+    #         popularity     = VALUES(popularity),
+    #         updated_at     = CURRENT_TIMESTAMP;
+    #     """
 
-        params: List[Dict[str, Any]] = []
-        for e in events:
-            params.append(
-                {
-                    "external_id": e.external_id,
-                    "name": e.name,
-                    "city": e.city,
-                    "region": e.region,
-                    "lat": e.lat,
-                    "lng": e.lng,
-                    "start_datetime": e.start_datetime,
-                    "end_datetime": e.end_datetime,
-                    "session": e.session,
-                    "summary": e.summary,
-                    "activities": json.dumps(e.activities or []),
-                    "image_url": e.image_url,
-                    "price_vnd": e.price_vnd,
-                    "popularity": e.popularity,
-                    "source": e.source,
-                }
-            )
+    #     params: List[Dict[str, Any]] = []
+    #     for e in events:
+    #         params.append(
+    #             {
+    #                 "external_id": e.external_id,
+    #                 "name": e.name,
+    #                 "city": e.city,
+    #                 "region": e.region,
+    #                 "lat": e.lat,
+    #                 "lng": e.lng,
+    #                 "start_datetime": e.start_datetime,
+    #                 "end_datetime": e.end_datetime,
+    #                 "session": e.session,
+    #                 "summary": e.summary,
+    #                 "activities": json.dumps(e.activities or []),
+    #                 "image_url": e.image_url,
+    #                 "price_vnd": e.price_vnd,
+    #                 "popularity": e.popularity,
+    #             }
+    #         )
 
-        cursor.executemany(sql, params)
-        db.commit()
+    #     cursor.executemany(sql, params)
+    #     db.commit()
 
-        cursor.close()
-        db.close()
+    #     cursor.close()
+    #     db.close()
 
     def get_events_for_city_date(
         self,
@@ -160,8 +157,7 @@ class MySQLEventRepository(EventRepository):
             id, external_id, name, city, region,
             lat, lng,
             start_datetime, end_datetime, session,
-            summary, activities, image_url, price_vnd, popularity,
-            source
+            summary, activities, image_url, price_vnd, popularity
         FROM events
         WHERE start_datetime < %s
           AND end_datetime > %s
@@ -185,7 +181,7 @@ class MySQLEventRepository(EventRepository):
         events: List[Event] = []
         for row in rows:
             # Normalize city từ DB để so sánh
-            db_city_norm = normalize_text(row["city"])
+            db_city_norm = normalize_text(row["city"] or "")
             if db_city_norm == target_city_norm:
                 events.append(_row_to_event(row))
 
@@ -204,8 +200,7 @@ class MySQLEventRepository(EventRepository):
             id, external_id, name, city, region,
             lat, lng,
             start_datetime, end_datetime, session,
-            summary, activities, image_url, price_vnd, popularity,
-            source
+            summary, activities, image_url, price_vnd, popularity
         FROM events
         WHERE id = %s
         LIMIT 1
@@ -243,8 +238,7 @@ class MySQLEventRepository(EventRepository):
             id, external_id, name, city, region,
             lat, lng,
             start_datetime, end_datetime, session,
-            summary, activities, image_url, price_vnd, popularity,
-            source
+            summary, activities, image_url, price_vnd, popularity
         FROM events
         """
         cursor.execute(sql)

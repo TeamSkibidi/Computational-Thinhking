@@ -26,8 +26,11 @@ def row_to_place_lite(row) -> PlaceLite:
             tags = json.loads(tags)
         except json.JSONDecodeError:
             tags = []
+<<<<<<< HEAD
+=======
 
     print(row["priceVND"])
+>>>>>>> main
     
     return PlaceLite(
         id=row["id"],
@@ -97,4 +100,49 @@ def fetch_place_lites_by_city(city: str) -> List[PlaceLite]:
     db.close()
 
     # 5. Convert từng dòng -> PlaceLite
+    return [row_to_place_lite(r) for r in rows]
+
+
+def fetch_all_places() -> List[PlaceLite]:
+    # Lấy connection đến database
+    db = get_db()
+    if db is None:
+        return [];
+
+    cursor = db.cursor(dictionary=True)
+
+    sql = """
+    SELECT
+        p.id,
+        p.name,
+        p.priceVND,
+        p.summary,
+        p.description,
+        p.openTime,
+        p.closeTime,
+        p.phone,
+        p.rating,
+        p.reviewCount,
+        p.popularity,
+        p.image_url,
+        p.tags,    
+        p.dwell,  
+        p.category,
+        a.house_number,
+        a.street,
+        a.ward,
+        a.district,
+        a.city,
+        a.lat,
+        a.lng
+    FROM places p
+    JOIN addresses a ON p.address_id = a.id;
+    """
+    cursor.execute(sql)
+    rows = cursor.fetchall()
+
+
+    cursor.close()
+    db.close()
+
     return [row_to_place_lite(r) for r in rows]
