@@ -898,3 +898,86 @@ body {
     color: var(--slate-400);
     font-weight: bold;
 }
+
+.card-img-wrapper {
+    position: relative;
+}
+
+.btn-remove-place {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255, 59, 48, 0.9);
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transform: scale(0.8);
+    transition: all 0.2s ease;
+    z-index: 10;
+}
+
+.btn-remove-place:hover {
+    background: #ff3b30;
+    transform: scale(1.1);
+}
+
+.card:hover .btn-remove-place {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.btn-remove-place i {
+    font-size: 12px;
+}
+
+/* === TOAST NOTIFICATION === */
+.toast-notification {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 50px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 4px 20px rgba(40, 167, 69, 0.4);
+    z-index: 9999;
+    opacity: 0;
+    transition: all 0.3s ease;
+}
+
+.toast-notification.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+.toast-notification i {
+    font-size: 18px;
+}
+
+.toast-notification span {
+    font-weight: 500;
+    font-size: 14px;
+}
+
+/* Animation khi xóa card */
+.timeline-item-wrapper.removing {
+    animation: slideOutLeft 0.3s ease forwards;
+}
+
+@keyframes slideOutLeft {
+    to {
+        opacity: 0;
+        transform: translateX(-50px);
+    }
+}
