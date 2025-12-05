@@ -4,6 +4,7 @@ from typing import List, Optional
 from app.domain.entities.event import Event
 from app.application.interfaces.EventRepository import EventRepository
 from app.utils.geo_utils import haversine_km
+from app.config.setting import MAX_LEG_DISTANCE_KM_DEFAULT
 
 
 class EventService:
@@ -57,15 +58,11 @@ class EventService:
         city: str,
         target_date: date,
         session: Optional[str] = None,
-        price: Optional[int] = None,
         user_lat: Optional[float] = None,
         user_lng: Optional[float] = None,
         max_distance_km: Optional[float] = None,
     ) -> List[Event]:
         """
-        Gợi ý events:
-        - Lọc theo city + date (+ session)
-        - Lọc theo price (nếu có)
         - Nếu có GPS:
             + luôn tính distance_km
             + nếu max_distance_km != None: lọc theo bán kính
@@ -90,11 +87,13 @@ class EventService:
 
             # sort: gần → xa, trong cùng khoảng cách thì
             #   popularity cao hơn trước, rồi giá thấp hơn trước
-            events.sort(
-                key=lambda e: (
-                    e.distance_km if e.distance_km is not None else 1e9
-                )
+        events.sort(
+            key=lambda e: (
+                e.distance_km if e.distance_km is not None else 1e9,
+                -(e.popularity if e.popularity is not None else 0),
+                e.price_vnd if e.price_vnd is not None else 10**12,
             )
+        )
 
         return events
 

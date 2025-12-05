@@ -1,6 +1,5 @@
 from datetime import datetime
 from typing import List, Optional
-
 from pydantic import BaseModel
 
 from app.domain.entities.event import Event
@@ -8,7 +7,6 @@ from app.utils.format_money import format_money
 
 class EventOut(BaseModel):
     id: Optional[int]
-    external_id: str
     name: str
     city: str
     region: Optional[str]
@@ -34,3 +32,17 @@ class EventOut(BaseModel):
         if "distance_km" not in data and hasattr(e, "distance_km"):
             data["distance_km"] = getattr(e, "distance_km")
         return cls(**data)
+
+
+
+class EventListResponse(BaseModel):
+    success: bool
+    message: str
+    data: List[EventOut]
+
+
+
+class EventDetailResponse(BaseModel):
+    success: bool
+    message: str
+    data: EventOut
