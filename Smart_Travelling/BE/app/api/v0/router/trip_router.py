@@ -11,6 +11,7 @@ router = APIRouter(
 
 @router.post("/trip")
 def Recommnad_trip(req: ItineraryRequest) -> Dict:
+    print("Received itinerary request:", req)
 
     try:
         data = trip_service.get_trip_itinerary(req)

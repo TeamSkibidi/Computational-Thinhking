@@ -19,13 +19,10 @@ def get_trip_itinerary(req: ItineraryRequest):
     
     place_lites    =  fetch_place_lites_by_city(req.city)
     food_places    =  fetch_food_places_by_city(req.city)
-    accommodations =  fetch_accommodations_by_city(req.city)
     
-
     # Convert sang ItinerarySpot
     visit_spots = [place_lite_to_spot(p) for p in place_lites]
     food_spots  = [food_place_to_spot(f) for f in food_places]
-    hotel_spots = [accommodation_to_spot(a) for a in accommodations]
 
     
 
@@ -34,7 +31,6 @@ def get_trip_itinerary(req: ItineraryRequest):
         req=req,
         visit_spots=visit_spots,
         food_spots=food_spots,
-        hotel_spots=hotel_spots,
     )
 
     return trip

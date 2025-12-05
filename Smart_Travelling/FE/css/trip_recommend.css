@@ -685,6 +685,128 @@ body {
 }
 .tag-btn.active::before { opacity: 0; }
 
+.tags-field {
+    position: relative;
+    width: 100%;
+}
+
+.tags-trigger {
+    width: 100%;
+    padding: 0.875rem 1rem;
+    background: var(--slate-50);
+    border: 2px solid var(--slate-200);
+    border-radius: 0.75rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    user-select: none;
+}
+
+.tags-trigger:hover {
+    border-color: var(--primary);
+    background: var(--white);
+    box-shadow: 0 0 0 4px var(--primary-light);
+}
+
+.tags-trigger.active {
+    border-color: var(--primary);
+    background: var(--white);
+    box-shadow: 0 0 0 4px var(--primary-light);
+}
+
+.tags-trigger.active .tags-arrow {
+    transform: rotate(180deg);
+}
+
+.tags-placeholder {
+    color: var(--slate-500);
+    font-weight: 500;
+    font-size: 0.9375rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
+    padding-right: 0.5rem;
+}
+
+.tags-placeholder.has-selection {
+    color: var(--slate-800);
+}
+
+.tags-arrow {
+    color: var(--slate-400);
+    font-size: 0.75rem;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    flex-shrink: 0;
+}
+
+.tags-dropdown {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    left: 0;
+    right: 0;
+    background: var(--white);
+    border: 1px solid var(--slate-100);
+    border-radius: 0.75rem;
+    box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.15), 
+                0 4px 12px rgba(13, 148, 136, 0.08);
+    z-index: 100;
+    padding: 1rem;
+    max-height: 16rem;
+    overflow-y: auto;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px) scale(0.98);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.tags-dropdown.open {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0) scale(1);
+}
+
+.tags-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+/* Tags Display (hiển thị trong main content) */
+.tags-display {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.tags-display:empty {
+    display: none;
+}
+
+.tags-display .tag-btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.8125rem;
+    cursor: default;
+    background: var(--primary-light);
+    color: var(--primary-dark);
+    border: none;
+}
+
+.tags-display .tag-btn:hover {
+    transform: none;
+}
+
+/* Time Config List */
+.time-config-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+
 /* Time Config Item */
 .time-config-item {
     display: flex; align-items: center; gap: 1rem; padding: 1rem;
@@ -775,4 +897,87 @@ body {
 .time-sep {
     color: var(--slate-400);
     font-weight: bold;
+}
+
+.card-img-wrapper {
+    position: relative;
+}
+
+.btn-remove-place {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255, 59, 48, 0.9);
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transform: scale(0.8);
+    transition: all 0.2s ease;
+    z-index: 10;
+}
+
+.btn-remove-place:hover {
+    background: #ff3b30;
+    transform: scale(1.1);
+}
+
+.card:hover .btn-remove-place {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.btn-remove-place i {
+    font-size: 12px;
+}
+
+/* === TOAST NOTIFICATION === */
+.toast-notification {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 50px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 4px 20px rgba(40, 167, 69, 0.4);
+    z-index: 9999;
+    opacity: 0;
+    transition: all 0.3s ease;
+}
+
+.toast-notification.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+.toast-notification i {
+    font-size: 18px;
+}
+
+.toast-notification span {
+    font-weight: 500;
+    font-size: 14px;
+}
+
+/* Animation khi xóa card */
+.timeline-item-wrapper.removing {
+    animation: slideOutLeft 0.3s ease forwards;
+}
+
+@keyframes slideOutLeft {
+    to {
+        opacity: 0;
+        transform: translateX(-50px);
+    }
 }
