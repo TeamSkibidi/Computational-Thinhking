@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 from datetime import date
-
 from typing import List, Optional   
 from app.api.schemas.itinerary_request import ItineraryRequest
 from app.config.setting import (

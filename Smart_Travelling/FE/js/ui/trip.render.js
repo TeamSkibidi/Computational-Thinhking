@@ -252,34 +252,66 @@ export function renderDayTimeline(dayData, direction = 'none') {
 
 
 // Trong hàm renderTagsSelection, thêm event listener cho mỗi tag:
-export async function renderTagsSelection(container, tags, activeTags = []) {
-    if (!container) return;
+function renderTagsSelection() {
+    const container = document.getElementById('tagSelectionArea');
+    if (!container) {
+        console.error("tagSelectionArea not found!");
+        return;
+    }
     
+    // Clear container
     container.innerHTML = '';
-    tags = JSON.parse(localStorage.getItem('tags')) || [];
-  
-    tags.forEach(tag => {
+    
+    // Lấy tags để render
+    const tagsToRender = cachedTags.length > 0 ? cachedTags : AVAILABLE_TAGS;
+    const activeTags = currentConfig.preferred_tags || [];
+    
+    console.log("Rendering", tagsToRender.length, "tags");
+    console.log("Active tags:", activeTags);
+    
+    // Render từng tag
+    tagsToRender.forEach(tag => {
+        const isActive = activeTags.includes(tag);
+        
         const btn = document.createElement('button');
-
         btn.type = 'button';
-        btn.className = `tag-btn${activeTags.includes(tag) ? ' active' : ''}`;
+        btn.className = `tag-btn${isActive ? ' active' : ''}`;
         btn.textContent = tag;
+        btn.dataset.tag = tag;
         
         btn.addEventListener('click', (e) => {
             e.stopPropagation(); // Ngăn đóng dropdown
             btn.classList.toggle('active');
-            
-            // Cập nhật text hiển thị
-            if (typeof window.updateTagsSelectedText === 'function') {
-                window.updateTagsSelectedText();
-            }
+            updateTagsSelectedText();
         });
         
         container.appendChild(btn);
     });
     
-    // Cập nhật text ban đầu
-    if (typeof window.updateTagsSelectedText === 'function') {
-        window.updateTagsSelectedText();
+    // Cập nhật text hiển thị
+    updateTagsSelectedText();
+    
+    console.log("Tags rendered:", tagsToRender.length);
+}
+
+function updateTagsSelectedText() {
+    const textEl = document.getElementById('tagsSelectedText');
+    if (!textEl) return;
+    
+    const selectedBtns = document.querySelectorAll('#tagSelectionArea .tag-btn.active');
+    const count = selectedBtns.length;
+    
+    if (count === 0) {
+        textEl.textContent = 'Chọn phong cách du lịch...';
+        textEl.classList.remove('has-selection');
+    } else if (count <= 3) {
+        const names = Array.from(selectedBtns).map(btn => btn.textContent);
+        textEl.textContent = names.join(', ');
+        textEl.classList.add('has-selection');
+    } else {
+        textEl.textContent = `Đã chọn ${count} phong cách`;
+        textEl.classList.add('has-selection');
     }
 }
+
+

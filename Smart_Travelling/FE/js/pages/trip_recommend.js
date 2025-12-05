@@ -12,205 +12,132 @@ import {
 
 import { tripRecommand } from "../api/recommandApi.js";
 import { getTags } from "../api/tagsApi.js";
-document.addEventListener('DOMContentLoaded', () => init());
 
 // === STATE ===
 let generatedTripData = [];
 let activeDayIndex = 0;
-let cachedTags = []; // Thêm biến lưu cache tags
+let cachedTags = [];
 
-// === MAIN LOGIC ===
+// === INIT ===
+document.addEventListener('DOMContentLoaded', () => init());
+
 async function init() {
-    // 1. GẮN SỰ KIỆN CHO CÁC NÚT (Event Listeners)
-    // Nút: Tạo Lịch Trình
-    await setupTagsDropdown();
-
-    const btnCreateTrip = document.getElementById('btnCreateTrip');
-    if (btnCreateTrip) {
-        btnCreateTrip.addEventListener('click', saveAndGenerate);
-    }
-
-    // Nút: Hủy bỏ 
-    const btnCancelConfig = document.getElementById('btnCancelConfig');
-    if (btnCancelConfig) {
-        // Khi click thì gọi hàm toggleModal(false)
-        btnCancelConfig.addEventListener('click', () => toggleModal(false));
-    }
+    console.log("🚀 Initializing...");
     
-    // Nút đóng 
-    const btnCloseX = document.querySelector('.modal-close-btn');
-    if (btnCloseX) {
-        btnCloseX.addEventListener('click', () => toggleModal(false));
-    }
-
-
-    // Logic Sidebar
-    setupSidebarEvents();
+    // Fetch tags ngay khi load trang
+    await fetchAndCacheTags();
     
-    document.addEventListener("keydown", (e) => {
-        const modal = document.getElementById('configModal');
-        if (modal && modal.style.display === 'flex') return; // Nếu modal đang mở thì bỏ qua
-        if (e.key === "ArrowLeft") handleDayChange(activeDayIndex - 1);
-        if (e.key === "ArrowRight") handleDayChange(activeDayIndex + 1);
-    });
+    // Setup events
+    setupModalEvents();
+    setupTagsDropdown();
     
+    // Render header mặc định
+    renderHeaderInfo(currentConfig);
+    
+    console.log("✅ Init complete!");
+}
 
-    // Lấy dữ liệu chuyến đi từ LocalStorage (nếu có từ trước)
-    generatedTripData = await getTrip();
-
-    // Nếu có dữ liệu, hiển thị lên màn hình
-    if (generatedTripData && generatedTripData.length > 0) {
-        renderHeaderInfo(currentConfig, generatedTripData);
+// === FETCH TAGS ===
+async function fetchAndCacheTags() {
+    try {
+        console.log("📡 Fetching tags from API...");
+        const result = await getTags();
+        console.log("📡 API Response:", result);
         
-        activeDayIndex = 0;
-        renderDayNavigator(generatedTripData, 0, handleDayChange);
-        renderDayTimeline(generatedTripData[0], 'none');
+        // Xử lý các kiểu response khác nhau
+        if (result && result.data && Array.isArray(result.data)) {
+            cachedTags = result.data;
+        } else if (Array.isArray(result)) {
+            cachedTags = result;
+        } else {
+            console.warn("⚠️ Invalid response, using defaults");
+            cachedTags = [...AVAILABLE_TAGS];
+        }
+        
+        console.log("✅ Cached tags:", cachedTags);
+        localStorage.setItem("tags", JSON.stringify(cachedTags));
+        
+    } catch (error) {
+        console.error("❌ Fetch tags failed:", error);
+        
+        // Fallback
+        const stored = localStorage.getItem("tags");
+        cachedTags = stored ? JSON.parse(stored) : [...AVAILABLE_TAGS];
+        console.log("📦 Using fallback tags:", cachedTags);
     }
 }
 
-// Hàm lấy dữ liệu từ LocalStorage
-async function getTrip() {
-    const tripStr = localStorage.getItem('trip');
-    if (!tripStr) return [];
+// === SETUP MODAL EVENTS ===
+function setupModalEvents() {
+    // Floating button
+    document.querySelector('.btn-floating-config')?.addEventListener('click', () => toggleModal(true));
     
-    const parsed = JSON.parse(tripStr);
+    // Sidebar "Cấu hình"
+    document.getElementById('navItemConfig')?.addEventListener('click', () => toggleModal(true));
     
-    // Nếu là object có .days thì lấy .days, nếu là array thì dùng luôn
-    if (Array.isArray(parsed)) {
-        return parsed;
-    } else if (parsed && parsed.days) {
-        return Array.isArray(parsed.days) ? parsed.days : Object.values(parsed.days);
-    }
-    return [];
+    // Sidebar "Lịch trình"  
+    document.getElementById('navItemSchedule')?.addEventListener('click', () => toggleModal(false));
+    
+    // Close buttons
+    document.querySelector('.modal-close-btn')?.addEventListener('click', () => toggleModal(false));
+    document.getElementById('btnCancelConfig')?.addEventListener('click', () => toggleModal(false));
+    
+    // Create trip button
+    document.getElementById('btnCreateTrip')?.addEventListener('click', handleCreateTrip);
+    
+    // Click overlay to close
+    document.getElementById('configModal')?.addEventListener('click', (e) => {
+        if (e.target.id === 'configModal') toggleModal(false);
+    });
 }
 
-// Hàm này sẽ chạy khi sự kiện click xảy ra
-async function saveAndGenerate() {
-    // Thu thập dữ liệu từ các ô input
-    const cityInput = document.getElementById('inputCity');
-    const startDateInput = document.getElementById('inputStartDate');
-    const numDaysInput = document.getElementById('inputNumDays');
-
-    // Kiểm tra xem người dùng nhập đủ chưa
-    if (!cityInput.value || !startDateInput.value || !numDaysInput.value) {
-        alert("Vui lòng nhập đầy đủ Thành phố, Ngày bắt đầu và Số ngày!");
+// === SETUP TAGS DROPDOWN ===
+function setupTagsDropdown() {
+    const trigger = document.getElementById('tagsTrigger');
+    const dropdown = document.getElementById('tagsDropdown');
+    
+    if (!trigger || !dropdown) {
+        console.warn("⚠️ Tags dropdown elements not found");
         return;
     }
-
-    // Tạo object cấu hình để gửi lên Server
-    const newConfig = {
-        city: cityInput.value.trim(),
-        start_date: startDateInput.value.trim(),
-        num_days: parseInt(numDaysInput.value.trim()),
-
-        preferred_tags: [],
-        avoid_tags: [],
-        max_leg_distance_km: 5.0,
-        max_places_per_block: 3,
-        must_visit_place_ids: [],
-        avoid_place_ids: [],
-
-        morning: {},
-        lunch: {},
-        afternoon: {},
-        dinner: {},
-        evening: {}
-    };
     
-    // Lấy các Tags (Sở thích) đã chọn (có class .active)
-    document.querySelectorAll('.tag-btn.active').forEach(btn => {
-        newConfig.preferred_tags.push(btn.dataset.tag);
+    trigger.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isOpen = dropdown.classList.contains('open');
+        
+        trigger.classList.toggle('active', !isOpen);
+        dropdown.classList.toggle('open', !isOpen);
     });
-
-    // Lấy cấu hình thời gian cho từng khung
-    BLOCK_CONFIG.forEach(block => {
-        const enabled = document.getElementById(`toggle_${block.id}`).checked;
-        const start = document.getElementById(`start_${block.id}`).value;
-        const end = document.getElementById(`end_${block.id}`).value;
-        newConfig[block.id] = { enabled, start, end };
-    });
-
-    // Gọi API
-    try {
-        const btnSubmit = document.getElementById('btnCreateTrip');
-        const originalContent = btnSubmit.innerHTML;
-        
-        // Hiệu ứng Loading: Đổi nút thành "Đang tạo..." và xoay vòng
-        btnSubmit.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang tạo...';
-        btnSubmit.disabled = true;
-
-        // Gọi hàm API
-        const result = await tripRecommand(newConfig);
-        console.log("Full result:", result);
-        console.log("result.data:", result.data);
-        console.log("result.data.days:", result.data?.days);
-
-        // Khi thành công: Lấy dữ liệu trả về
-        const trip = result.data;
-        console.log("Thông tin Trip:", trip);
-        const dayList = Array.isArray(trip.days) ? trip.days : Object.values(trip.days || {});
-
-        // Lưu vào bộ nhớ trình duyệt
-        localStorage.setItem("trip", JSON.stringify(dayList));
-        generatedTripData = dayList;
-
-        updateConfig(newConfig);
-        
-        // Đóng Modal cấu hình
-        toggleModal(false);
-            
-
-        // Vẽ lại giao diện với dữ liệu mới
-        renderHeaderInfo(newConfig, generatedTripData);
-        activeDayIndex = 0;
-        renderDayNavigator(generatedTripData, 0, handleDayChange);
-        renderDayTimeline(generatedTripData[0], 'fade');
-        
-        // Trả lại trạng thái nút ban đầu
-        btnSubmit.innerHTML = originalContent;
-        btnSubmit.disabled = false;
-
-    } catch (err) {
-        console.error(err);
-        alert("Lỗi tạo lịch trình: " + (err.message || "Lỗi không xác định"));
-        
-        // Reset nút nếu lỗi
-        const btnSubmit = document.getElementById('btnCreateTrip');
-        if(btnSubmit) {
-            btnSubmit.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles"></i> Tạo Lịch Trình';
-            btnSubmit.disabled = false;
+    
+    document.addEventListener('click', (e) => {
+        if (!trigger.contains(e.target) && !dropdown.contains(e.target)) {
+            trigger.classList.remove('active');
+            dropdown.classList.remove('open');
         }
-    }
+    });
 }
 
-// Modal Cấu Hình
+// === TOGGLE MODAL ===
 async function toggleModal(show) {
     const modal = document.getElementById('configModal');
+    if (!modal) return;
     
     if (show) {
-        // Fetch tags trước khi mở modal
-        try {
-            const result = await getTags();
-            // Kiểm tra cấu trúc response
-            if (result && result.data) {
-                cachedTags = result.data;
-            } else if (Array.isArray(result)) {
-                cachedTags = result;
-            } else {
-                cachedTags = AVAILABLE_TAGS; // fallback
-            }
-            localStorage.setItem("tags", JSON.stringify(cachedTags));
-        } catch (error) {
-            console.error("Failed to fetch tags:", error);
-            // Fallback: lấy từ localStorage hoặc dùng default
-            const stored = localStorage.getItem("tags");
-            cachedTags = stored ? JSON.parse(stored) : AVAILABLE_TAGS;
+        console.log("📂 Opening modal...");
+        
+        // Fetch tags nếu chưa có
+        if (cachedTags.length === 0) {
+            await fetchAndCacheTags();
         }
         
-        await initForm();
+        // Render form với tags
+        renderModalForm();
+        
+        // Show modal
         modal.style.display = 'flex';
         setTimeout(() => modal.classList.add('open'), 10);
         document.body.style.overflow = 'hidden';
+        
     } else {
         modal.classList.remove('open');
         setTimeout(() => {
@@ -219,225 +146,202 @@ async function toggleModal(show) {
         }, 300);
     }
 }
-// Hàm khởi tạo form với dữ liệu hiện tại
-function initForm() {
-    // ĐIỀN dữ liệu từ currentConfig VÀO các ô input
-    document.getElementById('inputCity').value = currentConfig.city;
-    document.getElementById('inputStartDate').value = currentConfig.start_date;
-    document.getElementById('inputNumDays').value = currentConfig.num_days;
 
-    // Render Tags - Sử dụng cachedTags thay vì AVAILABLE_TAGS
-    const tagContainer = document.getElementById('tagSelectionArea');
-    tagContainer.innerHTML = '';
+// === RENDER MODAL FORM ===
+function renderModalForm() {
+    console.log("🎨 Rendering form...");
     
-    // Lấy tags từ cache hoặc localStorage
-    const tagsToRender = cachedTags.length > 0 
-        ? cachedTags 
-        : JSON.parse(localStorage.getItem('tags') || '[]');
+    // Basic inputs
+    const inputCity = document.getElementById('inputCity');
+    const inputStartDate = document.getElementById('inputStartDate');
+    const inputNumDays = document.getElementById('inputNumDays');
+    const inputNumPeople = document.getElementById('inputNumPeople');
     
-    if (tagsToRender.length === 0) {
-        // Fallback nếu không có tags
-        console.warn("No tags available, using defaults");
-        AVAILABLE_TAGS.forEach(tag => renderTagButton(tagContainer, tag));
-    } else {
-        tagsToRender.forEach(tag => renderTagButton(tagContainer, tag));
+    if (inputCity) inputCity.value = currentConfig.city || 'Hà Nội';
+    if (inputStartDate) inputStartDate.value = currentConfig.start_date || getTodayDate();
+    if (inputNumDays) inputNumDays.value = currentConfig.num_days || 3;
+    if (inputNumPeople) inputNumPeople.value = currentConfig.num_people || 1;
+    
+    // Render tags
+    renderTagsInDropdown();
+    
+    // Render time config
+    renderTimeConfig();
+}
+
+// === RENDER TAGS IN DROPDOWN ===
+function renderTagsInDropdown() {
+    const container = document.getElementById('tagSelectionArea');
+    
+    if (!container) {
+        console.error("❌ #tagSelectionArea not found in HTML!");
+        return;
     }
     
-    // Cập nhật text hiển thị
-    updateTagsSelectedText();
+    // Clear
+    container.innerHTML = '';
+    
+    // Lấy tags (ưu tiên cache, fallback default)
+    const tags = cachedTags.length > 0 ? cachedTags : AVAILABLE_TAGS;
+    const activeTags = currentConfig.preferred_tags || [];
+    
+    console.log("🏷️ Rendering tags:", tags);
+    
+    if (tags.length === 0) {
+        container.innerHTML = '<p style="color: #999; padding: 8px;">Không có tags</p>';
+        return;
+    }
+    
+    // Render each tag
+    tags.forEach(tag => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = `tag-btn${activeTags.includes(tag) ? ' active' : ''}`;
+        btn.textContent = tag;
+        btn.dataset.tag = tag;
+        
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            btn.classList.toggle('active');
+            updateTagsText();
+        });
+        
+        container.appendChild(btn);
+    });
+    
+    // Update display text
+    updateTagsText();
+    
+    console.log("✅ Rendered", tags.length, "tags");
+}
 
-    // Render Time Config (Giữ nguyên)
-    const timeContainer = document.getElementById('timeConfigContainer');
-    timeContainer.innerHTML = '';
+// === UPDATE TAGS TEXT ===
+function updateTagsText() {
+    const textEl = document.getElementById('tagsSelectedText');
+    if (!textEl) return;
+    
+    const selected = document.querySelectorAll('#tagSelectionArea .tag-btn.active');
+    const count = selected.length;
+    
+    if (count === 0) {
+        textEl.textContent = 'Chọn phong cách du lịch...';
+        textEl.classList.remove('has-selection');
+    } else if (count <= 3) {
+        textEl.textContent = Array.from(selected).map(b => b.textContent).join(', ');
+        textEl.classList.add('has-selection');
+    } else {
+        textEl.textContent = `Đã chọn ${count} phong cách`;
+        textEl.classList.add('has-selection');
+    }
+}
+
+// === RENDER TIME CONFIG ===
+function renderTimeConfig() {
+    const container = document.getElementById('timeConfigContainer');
+    if (!container) return;
+    
+    container.innerHTML = '';
     
     BLOCK_CONFIG.forEach(block => {
-        const config = currentConfig[block.id] || { enabled: true, start: block.defaultStart, end: block.defaultEnd };
+        const config = currentConfig[block.id] || { 
+            enabled: true, 
+            start: block.defaultStart, 
+            end: block.defaultEnd 
+        };
         
         const div = document.createElement('div');
-        div.className = "time-config-item";
-        
+        div.className = 'time-config-item';
         div.innerHTML = `
-            <div class="config-icon ${block.iconClass}"><i class="fa-solid ${block.icon}"></i></div>
-            
+            <div class="config-icon ${block.iconClass || ''}">
+                <i class="fa-solid ${block.icon}"></i>
+            </div>
             <div class="config-info">
                 <div class="config-label">${block.label}</div>
                 <div class="time-inputs">
                     <input type="time" id="start_${block.id}" class="time-control" value="${config.start}">
-                    <span class="time-sep">-</span>
+                    <span class="time-sep">—</span>
                     <input type="time" id="end_${block.id}" class="time-control" value="${config.end}">
                 </div>
             </div>
-
             <div class="toggle-switch">
                 <input type="checkbox" id="toggle_${block.id}" class="toggle-input" ${config.enabled ? 'checked' : ''}/>
                 <label for="toggle_${block.id}" class="toggle-slider"></label>
             </div>
         `;
-        timeContainer.appendChild(div);
+        container.appendChild(div);
     });
 }
-function renderTagButton(container, tag) {
-    const isActive = currentConfig.preferred_tags.includes(tag);
-    const btn = document.createElement('button');
-    btn.type = 'button';
-    btn.className = `tag-btn ${isActive ? 'active' : ''}`;
-    btn.textContent = "#" + tag;
-    btn.dataset.tag = tag;
-    
-    btn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        btn.classList.toggle('active');
-        updateTagsSelectedText();
-    });
-    
-    container.appendChild(btn);
-}
 
-
-// Hàm gắn sự kiện cho sidebar
-function setupSidebarEvents() {
-    const navItems = document.querySelectorAll('.nav-item');
-    
-    navItems.forEach(item => {
-        item.addEventListener('click', function() {
-                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-                this.classList.add('active');
-                
-                const blob = document.getElementById('navBlob');
-                const relativeTop = this.offsetTop; 
-                blob.style.top = `${relativeTop}px`;
-
-                // 2. Logic based on ID
-                if(this.id === 'navItemConfig') {
-                    toggleModal(true);
-                } else if(this.id === 'navItemTheme') {
-                    toggleDarkMode();
-                } else if(this.id === 'navItemSchedule') {
-                    // Scroll to top
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                }
-            });
-        });
-}
-
-// Hàm Toggle Dark Mode (Tùy chọn)
-function toggleDarkMode() {
-    document.body.classList.toggle('dark-mode');
-    const isDark = document.body.classList.contains('dark-mode');
-    localStorage.setItem('darkMode', isDark ? 'enabled' : 'disabled');
-    
-    const icon = document.querySelector('#navItemTheme i');
-    if (icon) {
-        icon.className = isDark ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+// === HANDLE CREATE TRIP ===
+async function handleCreateTrip() {
+    const btn = document.getElementById('btnCreateTrip');
+    if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang tạo...';
     }
-}
-
-// Kiểm tra Dark Mode khi load trang
-if (localStorage.getItem('darkMode') === 'enabled') {
-    document.body.classList.add('dark-mode');
-}
-
-// Hàm xử lý khi chuyển ngày
-function handleDayChange(newIndex) {
-    if (newIndex < 0 || newIndex >= generatedTripData.length) return;
     
-    const direction = newIndex > activeDayIndex ? 'right' : 'left';
-    activeDayIndex = newIndex;
-    
-    renderDayTimeline(generatedTripData[newIndex], direction);
-    renderDayNavigator(generatedTripData, activeDayIndex, handleDayChange);
-}
-
-// === TAGS DROPDOWN FUNCTIONS ===
-function setupTagsDropdown() {
-    const trigger = document.getElementById('tagsTrigger');
-    const dropdown = document.getElementById('tagsDropdown');
-    
-    if (!trigger || !dropdown) return;
-    
-    // Toggle khi click trigger
-    trigger.addEventListener('click', (e) => {
-        e.stopPropagation();
-        toggleTagsDropdown();
-    });
-    
-    // Đóng khi click ra ngoài
-    document.addEventListener('click', (e) => {
-        if (!trigger.contains(e.target) && !dropdown.contains(e.target)) {
-            closeTagsDropdown();
+    try {
+        const formData = collectFormData();
+        updateConfig(formData);
+        
+        const result = await tripRecommand(formData);
+        
+        if (result?.data) {
+            generatedTripData = result.data.days || [];
+            activeDayIndex = 0;
+            
+            renderHeaderInfo(currentConfig, result.data);
+            renderDayNavigator(generatedTripData, activeDayIndex, switchToDay);
+            renderDayTimeline(generatedTripData[activeDayIndex]);
+            
+            toggleModal(false);
         }
-    });
-    
-    // Ngăn đóng khi click trong dropdown
-    dropdown.addEventListener('click', (e) => {
-        e.stopPropagation();
-    });
-}
-
-function toggleTagsDropdown() {
-    const trigger = document.getElementById('tagsTrigger');
-    const dropdown = document.getElementById('tagsDropdown');
-    
-    if (!trigger || !dropdown) return;
-    
-    const isOpen = dropdown.classList.contains('open');
-    
-    if (isOpen) {
-        closeTagsDropdown();
-    } else {
-        openTagsDropdown();
+    } catch (error) {
+        console.error("❌ Create trip error:", error);
+        alert("Có lỗi xảy ra!");
+    } finally {
+        if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles"></i> Tạo Lịch Trình';
+        }
     }
 }
 
-function openTagsDropdown() {
-    const trigger = document.getElementById('tagsTrigger');
-    const dropdown = document.getElementById('tagsDropdown');
-    
-    if (!trigger || !dropdown) return;
-    
-    trigger.classList.add('active');
-    dropdown.classList.add('open');
-}
-
-function closeTagsDropdown() {
-    const trigger = document.getElementById('tagsTrigger');
-    const dropdown = document.getElementById('tagsDropdown');
-    
-    if (!trigger || !dropdown) return;
-    
-    trigger.classList.remove('active');
-    dropdown.classList.remove('open');
-}
-
-function updateTagsSelectedText() {
-    const textEl = document.getElementById('tagsSelectedText');
-    if (!textEl) return;
-    
-    // Lấy các tags đã chọn
+// === COLLECT FORM DATA ===
+function collectFormData() {
     const selectedTags = document.querySelectorAll('#tagSelectionArea .tag-btn.active');
+    const preferredTags = Array.from(selectedTags).map(btn => btn.dataset.tag);
     
-    if (selectedTags.length === 0) {
-        textEl.textContent = 'Chọn phong cách du lịch...';
-        textEl.classList.remove('has-selection');
-    } else if (selectedTags.length <= 3) {
-        const tagNames = Array.from(selectedTags).map(t => t.textContent.trim());
-        textEl.textContent = tagNames.join(', ');
-        textEl.classList.add('has-selection');
-    } else {
-        textEl.textContent = `Đã chọn ${selectedTags.length} phong cách`;
-        textEl.classList.add('has-selection');
-    }
+    const data = {
+        city: document.getElementById('inputCity')?.value || 'Hà Nội',
+        start_date: document.getElementById('inputStartDate')?.value || getTodayDate(),
+        num_days: parseInt(document.getElementById('inputNumDays')?.value) || 3,
+        num_people: parseInt(document.getElementById('inputNumPeople')?.value) || 1,
+        preferred_tags: preferredTags
+    };
+    
+    BLOCK_CONFIG.forEach(block => {
+        data[block.id] = {
+            enabled: document.getElementById(`toggle_${block.id}`)?.checked ?? true,
+            start: document.getElementById(`start_${block.id}`)?.value || block.defaultStart,
+            end: document.getElementById(`end_${block.id}`)?.value || block.defaultEnd
+        };
+    });
+    
+    return data;
 }
 
-// Export để dùng trong trip.render.js
-window.updateTagsSelectedText = updateTagsSelectedText;
+// === HELPERS ===
+function switchToDay(index) {
+    if (index < 0 || index >= generatedTripData.length) return;
+    activeDayIndex = index;
+    renderDayNavigator(generatedTripData, activeDayIndex, switchToDay);
+    renderDayTimeline(generatedTripData[activeDayIndex]);
+}
 
+function getTodayDate() {
+    return new Date().toISOString().split('T')[0];
+}
 
-// Nút mũi tên trái/phải
-window.changeDay = (offset) => handleDayChange(activeDayIndex + offset);
-
-// Expose functions to Window for HTML onclick
+// === EXPOSE TO GLOBAL ===
 window.toggleModal = toggleModal;
-
-// START APP
-init();

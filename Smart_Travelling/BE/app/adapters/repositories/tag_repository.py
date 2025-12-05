@@ -64,5 +64,6 @@ def fetch_tags_by_data() -> List[str]:
 
     cursor.close()
     db.close()
-
+    for tag in all_tags:
+        print("Tag fetched:", tag)
     return all_tags

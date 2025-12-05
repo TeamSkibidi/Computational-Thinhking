@@ -1,10 +1,6 @@
 from dataclasses import dataclass
-from typing import List, Set
-from typing import Optional, Tuple
+from typing import List, Set, Optional, Tuple , Dict
 from datetime import timedelta
-from app.domain.entities.place_lite import PlaceLite
-from app.domain.entities.food_place import FoodPlace
-from app.domain.entities.accommodation import Accommodation
 from app.domain.entities.nightstay import NightStay
 from app.utils.tag_utils import apply_tag_filter, tag_score
 from app.application.itinerary.trip_context import TripContext, UserPreferences
@@ -14,8 +10,8 @@ from app.domain.entities.itinerary_spot import ItinerarySpot
 from app.api.schemas.itinerary_request import ItineraryRequest
 from app.config.setting import IMAGE_BASE_URL
 from app.api.schemas.itinerary_response import DayItineraryResponse, BlockItemResponse, CostSummaryResponse
-
-
+from app.application.ai.hybrid import HybridRecommender, HybridConfig
+from app.application.itinerary.trip_context import UserPreferences
 @dataclass
 class BlockItem:
     order: int
@@ -29,8 +25,6 @@ class BlockItem:
     travel_from_prev_min: int
     price_vnd: int | None
     image_url: str | None
-
-
 """------- Các hàm tiện ích cho gợi ý lịch trình -------"""
 
 """ Hàm loại những địa điểm mà user không muốn tránh theo danh sách id"""
@@ -47,13 +41,63 @@ def apply_avoid(spots: list[ItinerarySpot],
 
 
 """ Hàm sắp xếp địa điểm tham quan dựa trên sở thích người dùng """
-def visit_sort_key(spot, prefs, must_ids):
+def visit_sort_key(spot: ItinerarySpot, prefs: UserPreferences, must_ids, use_ai: bool = True):
+    """
+    Hàm sắp xếp địa điểm - có tích hợp AI.
+    Fallback về rule-based nếu AI không available.
+    """
+    ai_score = 0.0
+    
+    if use_ai and is_ai_ready():
+        tags = []
+        if prefs and hasattr(prefs, 'tags') and prefs.tags:
+            tags = prefs.tags
+        elif prefs and hasattr(prefs, 'preferred_tags') and prefs.preferred_tags:
+            tags = prefs.preferred_tags
+        
+        if tags:
+            ai_score = get_ai_score(spot.id, tags)
+    
+    # Tính tag_score như cũ
+    t_score = 0
+    if prefs:
+        spot_tags = set(getattr(spot, 'tags', None) or [])
+        pref_tags = set(getattr(prefs, 'tags', None) or getattr(prefs, 'preferred_tags', None) or [])
+        if spot_tags and pref_tags:
+            t_score = len(spot_tags & pref_tags)
+    
     return (
-        1 if spot.id in must_ids else 0,   # must_visit trước
-        tag_score(spot, prefs),            # hợp gu hơn
-        spot.rating or 0.0,                # rating cao hơn
-        spot.popularity or 0,              # phổ biến hơn
+        1 if spot.id in must_ids else 0,
+        ai_score,
+        t_score,
+        spot.rating or 0.0,
+        getattr(spot, 'popularity', 0) or 0,
     )
+
+
+def preload_ai_scores(spots: list, preferred_tags: List[str]):
+    """Preload AI scores cho tất cả spots."""
+    global _ai_scores_cache
+    
+    if not is_ai_ready() or not preferred_tags:
+        return
+    
+    try:
+        recommendations = _ai_recommender.recommend(
+            preferred_tags=preferred_tags,
+            top_k=len(spots) + 50
+        )
+        
+        cache_key_suffix = ','.join(sorted(preferred_tags))
+        for place, score, _ in recommendations:
+            pid = getattr(place, 'id', None) or getattr(place, 'place_id', None)
+            if pid:
+                cache_key = f"{pid}:{cache_key_suffix}"
+                _ai_scores_cache[cache_key] = score
+        
+        print(f"Preloaded {len(recommendations)} AI scores")
+    except Exception as e:
+        print(f"Preload failed: {e}")
 
 
 """Hàm set thời gian ở lại 1 địa điểm"""
@@ -170,7 +214,6 @@ def recompute_cost_summary_from_blocks(day_plan: DayItineraryResponse) -> None:
 
     day_plan.cost_summary = CostSummaryResponse(
         total_attraction_cost_vnd=total_attraction_cost,
-        total_accommodation_cost_vnd=total_hotel_cost,
         total_trip_cost_vnd=(
             total_attraction_cost + total_food_cost + total_hotel_cost
         ),
@@ -319,90 +362,6 @@ def pick_meal_block(
 
     return items, food_spot
 
-""" Chọn khách sạn cho buổi tối """
-def pick_hotel_for_night(
-    anchor: Optional[ItinerarySpot],
-    hotel_spots: List[ItinerarySpot],
-    context: TripContext,
-) -> tuple[List[BlockItem], Optional[ItinerarySpot]]:
-    items: List[BlockItem] = []
-
-    if not hotel_spots:
-        return items, None
-
-    """ Lọc khách sạn theo sở thích người dùng """
-    candidates = hotel_spots
-
-    """ Hàm sắp xếp khách sạn theo rating và popularity """
-    def _hotel_sort_key(s: ItinerarySpot):
-        return (
-            s.rating or 0.0,
-            s.popularity or 0,
-        )
-
-    """ Lọc khách sạn khách sạn """
-    candidates = sorted(candidates, key=_hotel_sort_key, reverse=True)
-
-    """"""
-    best: Optional[Tuple[ItinerarySpot, float, int]] = None  # spot, dist, travel_min
-    best_score: Optional[tuple] = None
-
-    for h in candidates:
-        if anchor is not None:
-            dist_km = haversine_km(anchor.lat, anchor.lng, h.lat, h.lng)
-            # có thể cho hotel xa hơn chút, ví dụ gấp đôi max_leg_distance
-            if dist_km > context.max_leg_distance_km * 2:
-                continue
-            travel_min = estimate_travel_minutes(dist_km)
-        else:
-            dist_km = 0.0
-            travel_min = 0
-
-        # score: rating cao + popularity cao + gần anchor
-        score = (
-            h.rating or 0.0,
-            h.popularity or 0,
-            -(dist_km),
-        )
-
-        if best is None or score > best_score:
-            best = (h, dist_km, travel_min)
-            best_score = score
-
-    if best is None:
-        return items, None
-
-    hotel_spot, dist_km, travel_min = best
-
-    # xác định thời gian check-in khách sạn:
-    # - nếu có anchor: bắt đầu sau khi kết thúc anchor + thời gian di chuyển
-    # - nếu không: dùng evening_start
-    if anchor is not None:
-        # giả sử bạn truyền anchor_end_min từ ngoài, tạm thời dùng context.evening_end
-        # nhưng đẹp nhất là truyền vào thời gian kết thúc của block evening
-        anchor_end_min = context.evening_end
-        start_min = anchor_end_min + travel_min
-    else:
-        start_min = context.evening_end  # hoặc evening_start, tuỳ bạn
-    end_min = start_min   # hotel không cần dwell, dùng 0
-
-    hotel_item = BlockItem(
-        order=0,  # sẽ set lại khi append vào block evening
-        type="hotel",
-        place_id=hotel_spot.id,
-        name=hotel_spot.name,
-        start_min=start_min,
-        end_min=end_min,
-        dwell_min=0,
-        distance_from_prev_km=dist_km,
-        travel_from_prev_min=travel_min,
-        price_vnd=int(hotel_spot.price_vnd) if hotel_spot.price_vnd is not None else None,
-        image_url=hotel_spot.image_url,
-    )
-
-    items.append(hotel_item)
-    return items, hotel_spot
-
 """ Xây dựng 1 block vd 1 buổi sáng tham quan trong ngày """
 def build_visit_block(
     block_start_min: int,
@@ -547,13 +506,11 @@ def build_day_itinerary(
     context: TripContext,
     visit_spots: list[ItinerarySpot],
     food_spots: list[ItinerarySpot],
-    hotel_spots: list[ItinerarySpot],
 ) -> DayItineraryResponse:
     
     """ Loại bỏ những địa điểm mà user không muốn"""
     visit_spots = apply_avoid(visit_spots, context.avoid_place_ids)
     food_spots  = apply_avoid(food_spots, context.avoid_place_ids)
-    hotel_spots = apply_avoid(hotel_spots, context.avoid_place_ids)
 
     used_visit_place_ids_in_day: set[int] = set()
 
@@ -668,23 +625,7 @@ def build_day_itinerary(
             i.place_id for i in evening_items if i.place_id is not None
         )
 
-    """ Chọn khách sạn cho buổi tối"""
-    anchor_spot = last_evening_spot or last_lunch_spot or last_afternoon_spot or last_morning_spot
 
-    hotel_items: list[BlockItem] = []
-    chosen_hotel: Optional[ItinerarySpot] = None
-
-    if hotel_spots:
-        hotel_items, chosen_hotel = pick_hotel_for_night(
-            anchor=anchor_spot,
-            hotel_spots=hotel_spots,
-            context=context,
-        )
-
-        """ Thêm khách sạn vào cuối block evening """
-        for h in hotel_items:
-            h.order = len(evening_items) + 1
-            evening_items.append(h)
 
     """ Tính tổng chi phí tham quan trong ngày """
     all_items = morning_items + lunch_items + afternoon_items + dinner_items + evening_items
@@ -692,12 +633,6 @@ def build_day_itinerary(
         i.price_vnd or 0
         for i in all_items
         if i.type == "visit"
-    )
-    """ Tính tổng chi phí khách sạn trong 1 đêm"""
-    total_hotel_cost = sum(
-        i.price_vnd or 0
-        for i in all_items
-        if i.type == "hotel"
     )
     """ Tính tổng chí phí ăn (nếu có) """
     total_food_cost = sum(
@@ -708,8 +643,7 @@ def build_day_itinerary(
 
     cost_summary = CostSummaryResponse(
         total_attraction_cost_vnd=total_attraction_cost,
-        total_accommodation_cost_vnd=total_hotel_cost,
-        total_trip_cost_vnd=total_attraction_cost + total_food_cost + total_hotel_cost,
+        total_trip_cost_vnd=total_attraction_cost + total_food_cost,
     )
 
     return DayItineraryResponse(
@@ -730,14 +664,21 @@ def build_trip_itinerary(
     req: ItineraryRequest,
     visit_spots: list[ItinerarySpot],
     food_spots: list[ItinerarySpot],
-    hotel_spots: list[ItinerarySpot],
 ) -> dict:
     """
     Xây dựng lịch trình cho toàn bộ chuyến đi nhiều ngày.
     Không lặp lại cùng 1 địa điểm (theo name) ở các NGÀY KHÁC NHAU.
     """
+    preferred_tags = []
+    if req.preferred_tags:
+        preferred_tags = req.preferred_tags
+            
+    if preferred_tags:
+        # Preload scores cho tất cả spots
+        all_spots = visit_spots + food_spots
+        preload_ai_scores(all_spots, preferred_tags)
+    
     days: List[DayItineraryResponse] = []
-    night_stays: List[NightStay] = []
 
     """ Theo dõi tên địa điểm đã dùng để tránh lặp lại giữa các ngày """
     used_visit_names: Set[str] = set()
@@ -762,14 +703,12 @@ def build_trip_itinerary(
         filtered_food_spots = [s for s in food_spots if keep_food(s)]
 
         """ Hotel có thể lặp lại nếu khách ở cùng 1 khách sạn nhiều đêm """
-        filtered_hotel_spots = hotel_spots
 
         """ Xây dựng lịch trình cho ngày i """
         day_plan = build_day_itinerary(
             context=context,
             visit_spots=filtered_visit_spots,
             food_spots=filtered_food_spots,
-            hotel_spots=filtered_hotel_spots,
         )
 
         """ Loại bỏ các địa điểm trùng trong cùng 1 ngày """
@@ -791,22 +730,8 @@ def build_trip_itinerary(
                     used_food_names.add(item.name)
 
         """ Lấy thông tin khách sạn buổi tối nếu không phải ngày cuối """
-        if i < req.num_days - 1:
-            evening_block = day_plan.blocks.get("evening", [])
-            hotel_item = next(
-                (b for b in evening_block if b.type == "hotel"),
-                None,
-            )
-            if hotel_item is not None:
-                night_stays.append(
-                    NightStay(
-                        guest_name="",
-                        num_guest=None,
-                    )
-                )
 
     num_nights = max(req.num_days - 1, 0)
-    total_hotel_price = sum(getattr(ns, "priceVND", 0) or 0 for ns in night_stays)
 
     """ debug để chắc chắn không bị trùng giữa các ngày nữa """
     for d in days:
@@ -819,9 +744,62 @@ def build_trip_itinerary(
         "start_date": req.start_date,
         "num_days": req.num_days,
         "num_nights": num_nights,
-        "total_hotel_price_vnd": total_hotel_price,
         "days": [d.model_dump() for d in days],
-        "night_stays": [ns.to_json() for ns in night_stays],
     }
 
 
+
+# Khởi tạo biến singleton cho module recommender
+_ai_recommender: Optional['HybridRecommender'] = None
+_ai_scores_cache: Dict[str, float] = {}
+
+
+def init_ai_recommender(places: list, interactions: list = None) -> bool:
+    # Khởi tạo singleton 
+    global _ai_recommender
+    
+    try:
+        _ai_recommender = HybridRecommender(HybridConfig(
+            content_weight=0.5,
+            collaborative_weight=0.3,
+            popularity_weight=0.2
+        ))
+        _ai_recommender.fit(places, interactions)
+        _ai_recommender.save_models()
+        print(f"Module Recommender initialized with {len(places)} places")
+        return True
+    except Exception as e:
+        print(f"Module Recommender init failed: {e}")
+        _ai_recommender = None
+        return False
+
+
+def get_ai_recommender():
+    """Lấy AI recommender instance."""
+    return _ai_recommender
+
+# Kiểm tra module đã sẵn sàng chưa 
+def is_ai_ready() -> bool:
+    return _ai_recommender is not None and _ai_recommender.is_trained
+
+
+def get_ai_score(place_id: int, preferred_tags: List[str]) -> float:
+    """Lấy AI score cho 1 địa điểm."""
+    global _ai_scores_cache
+    
+    if not is_ai_ready():
+        return 0.0
+    
+    cache_key = f"{place_id}:{','.join(sorted(preferred_tags))}"
+    if cache_key in _ai_scores_cache:
+        return _ai_scores_cache[cache_key]
+    
+    score = _ai_recommender.get_place_score(place_id, preferred_tags)
+    _ai_scores_cache[cache_key] = score
+    return score
+
+
+def clear_ai_cache():
+    """Xóa cache AI scores."""
+    global _ai_scores_cache
+    _ai_scores_cache = {}
