@@ -99,58 +99,56 @@ def parse_price(price_str: str) -> Optional[int]:
         match = re.search(r'\d+', clean)
         if match:
             price = int(match.group())
-            return max(price, 0)
+            return max(price, 0)  # Ensure >= 0
         return None
     except:
         return None
 
 
-def get_next_address_id(cursor) -> int:
-    """Lấy ID tiếp theo cho bảng addresses."""
-    cursor.execute("SELECT COALESCE(MAX(id), 0) + 1 FROM addresses")
-    return cursor.fetchone()[0]
-
-
-def get_next_food_id(cursor) -> int:
-    """Lấy ID tiếp theo cho bảng food."""
-    cursor.execute("SELECT COALESCE(MAX(id), 0) + 1 FROM food")
-    return cursor.fetchone()[0]
-
-
-def create_address(cursor, address_id: int, house_number: str, street: str, ward: str, 
-                   district: str, city: str, lat: float, lng: float) -> bool:
-    """Insert address với ID cụ thể."""
+def create_address(cursor, house_number: str, street: str, ward: str, 
+                   district: str, city: str, lat: float, lng: float) -> Optional[int]:
+    """Insert address and return address_id."""
+    if not any([house_number, street, ward, district, city]):
+        return None
+    
     try:
         sql = """
-            INSERT INTO addresses (id, house_number, street, ward, district, city, lat, lng)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+            INSERT INTO addresses (house_number, street, ward, district, city, lat, lng)
+            VALUES (%s, %s, %s, %s, %s, %s, %s)
         """
-        cursor.execute(sql, (
-            address_id,
-            house_number,
-            street,
-            ward,
-            district,
-            city or "Hồ Chí Minh",
-            lat,
-            lng
-        ))
-        return True
+        cursor.execute(sql, (house_number, street, ward, district, city or "Hồ Chí Minh", lat, lng))
+        return cursor.lastrowid
     except Exception as e:
-        print(f"  ⚠️ Error creating address {address_id}: {e}")
-        return False
+        print(f" Error creating address: {e}")
+        return None
 
 
-def create_food(cursor, food_id: int, food_data: dict, address_id: int) -> bool:
-    """Insert food với ID cụ thể."""
+def create_food(cursor, food_data: dict) -> bool:
+    """
+    Insert vào bảng food theo đúng schema:
+    - name: VARCHAR(255) NOT NULL
+    - priceVND: BIGINT
+    - summary: VARCHAR(160)
+    - description: TEXT
+    - openTime: CHAR(5)
+    - closeTime: CHAR(5)
+    - phone: VARCHAR(50)
+    - rating: DECIMAL(3,2) - range 0-5
+    - reviewCount: INT DEFAULT 0
+    - popularity: INT DEFAULT 0 - range 0-100
+    - image_url: VARCHAR(500)
+    - tags: JSON
+    - category: ENUM('visit','eat','hotel') DEFAULT 'eat'
+    - address_id: BIGINT
+    """
     try:
         sql = """
             INSERT INTO food (
-                id, name, priceVND, summary, description, 
+                name, priceVND, summary, description, 
                 openTime, closeTime, phone, rating, reviewCount, 
                 popularity, image_url, tags, category, address_id
             ) VALUES (
-                %s, %s, %s, %s, %s, 
+                %s, %s, %s, %s, 
                 %s, %s, %s, %s, %s, 
                 %s, %s, %s, %s, %s
             )
@@ -160,25 +158,24 @@ def create_food(cursor, food_id: int, food_data: dict, address_id: int) -> bool:
         tags_json = json.dumps(food_data["tags"], ensure_ascii=False) if food_data["tags"] else None
         
         cursor.execute(sql, (
-            food_id,
-            food_data["name"],
-            food_data["priceVND"],
-            food_data["summary"],
-            food_data["description"],
-            food_data["openTime"],
-            food_data["closeTime"],
-            food_data["phone"],
-            food_data["rating"],
-            food_data["reviewCount"],
-            food_data["popularity"],
-            food_data["image_url"],
-            tags_json,
-            "eat",
-            address_id,
+            food_data["name"],           # VARCHAR(255) NOT NULL
+            food_data["priceVND"],       # BIGINT
+            food_data["summary"],        # VARCHAR(160)
+            food_data["description"],    # TEXT
+            food_data["openTime"],       # CHAR(5)
+            food_data["closeTime"],      # CHAR(5)
+            food_data["phone"],          # VARCHAR(50)
+            food_data["rating"],         # DECIMAL(3,2)
+            food_data["reviewCount"],    # INT
+            food_data["popularity"],     # INT
+            food_data["image_url"],      # VARCHAR(500)
+            tags_json,                   # JSON
+            "eat",                       # ENUM - always 'eat' for food
+            food_data["address_id"],     # BIGINT
         ))
         return True
     except Exception as e:
-        print(f"  ❌ Error creating food {food_id}: {e}")
+        print(f" Error: {e}")
         return False
 
 
@@ -202,11 +199,11 @@ def parse_line(line: str) -> Optional[dict]:
     14: district
     15: city
     16: Tọa độ -> lat, lng
-    17: URL (skip)
+    17: URL (skip - không có trong schema)
     18: phone
-    19: Img name (skip)
+    19: Img name (skip - không có trong schema)
     20: Img url -> image_url
-    21: dwell (skip)
+    21: dwell (skip - không có trong schema)
     """
     parts = line.split("\t")
     
@@ -263,15 +260,21 @@ def parse_line(line: str) -> Optional[dict]:
         coord_str = parts[16] if len(parts) > 16 else ""
         lat, lng = parse_coordinates(coord_str)
         
+        # Column 17: URL (SKIP - không có trong schema)
+        
         # Column 18: phone (VARCHAR 50)
         phone = parse_value(parts[18]) if len(parts) > 18 else None
         if phone and len(phone) > 50:
             phone = phone[:50]
         
+        # Column 19: Img name (SKIP - không có trong schema)
+        
         # Column 20: Img url -> image_url (VARCHAR 500)
         image_url = parse_value(parts[20]) if len(parts) > 20 else None
         if image_url and len(image_url) > 500:
             image_url = image_url[:500]
+        
+        # Column 21: dwell (SKIP - không có trong schema)
         
         return {
             "name": name,
@@ -286,7 +289,7 @@ def parse_line(line: str) -> Optional[dict]:
             "priceVND": price,
             "phone": phone,
             "image_url": image_url,
-            # Address fields
+            # Address fields for creating address
             "house_number": house_number,
             "street": street,
             "ward": ward,
@@ -294,6 +297,7 @@ def parse_line(line: str) -> Optional[dict]:
             "city": city or "Hồ Chí Minh",
             "lat": lat,
             "lng": lng,
+            "address_id": None,
         }
     except Exception as e:
         print(f"  ⚠️ Error parsing: {e}")
@@ -301,17 +305,10 @@ def parse_line(line: str) -> Optional[dict]:
 
 
 def import_data(data_lines: list):
-    print("🚀 Starting food data import...")
+    print("Starting food data import...")
     
     conn = pymysql.connect(**DB_CONFIG)
     cursor = conn.cursor()
-    
-    # Lấy ID bắt đầu
-    address_id = get_next_address_id(cursor)
-    food_id = get_next_food_id(cursor)
-    
-    print(f"📍 Starting address ID: {address_id}")
-    print(f"🍜 Starting food ID: {food_id}")
     
     success_count = 0
     error_count = 0
@@ -327,10 +324,9 @@ def import_data(data_lines: list):
             skip_count += 1
             continue
         
-        # Tạo address trước
-        addr_success = create_address(
+        # Create address first
+        address_id = create_address(
             cursor,
-            address_id,
             food_data["house_number"],
             food_data["street"],
             food_data["ward"],
@@ -339,47 +335,31 @@ def import_data(data_lines: list):
             food_data["lat"],
             food_data["lng"],
         )
+        food_data["address_id"] = address_id
         
-        if not addr_success:
-            error_count += 1
-            print(f"❌ Failed to create address for: {food_data['name']}")
-            continue
-        
-        # Tạo food với address_id
-        food_success = create_food(cursor, food_id, food_data, address_id)
-        
-        if food_success:
+        if create_food(cursor, food_data):
             success_count += 1
-            print(f"✅ [{success_count}] {food_data['name']} (food_id={food_id}, addr_id={address_id})")
-            # Tăng ID cho record tiếp theo
-            address_id += 1
-            food_id += 1
+            print(f"✅ [{success_count}] {food_data['name']}")
         else:
             error_count += 1
             print(f"❌ Failed: {food_data['name']}")
-            # Rollback address nếu food fail
-            cursor.execute("DELETE FROM addresses WHERE id = %s", (address_id,))
     
     conn.commit()
     
     # Final count
     cursor.execute("SELECT COUNT(*) FROM food")
-    total_food = cursor.fetchone()[0]
-    
-    cursor.execute("SELECT COUNT(*) FROM addresses")
-    total_addr = cursor.fetchone()[0]
+    total_count = cursor.fetchone()[0]
     
     cursor.close()
     conn.close()
     
     print(f"\n{'='*50}")
-    print(f"📊 IMPORT SUMMARY")
+    print(f"IMPORT SUMMARY")
     print(f"{'='*50}")
-    print(f"✅ Success: {success_count}")
-    print(f"⏭️ Skipped: {skip_count}")
-    print(f"❌ Errors: {error_count}")
-    print(f"📍 Total addresses in DB: {total_addr}")
-    print(f"🍜 Total food records in DB: {total_food}")
+    print(f"Success: {success_count}")
+    print(f"Skipped: {skip_count}")
+    print(f"Errors: {error_count}")
+    print(f"Total food records: {total_count}")
 
 
 def main():
@@ -388,9 +368,9 @@ def main():
     if os.path.exists(data_file):
         with open(data_file, "r", encoding="utf-8") as f:
             lines = f.readlines()
-        print(f"📂 Found {len(lines)} lines in {data_file}")
+        print(f"Found {len(lines)} lines in {data_file}")
     else:
-        print(f"❌ File {data_file} not found!")
+        print(f"File {data_file} not found!")
         return
     
     import_data(lines)

@@ -4,7 +4,6 @@ import math
 """ Tính khoảng cách bằng tọa độ giữa 2 điểm (đường chim bay)"""
 def haversine_km(lat1, lng1, lat2, lng2) -> float:
     R = 6371.0  
-    print (lat1, lng1, lat2, lng2)
     phi1 = math.radians(lat1)
     phi2 = math.radians(lat2)
     dphi = math.radians(lat2 - lat1)

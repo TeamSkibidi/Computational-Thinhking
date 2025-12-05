@@ -26,11 +26,6 @@ def row_to_place_lite(row) -> PlaceLite:
             tags = json.loads(tags)
         except json.JSONDecodeError:
             tags = []
-<<<<<<< HEAD
-=======
-
-    print(row["priceVND"])
->>>>>>> main
     
     return PlaceLite(
         id=row["id"],

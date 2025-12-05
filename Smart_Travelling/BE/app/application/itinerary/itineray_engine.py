@@ -556,17 +556,21 @@ def build_visit_block(
     selected_in_trip: List[ItinerarySpot] = None,
     anchor_spot: ItinerarySpot = None,
 ) -> tuple[List[BlockItem], Optional[ItinerarySpot]]:
-    if not spots_for_block:
-        return [], None
-
-    """ Lọc những điểm mà user không muốn"""
-    filtered = apply_tag_filter(spots_for_block, context.preferences)
-    if not filtered:
-        return [], None
+    items: List[BlockItem] = []
+    current_min = block_start_min
+    last_spot = anchor_spot
+    order = 1
+    
+    # Lọc spots đã chọn trong trip
+    selected_ids = {s.id for s in selected_in_trip}
+    available_spots = [s for s in spots_for_block if s.id not in selected_ids]
+    
+    if not available_spots:
+        return items, last_spot
     
     """ Sắp xếp với đa dạng hóa + AI """
     sorted_spots = sort_spots_diverse(
-        filtered,
+        available_spots,
         prefs=context.preferences,
         must_ids=context.must_visit_place_ids,
         selected_in_trip=selected_in_trip,
@@ -574,139 +578,93 @@ def build_visit_block(
         max_leg_km=max_leg_km,
         randomness=0.25
     )
-    if not sorted_spots:
-        return [], None
+    attempts = 0
+    max_attempts = len(sorted_spots) * 2  # Cho phép thử nhiều lần
+    spot_index = 0
     
-    block_duration = block_end_min - block_start_min
-    items: List[BlockItem] = []
-    used_place_ids = set()
-    selected_in_block: List[ItinerarySpot] = []
-
-    # === CHỌN ĐỊA ĐIỂM ĐẦU TIÊN - Random trong top 3 ===
-    top_candidates = sorted_spots[:min(3, len(sorted_spots))]
-    first_place = random.choice(top_candidates)
-
-    dwell1 = estimate_dwell_minutes(first_place)
-    if dwell1 > block_duration:
-        dwell1 = int(block_duration * 0.6)
-
-    visit1_start = block_start_min
-    visit1_end = visit1_start + dwell1
-
-    items.append(
-        BlockItem(
-            order=1,
+    while order <= max_places_per_block and current_min < block_end_min and attempts < max_attempts:
+        attempts += 1
+        
+        if spot_index >= len(sorted_spots):
+            # Reset và thử lại với spots còn lại
+            break
+        
+        spot = sorted_spots[spot_index]
+        spot_index += 1
+        
+        # Skip nếu đã chọn
+        if spot.id in selected_ids:
+            continue
+        
+        # Tính khoảng cách và thời gian di chuyển
+        if last_spot is not None:
+            dist_km = haversine_km(last_spot.lat, last_spot.lng, spot.lat, spot.lng)
+            if dist_km > max_leg_km * 1.5:  # Nới lỏng một chút
+                continue
+            travel_min = estimate_travel_minutes(dist_km)
+        else:
+            dist_km = 0.0
+            travel_min = 0
+        
+        # Tính thời gian bắt đầu và kết thúc
+        start_min = current_min + travel_min
+        dwell_min = spot.dwell_min if spot.dwell_min else 60
+        end_min = start_min + dwell_min
+        
+        # Check giờ mở cửa
+        open_min = spot.open_time_min if spot.open_time_min is not None else 0
+        close_min = spot.close_time_min if spot.close_time_min is not None else 1439
+        
+        # Điều chỉnh start nếu spot chưa mở
+        if start_min < open_min:
+            start_min = open_min
+            end_min = start_min + dwell_min
+        
+        # Check không vượt quá block end (cho phép vượt 15 phút)
+        if start_min >= block_end_min:
+            continue
+        
+        if end_min > block_end_min + 15:
+            # Giảm dwell time nếu có thể
+            available_time = block_end_min - start_min
+            if available_time >= 30:  # Tối thiểu 30 phút
+                dwell_min = available_time
+                end_min = start_min + dwell_min
+            else:
+                continue
+        
+        # Check không vượt quá giờ đóng cửa
+        if end_min > close_min:
+            continue
+        
+        # Tạo block item
+        item = BlockItem(
+            order=order,
             type="visit",
-            place_id=first_place.id,
-            name=first_place.name,
-            start_min=visit1_start,
-            end_min=visit1_end,
-            dwell_min=dwell1,
-            distance_from_prev_km=0.0,
-            travel_from_prev_min=0,
-            price_vnd=first_place.price_vnd,
-            image_url=first_place.image_url,
-        )
-    )
-
-    used_place_ids.add(first_place.id)
-    selected_in_block.append(first_place)
-    last_place = first_place
-    last_end_time = visit1_end
-
-    # === CHỌN CÁC ĐỊA ĐIỂM TIẾP THEO ===
-    while len(items) < max_places_per_block:
-        valid_candidates = []
-        
-        for candidate in filtered:
-            if candidate.id in used_place_ids:
-                continue
-
-            distance_km = haversine_km(
-                last_place.lat, last_place.lng,
-                candidate.lat, candidate.lng,
-            )
-            
-            # Strict distance filter
-            if distance_km > max_leg_km:
-                continue
-
-            travel_min = estimate_travel_minutes(distance_km)
-            dwell_min = estimate_dwell_minutes(candidate)
-
-            candidate_start = last_end_time + travel_min
-            candidate_end = candidate_start + dwell_min
-
-            if candidate_end > block_end_min:
-                continue
-
-            if candidate.open_time_min and candidate_start < candidate.open_time_min:
-                continue
-            if candidate.close_time_min and candidate_end > candidate.close_time_min:
-                continue
-
-            valid_candidates.append({
-                'spot': candidate,
-                'distance_km': distance_km,
-                'travel_min': travel_min,
-                'dwell_min': dwell_min,
-            })
-
-        if not valid_candidates:
-            break
-
-        # Tính weight cho mỗi candidate
-        weights = []
-        for c in valid_candidates:
-            weight = calculate_spot_weight(
-                c['spot'],
-                context.preferences,
-                context.must_visit_place_ids,
-                selected_spots=selected_in_trip + selected_in_block,
-                distance_from_prev=c['distance_km'],
-                max_leg_km=max_leg_km,
-                randomness=0.3
-            )
-            weights.append(max(weight, 0.01))
-
-        # Chọn ngẫu nhiên có trọng số
-        chosen_spots = weighted_random_choice(
-            [c['spot'] for c in valid_candidates],
-            weights,
-            k=1
+            place_id=spot.id,
+            name=spot.name,
+            start_min=start_min,
+            end_min=end_min,
+            dwell_min=dwell_min,
+            distance_from_prev_km=round(dist_km, 2),
+            travel_from_prev_min=travel_min,
+            price_vnd=int(spot.price_vnd) if spot.price_vnd else 0,
+            image_url=spot.image_url,
         )
         
-        if not chosen_spots:
-            break
+        items.append(item)
+        selected_ids.add(spot.id)
+        last_spot = spot
+        current_min = end_min
+        order += 1
         
-        chosen_spot = chosen_spots[0]
-        chosen_data = next(c for c in valid_candidates if c['spot'] == chosen_spot)
-
-        candidate_start = last_end_time + chosen_data['travel_min']
-        candidate_end = candidate_start + chosen_data['dwell_min']
-        
-        items.append(
-            BlockItem(
-                order=len(items) + 1,
-                type="visit",
-                place_id=chosen_spot.id,
-                name=chosen_spot.name,
-                start_min=candidate_start,
-                end_min=candidate_end,
-                dwell_min=chosen_data['dwell_min'],
-                distance_from_prev_km=chosen_data['distance_km'],
-                travel_from_prev_min=chosen_data['travel_min'],
-                price_vnd=chosen_spot.price_vnd,
-                image_url=chosen_spot.image_url,
-            )
-        )
-
-        used_place_ids.add(chosen_spot.id)
-        selected_in_block.append(chosen_spot)
-        last_place = chosen_spot
-        last_end_time = candidate_end
-
-    return items, last_place
+        # Nếu còn nhiều thời gian trống (> 1 giờ), tiếp tục thêm spots
+        remaining_time = block_end_min - current_min
+        if remaining_time > 60 and order <= max_places_per_block:
+            # Tiếp tục vòng lặp
+            continue
+    
+    return items, last_spot
 
 """"------- Build lịch trình cho cả ngày và chuyến đi -------"""
 """ Xây dựng lịch trình cho 1 ngày """
@@ -763,7 +721,7 @@ def build_day_itinerary(
             i.place_id for i in morning_items if i.place_id is not None
         )
 
-    if (context.lunch_start is not None or context.lunch_end is not None):
+    if (context.lunch_start is not None and context.lunch_end is not None):
         lunch_candidates = filter_spots_for_block(
             food_spots,
             context.lunch_start,
