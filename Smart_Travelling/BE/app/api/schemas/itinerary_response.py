@@ -18,7 +18,6 @@ class BlockItemResponse(BaseModel):
 """Tổng hợp chi phí trong ngày không bao gồm ăn uống và di chuyển nha (chỉ tính tham quan với khách sạn thôi    )"""
 class CostSummaryResponse(BaseModel):
     total_attraction_cost_vnd: int = Field(..., example=150000)
-    total_accommodation_cost_vnd: int = Field(..., example=120000)
     total_trip_cost_vnd: int = Field(..., example=270000)
 
 

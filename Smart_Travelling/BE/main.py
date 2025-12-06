@@ -10,10 +10,13 @@ from app.api.v0.router.admin_router import router as admin_router
 from app.api.v0.router.trip_router import router as trip_router
 from app.api.v0.router.visitor_router import router as visitor_router
 from app.api.v0.router.event_router import router as events_router 
+from app.api.v0.router.tag_router import router as tag_router
+
+from app.application.services.lifespan import lifespan
 
 
 # 2) Tạo app FastAPI
-app = FastAPI(title="Let's Travel Smart with us")
+app = FastAPI(title="Let's Travel Smart with us", lifespan=lifespan)
 
 
 # 3) Bật CORS để Frontend gọi được Backend
@@ -35,7 +38,12 @@ app.include_router(users_router, prefix="/api/v0")
 app.include_router(admin_router, prefix="/api/v0")
 app.include_router(events_router, prefix="/api/v0")  
 app.include_router(trip_router, prefix="/api/v0")
+
 app.include_router(visitor_router, prefix="/api/v0")
+
+app.include_router(tag_router, prefix="/api/v0")
+
+
 
 # 5) Serve Frontend (nếu bạn muốn chạy chung BE + FE)
 #    Dùng Path để chắc chắn không sai đường dẫn

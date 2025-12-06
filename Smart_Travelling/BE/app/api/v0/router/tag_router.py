@@ -10,11 +10,11 @@ router = APIRouter(
 )
 
 
-@router.get("/{tag}")
-def get_all_tag(tag: List[str]):
-    tags = tag_service.get_all_places_by_tag(tag)
+
+@router.get("/items") 
+def get_all_tag():
+    tags = tag_service.get_all_places_by_tag()
     if tags is None:
         return error("Tag không có tồn tại")
-    return success("Lấy danh sách địa điểm theo tag thành công!", data=tags)
-
+    return success("Lấy danh sách tags thành công!", data=tags)
 

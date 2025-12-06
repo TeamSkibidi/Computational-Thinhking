@@ -45,7 +45,7 @@ def fetch_food_places_by_city(city: str) -> List[FoodPlace]:
     # Lấy connection đến database
     db = get_db()
     if db is None:
-        return [];
+        return []
 
     cursor = db.cursor(dictionary=True)
     
