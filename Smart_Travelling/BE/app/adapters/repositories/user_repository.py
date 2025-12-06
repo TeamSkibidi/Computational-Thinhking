@@ -1,6 +1,7 @@
 from typing import Optional, List, Dict
 from app.infrastructure.database.connectdb import get_db
 from datetime import datetime, timezone
+import json
 
 
 
@@ -355,6 +356,39 @@ def update_timestamp(user_id: int) -> bool:
 
     cursor.close()
     db.close()
+
+    return updated
+
+# cập nhật tags của user khi có tags mới
+def update_user_tags(user_id: int, tags: List[str]) -> bool:
+    """
+    Cập nhật tags của user.
+    
+    Tham số:
+        user_id: ID người dùng
+        tags: List các tag, vd: ["Du lịch", "Ẩm thực"]
+    """
+    db = get_db()
+    if db is None:
+        return False
+
+    cursor = db.cursor()
+
+    # Convert list -> JSON string
+    
+    tags_json = json.dumps(tags) if tags else None
+
+    sql = "UPDATE users SET tags = %s WHERE id = %s"
+    cursor.execute(sql, (tags_json, user_id))
+    db.commit()
+
+    updated = cursor.rowcount > 0
+
+    cursor.close()
+    db.close()
+
+    # Cập nhật timestamp
+    update_timestamp(user_id)
 
     return updated
 
