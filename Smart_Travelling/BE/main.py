@@ -35,7 +35,7 @@ app.include_router(users_router, prefix="/api/v0")
 app.include_router(admin_router, prefix="/api/v0")
 app.include_router(events_router, prefix="/api/v0")  
 app.include_router(trip_router, prefix="/api/v0")
-
+app.include_router(visitor_router, prefix="/api/v0")
 
 # 5) Serve Frontend (nếu bạn muốn chạy chung BE + FE)
 #    Dùng Path để chắc chắn không sai đường dẫn

@@ -5,7 +5,7 @@ from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query
 
 from app.application.services.event_service import EventService
-from Smart_Travelling.BE.app.adapters.repositories.event_repository import MySQLEventRepository
+from app.adapters.repositories.event_repository import MySQLEventRepository
 from app.api.schemas.event import EventOut  
 
 

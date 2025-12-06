@@ -1,17 +1,19 @@
 :root {
-  --bg: #0f172a;
-  --bg-card: #020617;
-  --bg-card-soft: #111827;
-  --accent: #38bdf8;
-  --accent-soft: rgba(56, 189, 248, 0.15);
-  --accent-strong: #0ea5e9;
-  --text-main: #e5e7eb;
-  --text-muted: #9ca3af;
-  --border: #1f2937;
-  --danger: #f97373;
-  --shadow-soft: 0 18px 45px rgba(15, 23, 42, 0.8);
-  --radius-lg: 18px;
-  --radius-md: 12px;
+  /* Palette sáng – gần giống trang lịch trình */
+  --bg: #f3f4f6;
+  --bg-hero: linear-gradient(135deg, #22c1c3 0%, #6dd5ed 40%, #ffffff 100%);
+  --bg-card: #ffffff;
+  --bg-card-soft: #f9fafb;
+  --accent: #0ea5e9;
+  --accent-soft: rgba(14, 165, 233, 0.12);
+  --accent-strong: #0369a1;
+  --text-main: #0f172a;
+  --text-muted: #6b7280;
+  --border: #e5e7eb;
+  --danger: #ef4444;
+  --shadow-soft: 0 18px 45px rgba(15, 23, 42, 0.18);
+  --radius-lg: 20px;
+  --radius-md: 14px;
 }
 
 /* Reset nhẹ */
@@ -23,15 +25,37 @@
 
 body {
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  background: radial-gradient(circle at top, #1f2937 0, #020617 55%, #020617 100%);
+  background: var(--bg);
   color: var(--text-main);
   min-height: 100vh;
 }
 
+/* Hero wrapper: tạo cảm giác giống trang lịch trình */
 .app {
-  max-width: 1120px;
-  margin: 32px auto;
-  padding: 0 16px 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px 20px 48px;
+  position: relative;
+}
+
+.app::before {
+  /* hero gradient ở trên cùng */
+  content: "";
+  position: fixed;
+  inset: 0 0 auto 0;
+  height: 260px;
+  background: var(--bg-hero);
+  z-index: -2;
+}
+
+.app::after {
+  /* overlay để màu dịu hơn */
+  content: "";
+  position: fixed;
+  inset: 0 0 auto 0;
+  height: 260px;
+  background: linear-gradient(to bottom, rgba(15, 23, 42, 0.08), transparent);
+  z-index: -1;
 }
 
 /* Header */
@@ -45,17 +69,18 @@ body {
 }
 
 .header h1 {
-  font-size: 28px;
-  font-weight: 700;
-  letter-spacing: 0.03em;
+  font-size: 30px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
+  color: #0f172a;
 }
 
 .header h1::before {
   content: "✈️";
-  font-size: 24px;
+  font-size: 26px;
 }
 
 .subtitle {
@@ -64,8 +89,6 @@ body {
   color: var(--text-muted);
   max-width: 640px;
 }
-
-/* Buttons */
 
 .btn {
   border: none;
@@ -82,45 +105,48 @@ body {
 
 .btn-primary {
   background: linear-gradient(135deg, var(--accent), var(--accent-strong));
-  color: #0b1120;
-  box-shadow: 0 10px 25px rgba(56, 189, 248, 0.35);
+  color: #f9fafb;
+  box-shadow: 0 10px 25px rgba(14, 165, 233, 0.35);
 }
 
 .btn-primary:hover {
   transform: translateY(-1px);
-  box-shadow: 0 14px 30px rgba(56, 189, 248, 0.45);
+  box-shadow: 0 14px 30px rgba(14, 165, 233, 0.5);
 }
 
 .btn-secondary {
-  background: rgba(15, 23, 42, 0.8);
-  color: var(--text-main);
-  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.9);
+  color: #0f172a;
+  border: 1px solid rgba(148, 163, 184, 0.4);
+  backdrop-filter: blur(8px);
 }
 
 .btn-secondary:hover {
-  background: #020617;
+  background: #e5f3ff;
 }
 
 .btn-ghost {
   background: transparent;
   color: var(--text-muted);
-  border: 1px dashed var(--border);
+  border: 1px dashed rgba(148, 163, 184, 0.7);
 }
 
 .btn-ghost:hover {
   border-style: solid;
-  color: var(--text-main);
+  color: #111827;
 }
 
-/* Search panel */
+/* Search panel – card nổi nằm giữa, giống “cấu hình” */
 
 .search-panel {
-  background: linear-gradient(135deg, rgba(15, 23, 42, 0.96), #020617);
-  border-radius: var(--radius-lg);
-  padding: 20px 20px 16px;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(18px);
+  border-radius: 24px;
+  padding: 18px 20px 14px;
   box-shadow: var(--shadow-soft);
-  border: 1px solid rgba(148, 163, 184, 0.25);
-  margin-bottom: 28px;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  margin: 0 auto 30px;
+  max-width: 760px;
   position: relative;
   overflow: hidden;
 }
@@ -128,16 +154,28 @@ body {
 .search-panel::before {
   content: "";
   position: absolute;
-  inset: -80px;
-  background: radial-gradient(circle at top left, rgba(56, 189, 248, 0.12), transparent 50%);
-  opacity: 0.6;
+  inset: -60px auto auto -80px;
+  width: 260px;
+  height: 260px;
+  background: radial-gradient(circle at center, var(--accent-soft), transparent 55%);
+  opacity: 0.9;
+  pointer-events: none;
+}
+
+.search-panel::after {
+  content: "";
+  position: absolute;
+  inset: auto -120px -120px auto;
+  width: 280px;
+  height: 280px;
+  background: radial-gradient(circle at center, rgba(56, 189, 248, 0.08), transparent 60%);
   pointer-events: none;
 }
 
 .field-group {
   position: relative;
   z-index: 1;
-  margin-bottom: 12px;
+  margin-bottom: 14px;
 }
 
 .field-group label {
@@ -149,10 +187,10 @@ body {
 
 .input {
   width: 100%;
-  background: rgba(15, 23, 42, 0.8);
+  background: var(--bg-card-soft);
   border-radius: 999px;
-  border: 1px solid rgba(148, 163, 184, 0.5);
-  padding: 10px 14px;
+  border: 1px solid rgba(148, 163, 184, 0.8);
+  padding: 11px 16px;
   font-size: 14px;
   color: var(--text-main);
   outline: none;
@@ -160,13 +198,13 @@ body {
 }
 
 .input::placeholder {
-  color: #6b7280;
+  color: #9ca3af;
 }
 
 .input:focus {
   border-color: var(--accent);
   box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.4);
-  background: rgba(15, 23, 42, 0.95);
+  background: #ffffff;
 }
 
 .search-actions {
@@ -198,7 +236,7 @@ body {
 }
 
 .status-message.success {
-  color: #4ade80;
+  color: #16a34a;
 }
 
 /* Loading overlay */
@@ -206,15 +244,16 @@ body {
 .loading-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(15, 23, 42, 0.72);
+  background: rgba(15, 23, 42, 0.35);
   display: flex;
   flex-direction: column;
   gap: 10px;
   align-items: center;
   justify-content: center;
-  z-index: 20;
-  color: var(--text-main);
+  z-index: 40;
+  color: #e5e7eb;
   font-size: 14px;
+  backdrop-filter: blur(4px);
 }
 
 .loading-overlay.hidden {
@@ -222,10 +261,10 @@ body {
 }
 
 .spinner {
-  width: 32px;
-  height: 32px;
+  width: 34px;
+  height: 34px;
   border-radius: 999px;
-  border: 3px solid rgba(148, 163, 184, 0.5);
+  border: 3px solid rgba(148, 163, 184, 0.6);
   border-top-color: var(--accent);
   animation: spin 0.8s linear infinite;
 }
@@ -239,23 +278,42 @@ body {
 /* Results */
 
 .results {
-  margin-top: 8px;
+  margin-top: 18px;
 }
 
 .results-title {
-  font-size: 18px;
+  font-size: 20px;
+  font-weight: 600;
   margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
+
+.results-title::before {
+  content: "";
+  width: 34px;
+  height: 3px;
+  border-radius: 999px;
+  background: linear-gradient(to right, var(--accent), transparent);
+}
+
+/* Lưới thẻ – bố cục khác trang cũ, tạo cảm giác “gallery” */
 
 .places-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 16px;
+  gap: 18px;
 }
 
-@media (max-width: 900px) {
+/* Responsive */
+@media (max-width: 980px) {
   .places-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .search-panel {
+    max-width: 100%;
   }
 }
 
@@ -268,34 +326,82 @@ body {
   .places-grid {
     grid-template-columns: 1fr;
   }
+
+  .app {
+    padding-top: 24px;
+  }
 }
 
-/* Place card */
+/* Place card – glass + gradient viền + animation */
 
 .place-card {
-  background: radial-gradient(circle at top left, rgba(56, 189, 248, 0.15), rgba(15, 23, 42, 0.98));
+  background: radial-gradient(circle at top left, var(--accent-soft), #ffffff);
   border-radius: var(--radius-md);
   padding: 14px 14px 12px;
-  border: 1px solid rgba(148, 163, 184, 0.25);
-  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(148, 163, 184, 0.55);
+  box-shadow: 0 16px 32px rgba(15, 23, 42, 0.18);
   display: flex;
   flex-direction: column;
   gap: 6px;
   position: relative;
   overflow: hidden;
+  transform: translateY(8px) scale(0.98);
+  opacity: 0;
+  animation: floatIn 0.55s cubic-bezier(0.16, 0.9, 0.33, 1.12) forwards;
 }
 
+/* tạo viền trái phát sáng nhẹ */
+.place-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 4px;
+  background: linear-gradient(to bottom, var(--accent), #22c55e);
+  opacity: 0.9;
+}
+
+/* ánh sáng ở góc phải */
 .place-card::after {
   content: "";
   position: absolute;
-  inset: -40px;
-  background: radial-gradient(
-    circle at bottom right,
-    rgba(56, 189, 248, 0.12),
-    transparent 45%
-  );
-  opacity: 0.6;
-  pointer-events: none;
+  inset: auto -40px -60px auto;
+  width: 160px;
+  height: 160px;
+  background: radial-gradient(circle at center, rgba(56, 189, 248, 0.18), transparent 65%);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.place-card:hover::after {
+  opacity: 1;
+}
+
+.place-card:hover {
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.25);
+}
+
+/* stagger animation cho 6 thẻ đầu – thường bạn gợi ý 5 thẻ */
+.places-grid .place-card:nth-child(1) { animation-delay: 0.02s; }
+.places-grid .place-card:nth-child(2) { animation-delay: 0.08s; }
+.places-grid .place-card:nth-child(3) { animation-delay: 0.14s; }
+.places-grid .place-card:nth-child(4) { animation-delay: 0.20s; }
+.places-grid .place-card:nth-child(5) { animation-delay: 0.26s; }
+.places-grid .place-card:nth-child(6) { animation-delay: 0.32s; }
+
+@keyframes floatIn {
+  0% {
+    opacity: 0;
+    transform: translateY(18px) scale(0.96);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(-2px) scale(1.01);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .place-header {
@@ -308,21 +414,27 @@ body {
 .place-name {
   font-weight: 600;
   font-size: 15px;
+  color: #0f172a;
 }
 
 .place-badge {
   font-size: 11px;
-  padding: 3px 7px;
+  padding: 4px 9px;
   border-radius: 999px;
-  background: rgba(15, 23, 42, 0.9);
-  border: 1px solid rgba(148, 163, 184, 0.6);
+  background: rgba(14, 165, 233, 0.08);
+  border: 1px solid rgba(14, 165, 233, 0.6);
+  color: var(--accent-strong);
 }
+
+/* mô tả */
 
 .place-summary {
   font-size: 13px;
   color: var(--text-muted);
-  min-height: 32px;
+  min-height: 34px;
 }
+
+/* Meta info */
 
 .place-meta {
   display: flex;
@@ -337,16 +449,18 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  padding: 3px 7px;
+  padding: 4px 8px;
   border-radius: 999px;
-  background: rgba(15, 23, 42, 0.9);
-  border: 1px solid rgba(51, 65, 85, 0.8);
+  background: var(--bg-card-soft);
+  border: 1px solid rgba(209, 213, 219, 0.9);
 }
 
 .meta-pill strong {
-  font-weight: 500;
-  color: var(--text-main);
+  font-weight: 600;
+  color: #111827;
 }
+
+/* Tags chip */
 
 .place-tags {
   display: flex;
@@ -357,27 +471,29 @@ body {
 
 .tag {
   font-size: 11px;
-  padding: 2px 7px;
+  padding: 3px 8px;
   border-radius: 999px;
-  background: rgba(15, 23, 42, 0.9);
-  color: var(--accent);
-  border: 1px solid rgba(56, 189, 248, 0.5);
+  background: rgba(14, 165, 233, 0.08);
+  color: var(--accent-strong);
+  border: 1px solid rgba(56, 189, 248, 0.7);
 }
+
+/* Address */
 
 .place-address {
   font-size: 12px;
   color: var(--text-muted);
-  margin-top: 4px;
+  margin-top: 6px;
 }
 
-/* Empty message */
+/* Empty state */
 
 .empty-message {
-  margin-top: 12px;
-  padding: 10px 12px;
-  border-radius: 8px;
-  background: rgba(15, 23, 42, 0.8);
-  border: 1px dashed var(--border);
+  margin-top: 16px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px dashed rgba(148, 163, 184, 0.8);
   font-size: 13px;
   color: var(--text-muted);
 }
