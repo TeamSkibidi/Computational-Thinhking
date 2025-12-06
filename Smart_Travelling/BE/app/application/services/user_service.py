@@ -271,3 +271,20 @@ def get_user_tags(user_id: int):
     USER - Lấy danh sách tags sở thích của user.
     """
     return user_repository.get_user_tags(user_id) or []
+
+
+def update_user_tags(user_id: int, tags: List[str]) -> bool:
+    """
+    USER - Cập nhật danh sách tags sở thích.
+    
+    Tham số:
+        user_id: ID người dùng
+        tags: List các tag mới
+    """
+    if not isinstance(tags, list):
+        raise ValueError("Tags phải là danh sách (list)")
+
+    # Loại bỏ trùng lặp & trim khoảng trắng
+    tags = list(set([t.strip() for t in tags if t and isinstance(t, str)]))
+
+    return user_repository.update_user_tags(user_id, tags)
