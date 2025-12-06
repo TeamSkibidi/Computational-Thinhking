@@ -263,3 +263,11 @@ def admin_delete_user(user_id: int) -> bool:
         raise ValueError("User không tồn tại")
 
     return user_repository.delete_user(user_id)
+
+
+# Phần này llaf thao tác lấy tags
+def get_user_tags(user_id: int):
+    """
+    USER - Lấy danh sách tags sở thích của user.
+    """
+    return user_repository.get_user_tags(user_id) or []
