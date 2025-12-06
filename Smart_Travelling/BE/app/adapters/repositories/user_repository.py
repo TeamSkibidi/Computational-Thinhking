@@ -151,6 +151,37 @@ def get_user_by_id(user_id: int) -> Optional[Dict]:
 
     return result
 
+# lấy tags của user theo id
+def get_user_tags(user_id: int) -> Optional[List[str]]:
+    """
+    Lấy danh sách tags của user.
+    Trả về List[str] hoặc None nếu user không có tags.
+    """
+    db = get_db()
+    if db is None:
+        return None
+
+    cursor = db.cursor(dictionary=True)
+    sql = "SELECT tags FROM users WHERE id = %s"
+    cursor.execute(sql, (user_id,))
+    result = cursor.fetchone()
+
+    cursor.close()
+    db.close()
+
+    if result is None:
+        return None
+
+    tags = result.get("tags")
+    if isinstance(tags, str):
+        try:
+            import json
+            tags = json.loads(tags)
+        except json.JSONDecodeError:
+            tags = []
+    
+    return tags if isinstance(tags, list) else []
+
 
 # Update các trường hợp
 
