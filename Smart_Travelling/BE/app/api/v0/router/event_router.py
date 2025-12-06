@@ -4,6 +4,8 @@ from fastapi import APIRouter, Depends
 
 from app.application.services.event_service import EventService
 from app.adapters.repositories.event_repository import MySQLEventRepository
+ 
+
 from app.api.schemas.event.event_request import (
     EventSearchByNameRequest,
     EventListRequest,
@@ -11,6 +13,7 @@ from app.api.schemas.event.event_request import (
 )
 from app.api.schemas.event.event_response import EventOut
 from app.utils.response_format import success, error
+
 
 
 router = APIRouter(prefix="/events", tags=["events"])
