@@ -48,3 +48,22 @@ def change_password(data: Dict):
         return success("Đổi mật khẩu thành công!")
     except ValueError as e:
         return error(str(e))
+    
+# các thao tác với tags
+# CẬP NHẬT TAGS
+@router.post("/{user_id}/tags")
+def update_user_tags(user_id: int, data: Dict):
+    """
+    Cập nhật danh sách tags sở thích.
+    
+    Body:
+    {
+        "tags": ["Du lịch", "Ẩm thực", "Thiên nhiên"]
+    }
+    """
+    try:
+        tags = data.get("tags", [])
+        user_service.update_user_tags(user_id, tags)
+        return success("Cập nhật tags thành công!")
+    except ValueError as e:
+        return error(str(e))
