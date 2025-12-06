@@ -423,21 +423,22 @@ def filter_spots_for_block(
 
 """ Chuyển đổi danh sách BlockItem sang BlockItemResponse """
 def block_items_to_response(items: List[BlockItem]) -> list[BlockItemResponse]:
-    return [
-        BlockItemResponse(
-            order=i.order,
-            type=i.type,
-            name=i.name,
-            start=min_to_time_str(i.start_min),
-            end=min_to_time_str(i.end_min),
-            distance_from_prev_km=round(i.distance_from_prev_km, 2),
-            travel_from_prev_min=i.travel_from_prev_min,
-            dwell_min=i.dwell_min,
-            image_url=i.image_url,
-            price_vnd=i.price_vnd,
-        )
-        for i in items
-    ]
+    result = []
+    for item in items:
+        result.append(BlockItemResponse(
+            order=item.order,
+            type=item.type,
+            name=item.name,
+            start=min_to_time_str(item.start_min),
+            end=min_to_time_str(item.end_min),
+            dwell_min=item.dwell_min,
+            distance_from_prev_km=round(item.distance_from_prev_km, 2),
+            travel_from_prev_min=item.travel_from_prev_min,
+            price_vnd=item.price_vnd,
+            image_url=item.image_url,
+            place_id=item.place_id,
+        ))
+    return result
 
 """------- Build cho từng block-------"""
 """ Chọn 1 địa điểm ăn uống phù hợp trong khung thời gian và khoảng cách cho phép """
