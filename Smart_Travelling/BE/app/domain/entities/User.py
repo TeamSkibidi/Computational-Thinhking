@@ -1,5 +1,5 @@
 from pydantic import BaseModel, EmailStr, Field
-from typing import Optional
+from typing import Optional, List
 from datetime import datetime, timezone
 import enum
 
@@ -48,6 +48,9 @@ class User(BaseModel):
     
     #số lần nhập sai
     failed_attempts: int = 0
+    
+    # tags sở thích người dùng
+    Optional[List[str]] = Field(default=None, description="Sở thích: ['Du lịch', 'Ẩm thực', ...]")
     
     
         
