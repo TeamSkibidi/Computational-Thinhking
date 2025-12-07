@@ -9,8 +9,9 @@ import { request } from "./request.js";
  * @param {string} city - Tên thành phố (VD: "Hồ Chí Minh")
  * @param {number[]} seenIds - Danh sách id đã gợi ý trước đó
  * @param {number} k - Số lượng địa điểm muốn gợi ý (default 5)
+ * @param {number|null} userId - ID người dùng (để lấy tags sở thích)
  */
-export async function recommendPlaces(city, seenIds = [], k = 5) {
+export async function recommendPlaces(city, seenIds = [], k = 5, userId = null) {
   const body = {
     city,
     seen_ids: seenIds,

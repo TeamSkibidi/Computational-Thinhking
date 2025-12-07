@@ -47,7 +47,7 @@ loginForm.addEventListener("submit", async (e) => {
     localStorage.setItem("user", JSON.stringify(user));
 
     // Chuyển sang trang profile (đổi path nếu bạn đặt khác)
-    window.location.href = "../html/profile.html";
+    window.location.href = "../html/recommend_five_vistor.html";
 
   } catch (err) {
     // Nếu backend trả lỗi, authApi đã throw Error
