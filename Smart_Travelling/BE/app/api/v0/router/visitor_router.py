@@ -19,6 +19,7 @@ def recommend_places(data: Dict):
 
     {
       "city": "Ho Chi Minh",
+      "user_id": 5  #user id để llaasy tag sở thích
       "seen_ids": [1, 2, 3],   # optional – danh sách id đã gợi ý trước đó
       "k": 5                   # optional – số lượng cần gợi ý, mặc định 5
     }
@@ -29,6 +30,7 @@ def recommend_places(data: Dict):
         city = data["city"]
 
         # seen_ids: danh sách id đã xem (optional)
+        user_id = data.get("user_id")  # ✅ THÊM
         raw_seen: List[int] = data.get("seen_ids", []) or []
         seen_ids: Set[int] = set(raw_seen)
 
@@ -39,6 +41,7 @@ def recommend_places(data: Dict):
         # Gọi service để random địa điểm KHÔNG LẶP
         places, new_seen_ids = visitor_service.recommend_places_by_city(
             city=city,
+            user_id=user_id,
             seen_ids=seen_ids,
             k=k,
         )
