@@ -17,6 +17,10 @@ export async function recommendPlaces(city, seenIds = [], k = 5) {
     k,
   };
 
+  if (userId !== null && userId !== undefined) {
+    body.user_id = userId;
+  }
+
   // request(path, method, body) – giống mấy file api khác
   const res = await request("/visitor/recommend", "POST", body);
 
