@@ -11,7 +11,8 @@ CREATE TABLE
         is_active BOOLEAN DEFAULT TRUE,
         failed_attempts INT DEFAULT 0,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-        updated_at DATETIME NULL ON UPDATE CURRENT_TIMESTAMP
+        updated_at DATETIME NULL ON UPDATE CURRENT_TIMESTAMP,
+        tags JSON DEFAULT NULL
     );
 
 -- dán vào workbench để tạo bảng
