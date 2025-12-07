@@ -28,73 +28,10 @@ class BlockItem:
     travel_from_prev_min: int
     price_vnd: int | None
     image_url: str | None
+
+
+
 """------- Các hàm tiện ích cho gợi ý lịch trình -------"""
-
-def weighted_random_choice(items: list, weights: list, k: int = 1) -> list:
-    """
-    Chọn ngẫu nhiên có trọng số từ danh sách.
-    Trả về list các item được chọn (không lặp).
-    """
-    if not items or not weights:
-        return []
-    
-    k = min(k, len(items))
-    
-    # Normalize weights
-    total = sum(weights)
-    if total == 0:
-        weights = [1.0] * len(items)
-        total = len(items)
-    
-    selected = []
-    remaining = list(zip(items, weights))
-    
-    for _ in range(k):
-        if not remaining:
-            break
-        
-        # Normalize probabilities
-        total_w = sum(w for _, w in remaining)
-        if total_w == 0:
-            break
-        
-        # Random choice
-        r = random.random() * total_w
-        cumulative = 0.0
-        chosen_idx = 0
-        
-        for i, (_, w) in enumerate(remaining):
-            cumulative += w
-            if r <= cumulative:
-                chosen_idx = i
-                break
-        
-        selected.append(remaining[chosen_idx][0])
-        remaining.pop(chosen_idx)
-    
-    return selected
-
-def calculate_cluster_center(spots: List[ItinerarySpot]) -> Tuple[float, float]:
-    """Tính tâm của nhóm địa điểm."""
-    if not spots:
-        return (0.0, 0.0)
-    
-    avg_lat = sum(s.lat for s in spots) / len(spots)
-    avg_lng = sum(s.lng for s in spots) / len(spots)
-    return (avg_lat, avg_lng)
-
-def filter_spots_by_cluster(
-    spots: List[ItinerarySpot],
-    center_lat: float,
-    center_lng: float,
-    max_radius_km: float
-) -> List[ItinerarySpot]:
-    """Lọc địa điểm trong bán kính từ tâm."""
-    return [
-        s for s in spots
-        if haversine_km(center_lat, center_lng, s.lat, s.lng) <= max_radius_km
-    ]
-
 """ Hàm tính trọng số cho địa điểm tham quan """
 def calculate_spot_weight(
     spot: ItinerarySpot,
@@ -114,18 +51,18 @@ def calculate_spot_weight(
     - Distance penalty (gần hơn = tốt hơn)
     - Random factor
     """
-    # === AI SCORE ===
+    # tính điểm bằng AI nếu có dựa trên tag của người dùng sẽ so sánh với model hybrid đã train trước đó
     ai_score = 0.0
     if is_ai_ready() and prefs:
         tags = getattr(prefs, 'tags', None) or getattr(prefs, 'preferred_tags', None) or []
         if tags:
             ai_score = get_ai_score(spot.id, tags)
     
-    # === BASE SCORES ===
+    # tính điểm dựa trên rating và popularity
     rating_score = (spot.rating or 3.0) / 5.0
     popularity_score = min((spot.popularity or 0) / 1000, 1.0)
     
-    # === TAG MATCHING ===
+    # tính điểm dựa trên tag của người dùng (rule_based khác với cái ai)
     t_score = 0.0
     if prefs:
         spot_tags = set(getattr(spot, 'tags', None) or [])
@@ -133,10 +70,10 @@ def calculate_spot_weight(
         if spot_tags and pref_tags:
             t_score = len(spot_tags & pref_tags) / max(len(pref_tags), 1)
     
-    # === MUST VISIT BONUS ===
+    # Lọc địa điểm phải đi (Chưa sài đâu)
     must_bonus = 2.0 if spot.id in must_ids else 0.0
     
-    # === DIVERSITY SCORE - Ưu tiên địa điểm KHÁC với những gì đã chọn ===
+    # Ưu tiên địa điểm so với các điểm đã chọn trong trip
     diversity_score = 1.0
     if selected_spots:
         # Tính khoảng cách trung bình đến các điểm đã chọn
@@ -147,21 +84,21 @@ def calculate_spot_weight(
         # Địa điểm xa hơn 2km so với trung bình = diversity cao
         diversity_score = min(avg_dist / 2.0, 1.0)
     
-    # === DISTANCE PENALTY - Gần hơn = điểm cao hơn ===
+    # Chấm điểm khoảng cách gần hơn tốt hơn
     distance_penalty = 1.0
     if distance_from_prev > 0:
         # Penalty tăng dần theo khoảng cách
         distance_penalty = max(1.0 - (distance_from_prev / max_leg_km), 0.2)
     
-    # === COMBINE SCORES ===
+
     # Nếu có AI score thì ưu tiên AI
     if ai_score > 0:
         deterministic_score = (
-            ai_score * 0.30 +           # AI recommendation
-            rating_score * 0.15 +       # Rating
-            t_score * 0.20 +            # Tag match
-            diversity_score * 0.15 +    # Diversity trong trip
-            distance_penalty * 0.20 +   # Khoảng cách
+            ai_score * 0.30 +           
+            rating_score * 0.15 +
+            t_score * 0.20 +
+            diversity_score * 0.15 +
+            distance_penalty * 0.20 +
             must_bonus
         )
     else:
@@ -174,11 +111,12 @@ def calculate_spot_weight(
             must_bonus
         )
     
-    # === ADD RANDOMNESS ===
+    # random ngẫu nhiên để tăng tính đa dạng các địa điểm
     random_factor = random.uniform(1 - randomness, 1 + randomness)
     
     return deterministic_score * random_factor
 
+""" Hàm sắp xếp địa điểm tham quan với đa dạng cao """
 def sort_spots_diverse(
     spots: list[ItinerarySpot],
     prefs: Optional[UserPreferences],
@@ -202,6 +140,7 @@ def sort_spots_diverse(
     if selected_in_trip is None:
         selected_in_trip = []
     
+    # Tính trọng số cho từng địa điểm
     weighted = []
     for spot in spots:
         # Tính khoảng cách từ anchor
@@ -222,18 +161,6 @@ def sort_spots_diverse(
     weighted.sort(key=lambda x: x[1], reverse=True)
     
     return [s for s, _ in weighted]
-
-""" Hàm loại những địa điểm mà user không muốn tránh theo danh sách id"""
-def apply_avoid(spots: list[ItinerarySpot],
-                avoid_ids: list[int]) -> list[ItinerarySpot]:
-    if not avoid_ids:
-        return spots
-
-    avoid_set = set(avoid_ids)
-    return [
-        s for s in spots
-        if s.id is None or s.id not in avoid_set
-    ]
 
 """ Hàm sắp xếp địa điểm tham quan dựa trên sở thích người dùng """
 def visit_sort_key(spot: ItinerarySpot, prefs: UserPreferences, must_ids, use_ai: bool = True):
@@ -269,7 +196,7 @@ def visit_sort_key(spot: ItinerarySpot, prefs: UserPreferences, must_ids, use_ai
         getattr(spot, 'popularity', 0) or 0,
     )
 
-# Preload AI scores cho tất cả spots
+""" Hàm lấy AI score cho 1 địa điểm với tag người dùng """
 def preload_ai_scores(spots: list, preferred_tags: List[str]):
     """Preload AI scores cho tất cả spots."""
     global _ai_scores_cache
@@ -293,48 +220,6 @@ def preload_ai_scores(spots: list, preferred_tags: List[str]):
         print(f"Preloaded {len(recommendations)} AI scores")
     except Exception as e:
         print(f"Preload failed: {e}")
-
-"""Hàm set thời gian ở lại 1 địa điểm"""
-def estimate_dwell_minutes(spot: ItinerarySpot) -> int:
-    if spot.dwell_min is not None:
-        return spot.dwell_min
-
-    return 90
-
-""" Lấy ID duy nhất của 1 địa điểm """
-def get_spot_unique_id(obj) -> str | None:
-    """
-    Lấy ra ID duy nhất của 1 địa điểm.
-    obj có thể là:
-    - ItinerarySpot
-    - BlockItemResponse (có field .spot)
-    """
-    if obj is None:
-        return None
-
-    """ Nếu là BlockItemResponse có field .spot thì ưu tiên lấy từ đó """
-    spot = getattr(obj, "spot", obj)
-
-    """ Thử lấy từ các thuộc tính có thể có """
-    for attr in ("spot_id", "place_id", "id"):
-        val = getattr(spot, attr, None)
-        if val:
-            return str(val)
-
-    return None
-
-""" Lấy tập hợp ID của các địa điểm trong 1 ngày """
-def get_spot_ids_from_day(day_plan: DayItineraryResponse) -> set[str]:
-    ids: set[str] = set()
-
-    """ Giả sử day_plan.blocks là dict[str, list[BlockItemResponse]] """
-    for block_items in day_plan.blocks.values():
-        for item in block_items:
-            uid = get_spot_unique_id(item)
-            if uid:
-                ids.add(uid)
-
-    return ids
 
 """" Hàm xoá các địa điểm trùng trong cùng 1 ngày """
 def dedup_day_items_by_name(day_plan: DayItineraryResponse,
@@ -365,19 +250,6 @@ def dedup_day_items_by_name(day_plan: DayItineraryResponse,
             new_items.append(item)
 
         day_plan.blocks[block_name] = new_items
-
-""" Lấy địa điểm nổi tiếng nhất trong danh sách địa điểm lấy ratting trước, popularity sau """
-def sort_spots_with_tags(
-    spots: list[ItinerarySpot],
-    prefs: Optional[UserPreferences],
-    must_ids: list[int],
-) -> list[ItinerarySpot]:
-    return sorted(
-        spots,
-        key=lambda s: visit_sort_key(s, prefs, must_ids),
-        reverse=True,
-    )
-
 
 """ Tính tổng chí phí địa điểm tham quan và khách sạn trong ngày """
 def recompute_cost_summary_from_blocks(day_plan: DayItineraryResponse) -> None:
@@ -455,21 +327,15 @@ def pick_meal_block(
 
     if not food_spots_for_block:
         return items, None
-
-    """ Lọc theo sở thích người dùng """
-    filtered = apply_tag_filter(food_spots_for_block, context.preferences)
-    if not filtered:
-        print("deo lọc theo sở thích dc")
-        return items, None
     
     """ Lọc theo thời gian trong block """
     filtered = filter_spots_for_block(
-        filtered,
+        food_spots_for_block,
         block_start_min,
         block_end_min,
     )
     if not filtered:
-        print("deo sap xep dc")
+        print("khong sap xep dc")
         return items, None
     
     """ Sắp xếp quán ăn theo sở thích người dùng """
@@ -730,9 +596,6 @@ def build_day_itinerary(
     
     if selected_in_trip is None:
         selected_in_trip = []
-    
-    visit_spots = apply_avoid(visit_spots, context.avoid_place_ids)
-    food_spots  = apply_avoid(food_spots, context.avoid_place_ids)
 
     used_visit_place_ids_in_day: set[int] = set()
     selected_today: List[ItinerarySpot] = []
@@ -951,8 +814,10 @@ def build_trip_itinerary(
             selected_in_trip=all_selected_in_trip,
         )
 
-        # Dedup và tính lại chi phí
+        # Tránh trùng lặp địa điểm trong ngày
         dedup_day_items_by_name(day_plan, dedup_types={"visit", "eat"})
+
+        # Cập nhật lại cost summary sau khi dedupe
         recompute_cost_summary_from_blocks(day_plan)
         
         days.append(day_plan)
@@ -986,11 +851,11 @@ def build_trip_itinerary(
         "days": [d.model_dump() for d in days],
     }
 
-# Khởi tạo biến singleton cho module recommender
+""" Khởi tạo module hybrid recommender AI """
 _ai_recommender: Optional['HybridRecommender'] = None
 _ai_scores_cache: Dict[str, float] = {}
 
-
+""" Khởi tạo module hybrid recommender AI """
 def init_ai_recommender(places: list, interactions: list = None) -> bool:
     # Khởi tạo singleton 
     global _ai_recommender
@@ -1010,15 +875,16 @@ def init_ai_recommender(places: list, interactions: list = None) -> bool:
         _ai_recommender = None
         return False
 
-
+""" Lấy instance của AI recommender """
 def get_ai_recommender():
     """Lấy AI recommender instance."""
     return _ai_recommender
 
-# Kiểm tra module đã sẵn sàng chưa 
+""" Kiểm tra module AI recommender đã sẵn sàng chưa """
 def is_ai_ready() -> bool:
     return _ai_recommender is not None and _ai_recommender.is_trained
 
+""" Lấy AI score cho 1 địa điểm với tag người dùng """
 def get_ai_score(place_id: int, preferred_tags: List[str]) -> float:
     """Lấy AI score cho 1 địa điểm."""
     global _ai_scores_cache
@@ -1034,6 +900,7 @@ def get_ai_score(place_id: int, preferred_tags: List[str]) -> float:
     _ai_scores_cache[cache_key] = score
     return score
 
+""" Xóa cache AI scores """
 def clear_ai_cache():
     """Xóa cache AI scores."""
     global _ai_scores_cache

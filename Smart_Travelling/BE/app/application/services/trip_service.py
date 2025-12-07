@@ -15,8 +15,6 @@ def get_trip_itinerary(req: ItineraryRequest):
     - Gọi trip engine để xây dựng lịch trình
     """
     #  Lấy dữ liệu từ DB
-
-    
     place_lites    =  fetch_place_lites_by_city(req.city)
     food_places    =  fetch_food_places_by_city(req.city)
 

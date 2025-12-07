@@ -126,7 +126,7 @@ def create_address(cursor, address_id: int, house_number: str, street: str, ward
         ))
         return True
     except Exception as e:
-        print(f"  ⚠️ Error creating address {address_id}: {e}")
+        print(f" Error creating address {address_id}: {e}")
         return False
 
 
@@ -184,7 +184,7 @@ def create_food(cursor, food_id: int, food_data: dict, address_id: int) -> bool:
         ))
         return True
     except Exception as e:
-        print(f"  ❌ Error creating food {food_id}: {e}")
+        print(f" Error creating food {food_id}: {e}")
         return False
 
 def parse_line(line: str) -> Optional[dict]:
@@ -245,12 +245,12 @@ def parse_line(line: str) -> Optional[dict]:
             "menu_url": None,
         }
     except Exception as e:
-        print(f"  ⚠️ Error parsing line: {e}")
+        print(f" Error parsing line: {e}")
         return None
 
 
 def import_data(data_lines: list):
-    print("🚀 Starting food data import...")
+    print("Starting food data import...")
     conn = pymysql.connect(**DB_CONFIG)
     cursor = conn.cursor()
 
@@ -300,15 +300,15 @@ def import_data(data_lines: list):
     cursor.close()
     conn.close()
 
-    print(f"✅ Success: {success}")
-    print(f"⏭️ Skipped: {skipped}")
-    print(f"❌ Errors: {error}")
+    print(f"Success: {success}")
+    print(f"Skipped: {skipped}")
+    print(f"Errors: {error}")
 
 
 def main():
     data_file = "food.tsv"
     if not os.path.exists(data_file):
-        print(f"❌ File {data_file} not found!")
+        print(f"File {data_file} not found!")
         return
     with open(data_file, "r", encoding="utf-8") as f:
         lines = f.readlines()
@@ -317,4 +317,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-# ...existing code...
