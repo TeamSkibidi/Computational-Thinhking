@@ -383,14 +383,14 @@ def import_data(data_lines: list):
 
 
 def main():
-    data_file = "food.tsv"
+    data_file = "places.tsv"
     
     if os.path.exists(data_file):
         with open(data_file, "r", encoding="utf-8") as f:
             lines = f.readlines()
-        print(f"📂 Found {len(lines)} lines in {data_file}")
+        print(f"Found {len(lines)} lines in {data_file}")
     else:
-        print(f"❌ File {data_file} not found!")
+        print(f"File {data_file} not found!")
         return
     
     import_data(lines)
