@@ -187,6 +187,8 @@ function renderPlaces(list) {
 
 // ------- Main logic -------
 
+let userId = null;
+
 async function handleRecommendClick() {
   const city = cityInput.value.trim();
   if (!city) {
@@ -201,7 +203,7 @@ async function handleRecommendClick() {
   try {
     const currentSeen = loadSeenIds(city);
 
-    const data = await recommendPlaces(city, currentSeen, 5);
+    const data = await recommendPlaces(city, currentSeen, 5, userId);
     // data: { city, places, seen_ids }
 
     renderPlaces(data.places);
@@ -255,6 +257,16 @@ backToHomeBtn.addEventListener("click", () => {
   window.location.href = "../html/main.html";
 });
 
-// Lúc đầu
-renderPlaces([]);
-setStatus('Nhập thành phố và nhấn "Gợi ý 5 địa điểm" để bắt đầu.');
+// SỬA: Init khi DOM load xong
+document.addEventListener("DOMContentLoaded", () => {
+  // Lấy user từ localStorage
+  const savedUser = localStorage.getItem("user");
+  if (savedUser) {
+    const user = JSON.parse(savedUser);
+    userId = user.id;  // ← Lưu user_id
+    console.log("User ID:", userId);  // Debug
+  }
+  
+  renderPlaces([]);
+  setStatus('Nhập thành phố và nhấn "Gợi ý 5 địa điểm" để bắt đầu.');
+});
