@@ -558,19 +558,26 @@ def build_visit_block(
     selected_in_trip: List[ItinerarySpot] = None,
     anchor_spot: ItinerarySpot = None,
 ) -> tuple[List[BlockItem], Optional[ItinerarySpot]]:
+    """
+    Build 1 block tham quan, cố gắng lấp đủ max_places_per_block.
+    Co giãn dwell time và nới lỏng khoảng cách hợp lý để tránh thiếu spot.
+    """
     items: List[BlockItem] = []
     current_min = block_start_min
     last_spot = anchor_spot
     order = 1
-    
-    # Lọc spots đã chọn trong trip
-    selected_ids = {s.id for s in selected_in_trip}
+
+    if selected_in_trip is None:
+        selected_in_trip = []
+
+    # Lọc spots đã chọn trong trip (theo id)
+    selected_ids = {s.id for s in selected_in_trip if s.id is not None}
     available_spots = [s for s in spots_for_block if s.id not in selected_ids]
-    
+
     if not available_spots:
         return items, last_spot
-    
-    """ Sắp xếp với đa dạng hóa + AI """
+
+    # Sắp xếp ban đầu theo AI + sở thích
     sorted_spots = sort_spots_diverse(
         available_spots,
         prefs=context.preferences,
@@ -578,94 +585,138 @@ def build_visit_block(
         selected_in_trip=selected_in_trip,
         anchor_spot=anchor_spot,
         max_leg_km=max_leg_km,
-        randomness=0.25
+        randomness=0.25,
     )
-    attempts = 0
-    max_attempts = len(sorted_spots) * 2  # Cho phép thử nhiều lần
-    spot_index = 0
-    
-    while order <= max_places_per_block and current_min < block_end_min and attempts < max_attempts:
-        attempts += 1
-        
-        if spot_index >= len(sorted_spots):
-            # Reset và thử lại với spots còn lại
+
+    # Pool động (xóa dần các spot đã chọn)
+    pool = list(sorted_spots)
+
+    # Lặp để chọn tới max_places_per_block
+    while order <= max_places_per_block:
+        # Nếu thời gian còn lại quá ít thì dừng
+        if current_min >= block_end_min - 30:  # < 30 phút thì thôi
             break
-        
-        spot = sorted_spots[spot_index]
-        spot_index += 1
-        
-        # Skip nếu đã chọn
-        if spot.id in selected_ids:
-            continue
-        
-        # Tính khoảng cách và thời gian di chuyển
-        if last_spot is not None:
-            dist_km = haversine_km(last_spot.lat, last_spot.lng, spot.lat, spot.lng)
-            if dist_km > max_leg_km * 1.5:  # Nới lỏng một chút
-                continue
-            travel_min = estimate_travel_minutes(dist_km)
-        else:
-            dist_km = 0.0
-            travel_min = 0
-        
-        # Tính thời gian bắt đầu và kết thúc
-        start_min = current_min + travel_min
-        dwell_min = spot.dwell_min if spot.dwell_min else 60
-        end_min = start_min + dwell_min
-        
-        # Check giờ mở cửa
-        open_min = spot.open_time_min if spot.open_time_min is not None else 0
-        close_min = spot.close_time_min if spot.close_time_min is not None else 1439
-        
-        # Điều chỉnh start nếu spot chưa mở
-        if start_min < open_min:
-            start_min = open_min
-            end_min = start_min + dwell_min
-        
-        # Check không vượt quá block end (cho phép vượt 15 phút)
-        if start_min >= block_end_min:
-            continue
-        
-        if end_min > block_end_min + 15:
-            # Giảm dwell time nếu có thể
-            available_time = block_end_min - start_min
-            if available_time >= 30:  # Tối thiểu 30 phút
-                dwell_min = available_time
-                end_min = start_min + dwell_min
+
+        best = None
+        best_score = -1e9
+
+        for idx, spot in enumerate(pool):
+            # Khoảng cách & thời gian di chuyển
+            if last_spot is not None:
+                dist_km = haversine_km(last_spot.lat, last_spot.lng, spot.lat, spot.lng)
+                travel_min = estimate_travel_minutes(dist_km)
             else:
+                dist_km = 0.0
+                travel_min = 0
+
+            # Nới lỏng khoảng cách theo thứ tự spot
+            # slot đầu: cho phép đi xa hơn để khởi động
+            # slot cuối: cũng nới một chút để vét nốt
+            if order == 1:
+                dist_limit = max_leg_km * 3.0
+            elif order == max_places_per_block:
+                dist_limit = max_leg_km * 2.0
+            else:
+                dist_limit = max_leg_km * 1.5
+
+            if dist_km > dist_limit:
                 continue
-        
-        # Check không vượt quá giờ đóng cửa
-        if end_min > close_min:
-            continue
-        
-        # Tạo block item
+
+            start_min = current_min + travel_min
+
+            # Giờ mở/đóng cửa
+            open_min = spot.open_time_min if spot.open_time_min is not None else 0
+            close_min = spot.close_time_min if spot.close_time_min is not None else 1439
+
+            # Nếu đến trước giờ mở cửa -> phải chờ
+            wait = 0
+            if start_min < open_min:
+                wait = open_min - start_min
+                start_min = open_min
+
+            # Nếu phải chờ quá lâu (> 30p) thì bỏ spot này, thử cái khác
+            if wait > 30:
+                continue
+
+            # Nếu tới nơi đã sau giờ đóng -> bỏ
+            if start_min >= close_min:
+                continue
+
+            # Thời gian còn lại trong block và tới khi đóng cửa
+            time_left_block = block_end_min - start_min
+            time_until_close = close_min - start_min
+            max_possible_dwell = min(time_left_block, time_until_close)
+
+            # Nếu không đủ tối thiểu 30p cho spot này -> bỏ
+            if max_possible_dwell < 30:
+                continue
+
+            # dwell chuẩn hoặc co lại cho vừa
+            base_dwell = spot.dwell_min if spot.dwell_min is not None else 60
+            if base_dwell <= max_possible_dwell:
+                dwell = base_dwell
+            else:
+                dwell = max_possible_dwell  # co lại
+
+            end_min = start_min + dwell
+
+            # Chấm điểm: ưu tiên
+            # - ít chờ
+            # - gần
+            # - rating/popularity cao
+            score = 0.0
+            score -= wait * 4.0
+            score -= dist_km * 15.0
+            score += (spot.rating or 3.0) * 8.0
+            score += (min((spot.popularity or 0) / 1000, 1.0)) * 5.0
+
+            # Ưu tiên slot cuối để lấp kín
+            if order == max_places_per_block:
+                score += 20.0
+
+            if score > best_score:
+                best_score = score
+                best = {
+                    "idx": idx,
+                    "spot": spot,
+                    "start": start_min,
+                    "end": end_min,
+                    "dwell": int(dwell),
+                    "dist": float(dist_km),
+                    "travel": int(travel_min),
+                }
+
+        # Không tìm được spot hợp lệ cho slot hiện tại -> dừng block
+        if best is None:
+            break
+
+        chosen = best["spot"]
         item = BlockItem(
             order=order,
             type="visit",
-            place_id=spot.id,
-            name=spot.name,
-            start_min=start_min,
-            end_min=end_min,
-            dwell_min=dwell_min,
-            distance_from_prev_km=round(dist_km, 2),
-            travel_from_prev_min=travel_min,
-            price_vnd=int(spot.price_vnd) if spot.price_vnd else 0,
-            image_url=spot.image_url,
+            place_id=chosen.id,
+            name=chosen.name,
+            start_min=best["start"],
+            end_min=best["end"],
+            dwell_min=best["dwell"],
+            distance_from_prev_km=round(best["dist"], 2),
+            travel_from_prev_min=best["travel"],
+            price_vnd=int(chosen.price_vnd) if chosen.price_vnd else 0,
+            image_url=chosen.image_url,
         )
-        
         items.append(item)
-        selected_ids.add(spot.id)
-        last_spot = spot
-        current_min = end_min
+
+        # Cập nhật trạng thái
+        current_min = best["end"]
+        last_spot = chosen
         order += 1
-        
-        # Nếu còn nhiều thời gian trống (> 1 giờ), tiếp tục thêm spots
-        remaining_time = block_end_min - current_min
-        if remaining_time > 60 and order <= max_places_per_block:
-            # Tiếp tục vòng lặp
-            continue
-    
+
+        # Xoá spot khỏi pool để không chọn lại
+        pool.pop(best["idx"])
+
+        if not pool:
+            break
+
     return items, last_spot
 
 """"------- Build lịch trình cho cả ngày và chuyến đi -------"""
