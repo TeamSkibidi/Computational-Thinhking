@@ -32,8 +32,7 @@ def test_valid_city_default_k():
     ids = [p.get("id") for p in places]
     assert None not in ids
     assert len(ids) == len(set(ids))
-    
-    
+
 # =======================================================
 # TC02 – seen_ids không được trả lại
 # =======================================================
