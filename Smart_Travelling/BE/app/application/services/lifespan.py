@@ -4,7 +4,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from app.domain.entities.place_lite import PlaceLite
-from typing import Dict, List, Optional, Tuple
+
+
 
 # Load places từ DB để khởi tạo module hybrid recommender
 async def load_places_for_ai() -> list[PlaceLite]:

@@ -224,13 +224,13 @@ def parse_line(line: str) -> Optional[dict]:
 
 
 def import_data(data_lines: list):
-    print("🚀 Starting data import...")
+    print("Starting data import...")
     
     conn = pymysql.connect(**DB_CONFIG)
     cursor = conn.cursor()
     
     # Clear old data first
-    print("🗑️ Clearing old data...")
+    print("Clearing old data...")
     cursor.execute("SET FOREIGN_KEY_CHECKS = 0")
     cursor.execute("DELETE FROM places")
     cursor.execute("DELETE FROM addresses")
@@ -264,7 +264,7 @@ def import_data(data_lines: list):
         
         if create_place(cursor, place_data):
             success_count += 1
-            print(f"✅ Imported: {place_data['name']}")
+            print(f"Imported: {place_data['name']}")
         else:
             error_count += 1
     
@@ -272,9 +272,9 @@ def import_data(data_lines: list):
     cursor.close()
     conn.close()
     
-    print(f"\n📊 Import completed!")
-    print(f"   ✅ Success: {success_count}")
-    print(f"   ❌ Errors: {error_count}")
+    print(f"\nImport completed!")
+    print(f"  Success: {success_count}")
+    print(f" Errors: {error_count}")
 
 
 def main():
