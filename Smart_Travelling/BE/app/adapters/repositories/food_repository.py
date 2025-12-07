@@ -81,7 +81,6 @@ def fetch_food_places_by_city(city: str) -> List[FoodPlace]:
     cursor.execute(sql, (city,))
 
     rows = cursor.fetchall()
-
     
     cursor.close()
     db.close()
