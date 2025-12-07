@@ -50,7 +50,7 @@ class User(BaseModel):
     failed_attempts: int = 0
     
     # tags sở thích người dùng
-    Optional[List[str]] = Field(default=None, description="Sở thích: ['Du lịch', 'Ẩm thực', ...]")
+    tags: Optional[List[str]] = Field(default=None, description="Sở thích: ['Du lịch', 'Ẩm thực', ...]")
     
     
         
