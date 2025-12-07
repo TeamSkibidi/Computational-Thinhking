@@ -300,7 +300,7 @@ def parse_line(line: str) -> Optional[dict]:
             "address_id": None,
         }
     except Exception as e:
-        print(f"  ⚠️ Error parsing: {e}")
+        print(f" rror parsing: {e}")
         return None
 
 
@@ -339,10 +339,10 @@ def import_data(data_lines: list):
         
         if create_food(cursor, food_data):
             success_count += 1
-            print(f"✅ [{success_count}] {food_data['name']}")
+            print(f"[{success_count}] {food_data['name']}")
         else:
             error_count += 1
-            print(f"❌ Failed: {food_data['name']}")
+            print(f"Failed: {food_data['name']}")
     
     conn.commit()
     

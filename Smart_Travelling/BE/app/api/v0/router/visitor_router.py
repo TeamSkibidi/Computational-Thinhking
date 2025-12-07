@@ -33,9 +33,8 @@ def recommend_places(data: Dict):
         seen_ids: Set[int] = set(raw_seen)
 
         # k: số lượng địa điểm muốn gợi ý (optional, default = 5)
-        k = data.get("k", 5)
-        if not isinstance(k, int) or k <= 0:
-            k = 5
+        
+        k = 5
 
         # Gọi service để random địa điểm KHÔNG LẶP
         places, new_seen_ids = visitor_service.recommend_places_by_city(
