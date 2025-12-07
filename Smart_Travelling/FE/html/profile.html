@@ -107,6 +107,54 @@
                         </div>
                     </div>
 
+                    <!-- ✅ THÊM: TAGS SECTION -->
+                    <div class="divider"></div>
+
+                    <!-- Tags View -->
+                    <div id="tagsDisplayMode">
+                        <div class="info-row">
+                            <div>
+                                <label>🏷️ Sở thích</label>
+                                <div id="currentTagsList" class="tags-display-list"></div>
+                                <p id="emptyTagsMessage" class="info-text">Bạn chưa chọn sở thích nào</p>
+                            </div>
+                            <button id="editTagsBtn" type="button" class="btn btn-outline btn-sm">Chỉnh sửa</button>
+                        </div>
+                    </div>
+
+                    <!-- Tags Edit (ẩn mặc định) -->
+                    <div id="tagsEditMode" class="edit-box hidden">
+                        <label>Chọn sở thích của bạn</label>
+                        <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">Nhấp vào các tag để thêm/bỏ</p>
+
+                        <!-- Search Tags -->
+                        <input 
+                            type="text" 
+                            id="searchTagsInput" 
+                            placeholder="🔍 Tìm kiếm sở thích..."
+                            class="form-control"
+                            style="margin-bottom: 12px;"
+                        />
+
+                        <!-- All Tags Grid -->
+                        <div class="all-tags-container" id="allTagsContainer" style="margin-bottom: 12px;"></div>
+
+                        <!-- Selected Tags Preview -->
+                        <div style="background: #f9fafb; padding: 8px; border-radius: 8px; margin-bottom: 12px;">
+                            <label style="font-size: 12px; color: var(--text-muted);">Đã chọn:</label>
+                            <div class="selected-tags" id="selectedTagsList" style="display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px;"></div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="edit-actions">
+                            <button type="button" id="saveTagsBtn" class="btn btn-primary btn-sm">Lưu</button>
+                            <button type="button" id="cancelTagsBtn" class="btn btn-outline btn-sm">Hủy</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
                 </div>
             </div>
 

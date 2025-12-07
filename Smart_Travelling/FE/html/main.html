@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Smart Travelling - Khám phá Việt Nam</title>
+  <link rel="stylesheet" href="../css/mainstyle.css" />
+</head>
+<body>
+  <!-- ===== SIDEBAR ===== -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <h2 class="sidebar-logo">✈️ Smart Travel</h2>
+      <button class="sidebar-close" id="sidebarClose">✕</button>
+    </div>
+
+    <!-- User Profile Section -->
+    <div class="sidebar-profile">
+      <div class="profile-avatar"></div>
+      <span class="profile-name" id="profileName">Khách</span>
+      <button class="btn-login" id="btnLogin">Đăng nhập</button>
+    </div>
+
+    <!-- Navigation Menu -->
+    <nav class="sidebar-nav">
+      <div class="nav-section">
+        <h3 class="nav-section-title">Khám phá</h3>
+        
+        <button class="nav-item" id="navRecommendTrip">
+          <span class="nav-icon">📅</span>
+          <span class="nav-text">Gợi ý lịch trình</span>
+        </button>
+
+        <button class="nav-item" id="navRecommendPlaces">
+          <span class="nav-icon">🎯</span>
+          <span class="nav-text">Gợi ý 5 địa điểm</span>
+        </button>
+
+        <button class="nav-item" id="navEvents">
+          <span class="nav-icon">🎉</span>
+          <span class="nav-text">Lễ hội & Sự kiện</span>
+        </button>
+      </div>
+    </nav>
+
+    <div class="sidebar-footer">
+      <p class="sidebar-version">v1.0.0</p>
+    </div>
+  </aside>
+
+  <!-- ===== HEADER ===== -->
+  <header class="header">
+    <button class="menu-toggle" id="menuToggle">☰</button>
+    <div class="header-title">Smart Travelling</div>
+  </header>
+
+  <!-- ===== MAIN CONTENT ===== -->
+  <main class="main-content">
+    <!-- Hero Section -->
+    <section class="hero-section">
+      <div class="hero-content">
+        <h1 class="hero-title">Khám phá Việt Nam tuyệt đẹp 🇻🇳</h1>
+        <p class="hero-subtitle">Hãy bắt đầu cuộc phiêu lưu của bạn</p>
+        <button class="btn btn-primary" id="btnGetStarted">Bắt đầu ngay</button>
+      </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features-section">
+      <h2 class="section-title">Các tính năng nổi bật</h2>
+      
+      <div class="features-grid">
+        <!-- Feature 1: Lịch trình -->
+        <div class="feature-card">
+          <div class="feature-icon">📅</div>
+          <h3 class="feature-title">Lịch trình thông minh</h3>
+          <p class="feature-desc">
+            Lên kế hoạch chuyến đi với AI, tự động sắp xếp các địa điểm theo thứ tự hợp lý
+          </p>
+          <button class="btn btn-outline" id="featureRecommendTrip">Khám phá →</button>
+        </div>
+
+        <!-- Feature 2: Gợi ý địa điểm -->
+        <div class="feature-card">
+          <div class="feature-icon">🎯</div>
+          <h3 class="feature-title">Gợi ý 5 địa điểm</h3>
+          <p class="feature-desc">
+            Nhận gợi ý cá nhân hóa dựa trên sở thích của bạn, không bao giờ lặp lại
+          </p>
+          <button class="btn btn-outline" id="featureRecommendPlaces">Khám phá →</button>
+        </div>
+
+        <!-- Feature 3: Lễ hội & Sự kiện -->
+        <div class="feature-card">
+          <div class="feature-icon">🎉</div>
+          <h3 class="feature-title">Lễ hội & Sự kiện</h3>
+          <p class="feature-desc">
+            Tìm kiếm và tham dự các lễ hội, sự kiện thú vị diễn ra khắp nước
+          </p>
+          <button class="btn btn-outline" id="featureEvents">Khám phá →</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Destinations Section -->
+    <section class="destinations-section">
+      <h2 class="section-title">Các điểm đến nổi bật</h2>
+      
+      <div class="destinations-grid">
+        <!-- Đà Lạt -->
+        <div class="destination-card">
+          <div class="destination-image dalat-image"></div>
+          <div class="destination-content">
+            <h3 class="destination-title">Đà Lạt</h3>
+            <p class="destination-desc">
+              Khám phá cao nguyên thơ mộng với khí hậu mát mẻ
+            </p>
+          </div>
+        </div>
+
+        <!-- Hạ Long -->
+        <div class="destination-card">
+          <div class="destination-image halong-image"></div>
+          <div class="destination-content">
+            <h3 class="destination-title">Hạ Long</h3>
+            <p class="destination-desc">
+              Vịnh Hạ Long với vịnh đá vôi huyền thoại và hơn 1600 hòn đảo
+            </p>
+          </div>
+        </div>
+
+        <!-- Sa Pa -->
+        <div class="destination-card">
+          <div class="destination-image sapa-image"></div>
+          <div class="destination-content">
+            <h3 class="destination-title">Sa Pa</h3>
+            <p class="destination-desc">
+              Tham quan ruộng bậc thang hùng vĩ và văn hóa dân tộc thiểu số
+            </p>
+          </div>
+        </div>
+
+        <!-- Phú Quốc -->
+        <div class="destination-card">
+          <div class="destination-image phuquoc-image"></div>
+          <div class="destination-content">
+            <h3 class="destination-title">Phú Quốc</h3>
+            <p class="destination-desc">
+              Thiên đường biển đảo với bãi biển dài và nước trong xanh
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ===== SCRIPT ===== -->
+  <script type="module" src="../js/pages/mainscript.js"></script>
+</body>
+</html>
