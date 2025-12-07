@@ -378,6 +378,7 @@ def sort_spots_with_tags(
         reverse=True,
     )
 
+
 """ Tính tổng chí phí địa điểm tham quan và khách sạn trong ngày """
 def recompute_cost_summary_from_blocks(day_plan: DayItineraryResponse) -> None:
     """Tính lại cost_summary dựa trên các block đã được dedupe."""
@@ -967,7 +968,6 @@ def get_ai_recommender():
 def is_ai_ready() -> bool:
     return _ai_recommender is not None and _ai_recommender.is_trained
 
-
 def get_ai_score(place_id: int, preferred_tags: List[str]) -> float:
     """Lấy AI score cho 1 địa điểm."""
     global _ai_scores_cache
@@ -982,7 +982,6 @@ def get_ai_score(place_id: int, preferred_tags: List[str]) -> float:
     score = _ai_recommender.get_place_score(place_id, preferred_tags)
     _ai_scores_cache[cache_key] = score
     return score
-
 
 def clear_ai_cache():
     """Xóa cache AI scores."""
