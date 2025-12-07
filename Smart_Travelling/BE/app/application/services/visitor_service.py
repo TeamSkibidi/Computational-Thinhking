@@ -64,7 +64,8 @@ def recommend_places_by_city(
 
     if user_tags and len(user_tags) > 0:
         # CÓ USER TAGS: Tính score + sort theo score + popularity
-        
+
+        place_scores = {}
         # Tính match_score cho mỗi place
         for place in remain:
             place_tags = set(place.tags or [])
@@ -72,13 +73,13 @@ def recommend_places_by_city(
             num_matching = len(matching_tags)
             # match_score = số tag trùng / tổng số user tags
             match_score = num_matching / len(user_tags)
-            place.match_score = match_score
+            place_scores[place.id] = match_score
         
         # SORT theo: match_score (cao → thấp), popularity (cao → thấp)
         remain.sort(
             key=lambda p: (
-                getattr(p, 'match_score', 0),  # Score cao nhất được ưu tiên
-                p.popularity or 0               # Score bằng → popularity cao nhất
+                place_scores.get(p.id, 0),  # Match score từ dict
+                p.popularity or 0
             ),
             reverse=True
         )
