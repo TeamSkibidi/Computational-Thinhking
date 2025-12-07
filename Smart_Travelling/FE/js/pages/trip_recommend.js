@@ -17,12 +17,68 @@ import { getTags } from "../api/tagsApi.js";
 let generatedTripData = [];
 let activeDayIndex = 0;
 let cachedTags = [];
+let currentUser = null;
+
 
 // === INIT ===
 document.addEventListener('DOMContentLoaded', () => init());
 
+function loadTripFromHistoryIfAny() {
+    const raw = localStorage.getItem("trip_from_history");
+    if (!raw) return false;
+
+    try {
+        const trip = JSON.parse(raw);
+        console.log("🔁 Load trip from history:", trip);
+
+
+
+        // Cập nhật cấu hình hiện tại từ trip
+        currentConfig.city = trip.city || currentConfig.city;
+        currentConfig.start_date = trip.start_date || currentConfig.start_date;
+        currentConfig.num_days = trip.num_days || currentConfig.num_days;
+        currentConfig.num_people = trip.num_people || currentConfig.num_people || 1;
+        currentConfig.preferred_tags = trip.tags || trip.preferred_tags || [];
+
+        // Parse lại days giống như lúc gọi API
+        let days = [];
+        const tripData = trip.trip_data || trip.data || trip;
+
+        if (Array.isArray(tripData?.days)) {
+            days = tripData.days;
+        } else if (tripData?.days && typeof tripData.days === "object") {
+            days = Object.values(tripData.days);
+        } else if (Array.isArray(tripData)) {
+            days = tripData;
+        }
+
+        console.log("Days from history:", days);
+
+        generatedTripData = days;
+        activeDayIndex = 0;
+
+        // Render lại giống lúc vừa tạo trip
+        renderHeaderInfo(currentConfig, generatedTripData);
+        renderDayNavigator(generatedTripData, activeDayIndex, switchToDay);
+
+        if (generatedTripData.length > 0) {
+            renderDayTimeline(generatedTripData[0], "fade");
+        }
+
+        return true;
+    } catch (e) {
+        console.error("Lỗi parse trip_from_history:", e);
+        return false;
+    } finally {
+        // Dùng xong thì xóa, tránh reload lại vẫn còn
+        localStorage.removeItem("trip_from_history");
+    }
+}
+
 async function init() {
     console.log("Initializing...");
+
+    checkLoginStatus();
     
     // Fetch tags ngay khi load trang
     await fetchAndCacheTags();
@@ -31,12 +87,37 @@ async function init() {
     setupModalEvents();
     setupTagsDropdown();
     
-    // Render header mặc định
-    renderHeaderInfo(currentConfig);
+    // Chỉ load từ history nếu URL có ?fromHistory=1
+    const params = new URLSearchParams(window.location.search);
+    const fromHistory = params.get("fromHistory") === "1";
+
+    if (fromHistory) {
+        const loaded = loadTripFromHistoryIfAny();
+        if (!loaded) {
+            // Nếu vì lý do gì đó không load được thì quay về trạng thái mặc định
+            renderHeaderInfo(currentConfig);
+        }
+    } else {
+        // Mở trang bình thường -> không đụng gì tới history
+        renderHeaderInfo(currentConfig);
+    }
     
     console.log("Init complete!");
 }
 
+
+// ✅ THÊM: Check login status
+function checkLoginStatus() {
+    const savedUser = localStorage.getItem("user");
+    if (savedUser) {
+        try {
+            currentUser = JSON.parse(savedUser);
+            console.log("Current user:", currentUser);
+        } catch (e) {
+            console.error("Parse user error:", e);
+        }
+    }
+}
 // === FETCH TAGS ===
 async function fetchAndCacheTags() {
     try {
@@ -78,6 +159,17 @@ function setupModalEvents() {
     // Sidebar "Lịch trình"  
     document.getElementById('navItemSchedule')?.addEventListener('click', () => toggleModal(false));
     
+    // ⭐ Sidebar "Đã lưu" -> mở history
+    const savedItem = document.getElementById('navItemSaved');
+    if (savedItem) {
+        savedItem.addEventListener('click', () => {
+            console.log("👉 Click ĐÃ LƯU – chuyển sang history");
+            window.location.href = "./history.html";  // hoặc "history.html"
+        });
+    } else {
+        console.warn("Không tìm thấy #navItemSaved trong DOM");
+    }
+
     // Close buttons
     document.querySelector('.modal-close-btn')?.addEventListener('click', () => toggleModal(false));
     document.getElementById('btnCancelConfig')?.addEventListener('click', () => toggleModal(false));
@@ -402,7 +494,8 @@ function collectFormData() {
         start_date: document.getElementById('inputStartDate')?.value || getTodayDate(),
         num_days: parseInt(document.getElementById('inputNumDays')?.value) || 3,
         num_people: parseInt(document.getElementById('inputNumPeople')?.value) || 1,
-        preferred_tags: preferredTags
+        preferred_tags: preferredTags,
+        user_id: currentUser ? currentUser.id : null  // ✅ THÊM: user_id
     };
     
     BLOCK_CONFIG.forEach(block => {
