@@ -14,6 +14,12 @@ class ItineraryRequest(BaseModel):
     city: str
     start_date: date
     num_days : int = Field(..., ge=1, le=30)
+    
+     # 👉 thêm vào đây
+    num_people: int = Field(1, ge=1, le=20)
+    
+    # Nếu FE gửi một mảng tags chung:
+    tags: List[str] = []
 
     preferred_tags: List[str] = []
     avoid_tags: List[str] = []
@@ -30,3 +36,5 @@ class ItineraryRequest(BaseModel):
     afternoon: BlockTimeConfig = BlockTimeConfig()
     dinner: BlockTimeConfig  = BlockTimeConfig()
     evening: BlockTimeConfig = BlockTimeConfig()
+    
+    user_id: Optional[int] = None
