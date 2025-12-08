@@ -833,16 +833,6 @@ def build_trip_itinerary(
                     used_food_names.add(item.name)
 
     num_nights = max(req.num_days - 1, 0)
-
-    # Debug log
-    print("\n=== TRIP SUMMARY ===")
-    for d in days:
-        print(f"DAY: {d.date}")
-        for block_name, items in d.blocks.items():
-            if items:
-                total_dist = sum(it.distance_from_prev_km or 0 for it in items)
-                print(f"   {block_name}: {[it.name for it in items]} ({total_dist:.1f}km)")
-
     return {
         "city": req.city,
         "start_date": req.start_date,
