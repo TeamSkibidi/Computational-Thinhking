@@ -170,6 +170,15 @@ function setupModalEvents() {
         console.warn("Không tìm thấy #navItemSaved trong DOM");
     }
 
+    // THÊM: Back to Home button
+    const backHomeBtn = document.getElementById('btnBackHome');
+    if (backHomeBtn) {
+        backHomeBtn.addEventListener('click', () => {
+            console.log("👉 Click TRANG CHỦ");
+            window.location.href = "./main.html";
+        });
+    }
+
     // Close buttons
     document.querySelector('.modal-close-btn')?.addEventListener('click', () => toggleModal(false));
     document.getElementById('btnCancelConfig')?.addEventListener('click', () => toggleModal(false));
