@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lịch sử lịch trình</title>
+  <link rel="stylesheet" href="../css/history.css">
+</head>
+<body>
+  <div class="app">
+    <header class="header">
+      <div>
+        <h1>📋 Lịch sử lịch trình</h1>
+        <p class="subtitle">Tất cả các chuyến đi của bạn</p>
+      </div>
+      <button class="btn btn-secondary" id="backToHomeBtn">← Về trang chính</button>
+    </header>
+
+    <main class="history-container">
+      <div class="history-actions">
+        <button class="btn btn-primary" id="clearHistoryBtn">🗑️ Xóa lịch sử</button>
+      </div>
+
+      <div id="historyByDate" class="history-by-date">
+        <!-- JS render ở đây -->
+      </div>
+
+      <div id="emptyMessage" class="empty-message hidden">
+        <p>📭 Bạn chưa có lịch sử lịch trình nào</p>
+      </div>
+    </main>
+
+    <!-- Modal chi tiết trip -->
+    <div id="tripDetailModal" class="modal hidden">
+      <div class="modal-content">
+        <button class="modal-close" id="modalCloseBtn">✕</button>
+        <div id="tripDetailContent">
+          <!-- Chi tiết trip render ở đây -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="../js/pages/history.js"></script>
+</body>
+</html>
