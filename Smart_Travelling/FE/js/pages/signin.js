@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // 1) Lấy form và input
   const signupForm = document.getElementById("signupForm");
-  const backBtn = document.getElementById("backBtn");
+  const loginBtn = document.getElementById("loginBtn");
 
   const usernameInput = document.getElementById("username");
   const passwordInput = document.getElementById("password");
@@ -55,15 +55,15 @@ document.addEventListener("DOMContentLoaded", function () {
       // ví dụ: "Đăng ký thành công. Vui lòng đăng nhập!"
 
       // 4) Chuyển trang
-      window.location.href = "../html/login.html";
+      window.location.href = "login.html";
 
     } catch (err) {
       alert("Đăng ký thất bại: " + err.message);
     }
   });
 
-  // 3) Nút back
-  backBtn.addEventListener("click", function () {
-    window.location.href = "../html/login.html";
+  // 3) Nút chuyển sang trang đăng nhập
+  loginBtn.addEventListener("click", function () {
+    window.location.href = "login.html";
   });
 });

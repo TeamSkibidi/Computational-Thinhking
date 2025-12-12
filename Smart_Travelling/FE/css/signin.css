@@ -134,20 +134,11 @@ body {
                 0 0 0 2px var(--primary-light);
 }
 
-/* 1. Căn giữa nút trong nhóm */
 .button-group {
     display: flex;
-    justify-content: center; /* Đưa nút vào chính giữa */
-    margin-top: 25px;
-}
-
-/* 2. Chỉnh kích thước riêng cho nút Login */
-#registerBtn {
-    /* Thay đổi độ rộng tại đây */
-    width: 150px;  /* Bạn có thể sửa thành 120px hoặc 180px tùy ý */
-    
-    /* Các thuộc tính giữ nguyên đẹp */
-    height: 50px;
+    justify-content: space-between;
+    gap: 20px;
+    margin-top: 20px;
 }
 
 .neumorph-btn {

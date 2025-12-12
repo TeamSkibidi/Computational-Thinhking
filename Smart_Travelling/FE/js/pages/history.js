@@ -20,6 +20,11 @@ const tripDetailContent = document.getElementById("tripDetailContent");
 // ===== INIT =====
 
 async function init() {
+  // Luôn gắn event cho nút quay lại (không phụ thuộc đăng nhập)
+  backToHomeBtn?.addEventListener("click", () => {
+    window.location.href = "recommend.html";
+  });
+
   checkLoginStatus();
   
   if (!currentUser) {
@@ -153,9 +158,6 @@ function setupEventListeners() {
   modalCloseBtn?.addEventListener("click", closeModal);
   tripDetailModal?.addEventListener("click", (e) => {
     if (e.target === tripDetailModal) closeModal();
-  });
-  backToHomeBtn?.addEventListener("click", () => {
-    window.location.href = "../html/recommend.html";
   });
 }
 

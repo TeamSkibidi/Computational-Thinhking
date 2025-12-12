@@ -436,4 +436,12 @@ function initEventPage() {
 // Khi DOM load xong thì khởi chạy trang
 document.addEventListener("DOMContentLoaded", () => {
   initEventPage();
+
+  // Xử lý nút quay về trang chính
+  const backBtn = document.getElementById("back-btn");
+  if (backBtn) {
+    backBtn.addEventListener("click", () => {
+      window.location.href = "main.html";
+    });
+  }
 });
