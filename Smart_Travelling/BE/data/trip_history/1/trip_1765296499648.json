@@ -1,0 +1,478 @@
+{
+  "city": "Hồ Chí Minh",
+  "start_date": "2025-12-09",
+  "num_days": 3,
+  "num_people": 1,
+  "total_cost": 2320000,
+  "places": [
+    {
+      "name": "Dinh Độc Lập",
+      "type": "visit",
+      "day": "2025-12-09",
+      "block": "morning",
+      "price_vnd": 40000,
+      "image_url": "https://encrypted-tbn0.gstatic.com/licensed-image?q=tbn:ANd9GcTbAgFkvF_eck0wFiGh-zBjfAVQ5v7fJ2LMVLMPz3wZxrXqoXfznqG4oPLQ85-j-nEjYgQGOONV8wgclQdn6v0b2Dk0xzmGllSecuKnd0xy_yuNABk"
+    },
+    {
+      "name": "Bảo tàng Lịch sử",
+      "type": "visit",
+      "day": "2025-12-09",
+      "block": "morning",
+      "price_vnd": 30000,
+      "image_url": "https://encrypted-tbn0.gstatic.com/licensed-image?q=tbn:ANd9GcQidUEDtxr5mdRTcP06AVTEw0e6rsf77pWed6xLbGNkFfv8cRCtbxk5Fcmjsxk-GaN_MCbWmW4ZYwNvZd7aTzFXLED3SbP2FZfvhApMN0C-RvarFI8"
+    },
+    {
+      "name": "GÓC HUẾ",
+      "type": "eat",
+      "day": "2025-12-09",
+      "block": "lunch",
+      "price_vnd": 200000,
+      "image_url": "https://i.pinimg.com/736x/02/c8/b7/02c8b7d52e1e3c0917988536d1672c29.jpg"
+    },
+    {
+      "name": "Chùa Ngọc Hoàng",
+      "type": "visit",
+      "day": "2025-12-09",
+      "block": "afternoon",
+      "price_vnd": 0,
+      "image_url": "https://encrypted-tbn3.gstatic.com/licensed-image?q=tbn:ANd9GcSOGlbuDh2RWvnVMfCPbrM9EHl-LBbdy-1oBjT4bdQhpGh902em_hDXQTx1uwFSQpeoBx2Mf9aZv9OclwLR0Co9hbB5QDN2uGWSyXRVEfgCSW7zk-E"
+    },
+    {
+      "name": "Nhà thờ Đức Bà",
+      "type": "visit",
+      "day": "2025-12-09",
+      "block": "afternoon",
+      "price_vnd": 0,
+      "image_url": "https://encrypted-tbn2.gstatic.com/licensed-image?q=tbn:ANd9GcRtzQoTebWwO-Tok96U6LkPmElTbZiiz9yE6_zhs-f6J_B7EOVU0b1OXTeiqqVzgUXJQRfK2SyqooFp9W6LzuXF0zXmjJpXrSdj3J0BBiZtHUJZvf8"
+    },
+    {
+      "name": "Phố đi bộ Nguyễn Huệ",
+      "type": "visit",
+      "day": "2025-12-09",
+      "block": "afternoon",
+      "price_vnd": 0,
+      "image_url": "https://encrypted-tbn2.gstatic.com/licensed-image?q=tbn:ANd9GcTf5-KNaijhAwlV6Wc2RWCpQb-1VvBN4CxlvwzUo8-XdPqrL-O5_uHyx27MYlE6wNA_8fj0wSDc97aXlU1msJU6eVMHZ6Li-1vF3NYa8h55UVSUpXI"
+    },
+    {
+      "name": "Phố Nhật Quán",
+      "type": "eat",
+      "day": "2025-12-09",
+      "block": "dinner",
+      "price_vnd": 150000,
+      "image_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR3gDRXBxY347HcQjcipo6wcz9NwfFXMntQSg&s"
+    },
+    {
+      "name": "Bitexco Tower",
+      "type": "visit",
+      "day": "2025-12-09",
+      "block": "evening",
+      "price_vnd": 200000,
+      "image_url": "https://encrypted-tbn3.gstatic.com/licensed-image?q=tbn:ANd9GcQVVCY2Bavik9y5l0DT3oShbI_MHZORle-eHzNI4fLJ6XyTwMIM6a5Zd4NTKBQjEDhiG09TxMVYD5C5ZPzSoTy_gMZU2Se9Gs72naC_2VIlVBk-DAY"
+    },
+    {
+      "name": "Suối Tiên (Núi Dinh)",
+      "type": "visit",
+      "day": "2025-12-10",
+      "block": "morning",
+      "price_vnd": 0,
+      "image_url": "https://bizweb.dktcdn.net/100/006/093/files/suoi-tien-nui-dinh.jpg?v=1728495172618"
+    },
+    {
+      "name": "Đèo Nước Ngọt",
+      "type": "visit",
+      "day": "2025-12-10",
+      "block": "afternoon",
+      "price_vnd": 0,
+      "image_url": "https://encrypted-tbn3.gstatic.com/licensed-image?q=tbn:ANd9GcSn1u6uTlaQXFD9IiU7UEjbzT9mzkQZ39QDrCxL8o7noVhdoxCYNVNCR0pVGSbXvkbyA12ZtkHp5WepDubPysyTlNu8U6I_OHoH0m2bbMV5m6QhthQ"
+    },
+    {
+      "name": "Hàu Sữa Quý Mập",
+      "type": "eat",
+      "day": "2025-12-10",
+      "block": "dinner",
+      "price_vnd": 150000,
+      "image_url": "https://vietinsiders.com/wp-content/uploads/2025/05/Hau-Sua-Quy-Map-bang-hieu-1.webp"
+    },
+    {
+      "name": "Bảo tàng Mỹ thuật",
+      "type": "visit",
+      "day": "2025-12-11",
+      "block": "morning",
+      "price_vnd": 30000,
+      "image_url": "https://encrypted-tbn1.gstatic.com/licensed-image?q=tbn:ANd9GcQ4N3uYHA5Ccx3h8YY6NhSO0wyJc4pvgCpU1FRMiFag007lL6w0IzEPK8AqLNHuK9LD7nnSF78wqT_BWpwHAo5joM6SAOtZY79NR3DWtyp8Kiv_3Eg"
+    },
+    {
+      "name": "Bến Nhà Rồng - Bảo tàng Hồ Chí Minh",
+      "type": "visit",
+      "day": "2025-12-11",
+      "block": "morning",
+      "price_vnd": 20000,
+      "image_url": "https://encrypted-tbn0.gstatic.com/licensed-image?q=tbn:ANd9GcTGlDr1G_42Ph2xgqu67U0Hb81KBpN3kpJp5ar3saNxbu9wMffl2wDvt5oZSbO86DUgdDuTJiVkLX1Zu4L0DyjBRevnhpcZIlKCgAJSo_MnXJRRBYQ"
+    },
+    {
+      "name": "State Bank of Vietnam - HCMC Office",
+      "type": "visit",
+      "day": "2025-12-11",
+      "block": "morning",
+      "price_vnd": 0,
+      "image_url": "https://encrypted-tbn1.gstatic.com/licensed-image?q=tbn:ANd9GcSaLFCj0h3fBXNSHUTEU6Tph4IUZzjQwSK8EbIQLlI3fcPrS8g-LNeuAcieXU-KXE0l5CuKxjKVa1lX6S49OiyzWBClmhdI6PEPbVBgWCNL3y7tP9c"
+    },
+    {
+      "name": "Sen Đại Việt Restaurant",
+      "type": "eat",
+      "day": "2025-12-11",
+      "block": "lunch",
+      "price_vnd": 250000,
+      "image_url": "https://i.pinimg.com/1200x/64/e1/4b/64e14bdf97dbcf3a28b61fe4eed9c626.jpg"
+    },
+    {
+      "name": "Chợ Dân Sinh",
+      "type": "visit",
+      "day": "2025-12-11",
+      "block": "afternoon",
+      "price_vnd": 0,
+      "image_url": "https://cdn3.ivivu.com/2022/10/Yersin-Market-ivivu.jpg"
+    },
+    {
+      "name": "Nhà thờ Tân Định",
+      "type": "visit",
+      "day": "2025-12-11",
+      "block": "afternoon",
+      "price_vnd": 0,
+      "image_url": "https://encrypted-tbn3.gstatic.com/licensed-image?q=tbn:ANd9GcRxuoDV2XfbtTUrpCwPWTx-qGL_c4227dmL0zegsgP-gU_FTumLsA2fZNArj9EI7jaakugqYHKzWAv6alTiCML8zGeB9i3yw6D_UFcAJA17LfGkfB0"
+    },
+    {
+      "name": "Chợ Bến Thành",
+      "type": "visit",
+      "day": "2025-12-11",
+      "block": "afternoon",
+      "price_vnd": 0,
+      "image_url": "https://encrypted-tbn3.gstatic.com/licensed-image?q=tbn:ANd9GcTpCAXpCMFfdq-_Q5r8R9faD47tDKUVle3dltOf4AWXCTLX7rNwTYOxDqcAMul9hH3QhniGynY86Twj48JbQaMBo17y3Yz9fxhuhM-rL_oZkdWBT20"
+    },
+    {
+      "name": "Dim Tu Tac",
+      "type": "eat",
+      "day": "2025-12-11",
+      "block": "dinner",
+      "price_vnd": 350000,
+      "image_url": "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcRlqTyBLdbq1_jPyawHwo0SnILhFDUbxC1bV4JgxdjEYaNkIu9OC-izX4hd7tP5"
+    },
+    {
+      "name": "Noir. Dining in the Dark",
+      "type": "visit",
+      "day": "2025-12-11",
+      "block": "evening",
+      "price_vnd": 900000,
+      "image_url": "https://encrypted-tbn0.gstatic.com/licensed-image?q=tbn:ANd9GcTAaKEnGRQqpgukteymKCWJP0IFpZfoGNVto3Htr6YdEWvU1gyXltNjO7zj4mtvpIjKlxDUiNr5S2UMbSKTAIBJ0p-6ACfzvbgy3M1GgvwDtqk10ig"
+    }
+  ],
+  "tags": [],
+  "trip_data": {
+    "city": "Hồ Chí Minh",
+    "start_date": "2025-12-09",
+    "num_days": 3,
+    "num_nights": 2,
+    "days": [
+      {
+        "city": "Hồ Chí Minh",
+        "date": "2025-12-09",
+        "blocks": {
+          "morning": [
+            {
+              "order": 1,
+              "type": "visit",
+              "name": "Dinh Độc Lập",
+              "start": "08:00",
+              "end": "10:00",
+              "distance_from_prev_km": 0.0,
+              "travel_from_prev_min": 0,
+              "dwell_min": 120,
+              "image_url": "https://encrypted-tbn0.gstatic.com/licensed-image?q=tbn:ANd9GcTbAgFkvF_eck0wFiGh-zBjfAVQ5v7fJ2LMVLMPz3wZxrXqoXfznqG4oPLQ85-j-nEjYgQGOONV8wgclQdn6v0b2Dk0xzmGllSecuKnd0xy_yuNABk",
+              "price_vnd": 40000
+            },
+            {
+              "order": 2,
+              "type": "visit",
+              "name": "Bảo tàng Lịch sử",
+              "start": "10:06",
+              "end": "11:30",
+              "distance_from_prev_km": 0.47,
+              "travel_from_prev_min": 6,
+              "dwell_min": 84,
+              "image_url": "https://encrypted-tbn0.gstatic.com/licensed-image?q=tbn:ANd9GcQidUEDtxr5mdRTcP06AVTEw0e6rsf77pWed6xLbGNkFfv8cRCtbxk5Fcmjsxk-GaN_MCbWmW4ZYwNvZd7aTzFXLED3SbP2FZfvhApMN0C-RvarFI8",
+              "price_vnd": 30000
+            }
+          ],
+          "lunch": [
+            {
+              "order": 1,
+              "type": "eat",
+              "name": "GÓC HUẾ",
+              "start": "11:55",
+              "end": "12:55",
+              "distance_from_prev_km": 2.08,
+              "travel_from_prev_min": 25,
+              "dwell_min": 60,
+              "image_url": "https://i.pinimg.com/736x/02/c8/b7/02c8b7d52e1e3c0917988536d1672c29.jpg",
+              "price_vnd": 200000
+            }
+          ],
+          "afternoon": [
+            {
+              "order": 1,
+              "type": "visit",
+              "name": "Chùa Ngọc Hoàng",
+              "start": "13:22",
+              "end": "13:55",
+              "distance_from_prev_km": 2.25,
+              "travel_from_prev_min": 27,
+              "dwell_min": 33,
+              "image_url": "https://encrypted-tbn3.gstatic.com/licensed-image?q=tbn:ANd9GcSOGlbuDh2RWvnVMfCPbrM9EHl-LBbdy-1oBjT4bdQhpGh902em_hDXQTx1uwFSQpeoBx2Mf9aZv9OclwLR0Co9hbB5QDN2uGWSyXRVEfgCSW7zk-E",
+              "price_vnd": 0
+            },
+            {
+              "order": 2,
+              "type": "visit",
+              "name": "Nhà thờ Đức Bà",
+              "start": "14:11",
+              "end": "16:17",
+              "distance_from_prev_km": 1.35,
+              "travel_from_prev_min": 16,
+              "dwell_min": 126,
+              "image_url": "https://encrypted-tbn2.gstatic.com/licensed-image?q=tbn:ANd9GcRtzQoTebWwO-Tok96U6LkPmElTbZiiz9yE6_zhs-f6J_B7EOVU0b1OXTeiqqVzgUXJQRfK2SyqooFp9W6LzuXF0zXmjJpXrSdj3J0BBiZtHUJZvf8",
+              "price_vnd": 0
+            },
+            {
+              "order": 3,
+              "type": "visit",
+              "name": "Phố đi bộ Nguyễn Huệ",
+              "start": "16:27",
+              "end": "17:30",
+              "distance_from_prev_km": 0.84,
+              "travel_from_prev_min": 10,
+              "dwell_min": 63,
+              "image_url": "https://encrypted-tbn2.gstatic.com/licensed-image?q=tbn:ANd9GcTf5-KNaijhAwlV6Wc2RWCpQb-1VvBN4CxlvwzUo8-XdPqrL-O5_uHyx27MYlE6wNA_8fj0wSDc97aXlU1msJU6eVMHZ6Li-1vF3NYa8h55UVSUpXI",
+              "price_vnd": 0
+            }
+          ],
+          "dinner": [
+            {
+              "order": 1,
+              "type": "eat",
+              "name": "Phố Nhật Quán",
+              "start": "17:43",
+              "end": "18:43",
+              "distance_from_prev_km": 1.08,
+              "travel_from_prev_min": 13,
+              "dwell_min": 60,
+              "image_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR3gDRXBxY347HcQjcipo6wcz9NwfFXMntQSg&s",
+              "price_vnd": 150000
+            }
+          ],
+          "evening": [
+            {
+              "order": 1,
+              "type": "visit",
+              "name": "Bitexco Tower",
+              "start": "18:53",
+              "end": "22:00",
+              "distance_from_prev_km": 0.83,
+              "travel_from_prev_min": 10,
+              "dwell_min": 187,
+              "image_url": "https://encrypted-tbn3.gstatic.com/licensed-image?q=tbn:ANd9GcQVVCY2Bavik9y5l0DT3oShbI_MHZORle-eHzNI4fLJ6XyTwMIM6a5Zd4NTKBQjEDhiG09TxMVYD5C5ZPzSoTy_gMZU2Se9Gs72naC_2VIlVBk-DAY",
+              "price_vnd": 200000
+            }
+          ]
+        },
+        "cost_summary": {
+          "total_attraction_cost_vnd": 270000,
+          "total_trip_cost_vnd": 620000
+        }
+      },
+      {
+        "city": "Hồ Chí Minh",
+        "date": "2025-12-10",
+        "blocks": {
+          "morning": [
+            {
+              "order": 1,
+              "type": "visit",
+              "name": "Suối Tiên (Núi Dinh)",
+              "start": "08:00",
+              "end": "10:10",
+              "distance_from_prev_km": 0.0,
+              "travel_from_prev_min": 0,
+              "dwell_min": 130,
+              "image_url": "https://bizweb.dktcdn.net/100/006/093/files/suoi-tien-nui-dinh.jpg?v=1728495172618",
+              "price_vnd": 0
+            }
+          ],
+          "lunch": [],
+          "afternoon": [
+            {
+              "order": 1,
+              "type": "visit",
+              "name": "Đèo Nước Ngọt",
+              "start": "14:24",
+              "end": "16:34",
+              "distance_from_prev_km": 21.16,
+              "travel_from_prev_min": 254,
+              "dwell_min": 130,
+              "image_url": "https://encrypted-tbn3.gstatic.com/licensed-image?q=tbn:ANd9GcSn1u6uTlaQXFD9IiU7UEjbzT9mzkQZ39QDrCxL8o7noVhdoxCYNVNCR0pVGSbXvkbyA12ZtkHp5WepDubPysyTlNu8U6I_OHoH0m2bbMV5m6QhthQ",
+              "price_vnd": 0
+            }
+          ],
+          "dinner": [
+            {
+              "order": 1,
+              "type": "eat",
+              "name": "Hàu Sữa Quý Mập",
+              "start": "17:44",
+              "end": "18:44",
+              "distance_from_prev_km": 5.87,
+              "travel_from_prev_min": 70,
+              "dwell_min": 60,
+              "image_url": "https://vietinsiders.com/wp-content/uploads/2025/05/Hau-Sua-Quy-Map-bang-hieu-1.webp",
+              "price_vnd": 150000
+            }
+          ],
+          "evening": []
+        },
+        "cost_summary": {
+          "total_attraction_cost_vnd": 0,
+          "total_trip_cost_vnd": 150000
+        }
+      },
+      {
+        "city": "Hồ Chí Minh",
+        "date": "2025-12-11",
+        "blocks": {
+          "morning": [
+            {
+              "order": 1,
+              "type": "visit",
+              "name": "Bảo tàng Mỹ thuật",
+              "start": "08:00",
+              "end": "10:00",
+              "distance_from_prev_km": 0.0,
+              "travel_from_prev_min": 0,
+              "dwell_min": 120,
+              "image_url": "https://encrypted-tbn1.gstatic.com/licensed-image?q=tbn:ANd9GcQ4N3uYHA5Ccx3h8YY6NhSO0wyJc4pvgCpU1FRMiFag007lL6w0IzEPK8AqLNHuK9LD7nnSF78wqT_BWpwHAo5joM6SAOtZY79NR3DWtyp8Kiv_3Eg",
+              "price_vnd": 30000
+            },
+            {
+              "order": 2,
+              "type": "visit",
+              "name": "Bến Nhà Rồng - Bảo tàng Hồ Chí Minh",
+              "start": "10:10",
+              "end": "10:25",
+              "distance_from_prev_km": 0.86,
+              "travel_from_prev_min": 10,
+              "dwell_min": 15,
+              "image_url": "https://encrypted-tbn0.gstatic.com/licensed-image?q=tbn:ANd9GcTGlDr1G_42Ph2xgqu67U0Hb81KBpN3kpJp5ar3saNxbu9wMffl2wDvt5oZSbO86DUgdDuTJiVkLX1Zu4L0DyjBRevnhpcZIlKCgAJSo_MnXJRRBYQ",
+              "price_vnd": 20000
+            },
+            {
+              "order": 3,
+              "type": "visit",
+              "name": "State Bank of Vietnam - HCMC Office",
+              "start": "10:29",
+              "end": "11:29",
+              "distance_from_prev_km": 0.35,
+              "travel_from_prev_min": 4,
+              "dwell_min": 60,
+              "image_url": "https://encrypted-tbn1.gstatic.com/licensed-image?q=tbn:ANd9GcSaLFCj0h3fBXNSHUTEU6Tph4IUZzjQwSK8EbIQLlI3fcPrS8g-LNeuAcieXU-KXE0l5CuKxjKVa1lX6S49OiyzWBClmhdI6PEPbVBgWCNL3y7tP9c",
+              "price_vnd": 0
+            }
+          ],
+          "lunch": [
+            {
+              "order": 1,
+              "type": "eat",
+              "name": "Sen Đại Việt Restaurant",
+              "start": "11:45",
+              "end": "12:45",
+              "distance_from_prev_km": 1.33,
+              "travel_from_prev_min": 16,
+              "dwell_min": 60,
+              "image_url": "https://i.pinimg.com/1200x/64/e1/4b/64e14bdf97dbcf3a28b61fe4eed9c626.jpg",
+              "price_vnd": 250000
+            }
+          ],
+          "afternoon": [
+            {
+              "order": 1,
+              "type": "visit",
+              "name": "Chợ Dân Sinh",
+              "start": "12:53",
+              "end": "13:43",
+              "distance_from_prev_km": 0.68,
+              "travel_from_prev_min": 8,
+              "dwell_min": 50,
+              "image_url": "https://cdn3.ivivu.com/2022/10/Yersin-Market-ivivu.jpg",
+              "price_vnd": 0
+            },
+            {
+              "order": 2,
+              "type": "visit",
+              "name": "Nhà thờ Tân Định",
+              "start": "14:14",
+              "end": "16:24",
+              "distance_from_prev_km": 2.55,
+              "travel_from_prev_min": 31,
+              "dwell_min": 130,
+              "image_url": "https://encrypted-tbn3.gstatic.com/licensed-image?q=tbn:ANd9GcRxuoDV2XfbtTUrpCwPWTx-qGL_c4227dmL0zegsgP-gU_FTumLsA2fZNArj9EI7jaakugqYHKzWAv6alTiCML8zGeB9i3yw6D_UFcAJA17LfGkfB0",
+              "price_vnd": 0
+            },
+            {
+              "order": 3,
+              "type": "visit",
+              "name": "Chợ Bến Thành",
+              "start": "16:47",
+              "end": "17:22",
+              "distance_from_prev_km": 1.93,
+              "travel_from_prev_min": 23,
+              "dwell_min": 35,
+              "image_url": "https://encrypted-tbn3.gstatic.com/licensed-image?q=tbn:ANd9GcTpCAXpCMFfdq-_Q5r8R9faD47tDKUVle3dltOf4AWXCTLX7rNwTYOxDqcAMul9hH3QhniGynY86Twj48JbQaMBo17y3Yz9fxhuhM-rL_oZkdWBT20",
+              "price_vnd": 0
+            }
+          ],
+          "dinner": [
+            {
+              "order": 1,
+              "type": "eat",
+              "name": "Dim Tu Tac",
+              "start": "17:26",
+              "end": "18:26",
+              "distance_from_prev_km": 0.34,
+              "travel_from_prev_min": 4,
+              "dwell_min": 60,
+              "image_url": "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcRlqTyBLdbq1_jPyawHwo0SnILhFDUbxC1bV4JgxdjEYaNkIu9OC-izX4hd7tP5",
+              "price_vnd": 350000
+            }
+          ],
+          "evening": [
+            {
+              "order": 1,
+              "type": "visit",
+              "name": "Noir. Dining in the Dark",
+              "start": "18:46",
+              "end": "22:00",
+              "distance_from_prev_km": 1.66,
+              "travel_from_prev_min": 20,
+              "dwell_min": 194,
+              "image_url": "https://encrypted-tbn0.gstatic.com/licensed-image?q=tbn:ANd9GcTAaKEnGRQqpgukteymKCWJP0IFpZfoGNVto3Htr6YdEWvU1gyXltNjO7zj4mtvpIjKlxDUiNr5S2UMbSKTAIBJ0p-6ACfzvbgy3M1GgvwDtqk10ig",
+              "price_vnd": 900000
+            }
+          ]
+        },
+        "cost_summary": {
+          "total_attraction_cost_vnd": 950000,
+          "total_trip_cost_vnd": 1550000
+        }
+      }
+    ]
+  },
+  "id": 1765296499648,
+  "created_at": "2025-12-09T16:08:19.648990+00:00"
+}

@@ -4,20 +4,28 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Smart Travelling - Khám phá Việt Nam</title>
+  
+  <!-- Font Awesome (Local) -->
+  <link rel="stylesheet" href="../icons/fontawesome/css/all.min.css">
+  <!-- Local Fonts -->
+  <link rel="stylesheet" href="../css/fonts.css">
+  
   <link rel="stylesheet" href="../css/mainstyle.css" />
 </head>
 <body>
   <!-- ===== SIDEBAR ===== -->
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-header">
-      <h2 class="sidebar-logo">✈️ Smart Travel</h2>
-      <button class="sidebar-close" id="sidebarClose">✕</button>
+      <h2 class="sidebar-logo"><i class="fa-solid fa-plane-departure"></i> Smart Travel</h2>
+      <button class="sidebar-close" id="sidebarClose"><i class="fa-solid fa-xmark"></i></button>
     </div>
 
     <!-- User Profile Section -->
     <div class="sidebar-profile">
-      <div class="profile-avatar"></div>
-      <span class="profile-name" id="profileName">Khách</span>
+      <a href="./profile.html" class="profile-link" style="text-decoration:none; color:inherit; display:flex; align-items:center; gap:10px; width:100%;">
+        <div class="profile-avatar"></div>
+        <span class="profile-name" id="profileName">Khách</span>
+      </a>
       <button class="btn-login" id="btnLogin">Đăng nhập</button>
     </div>
 
@@ -27,17 +35,17 @@
         <h3 class="nav-section-title">Khám phá</h3>
         
         <button class="nav-item" id="navRecommendTrip">
-          <span class="nav-icon">📅</span>
+          <span class="nav-icon"><i class="fa-solid fa-route"></i></span>
           <span class="nav-text">Gợi ý lịch trình</span>
         </button>
 
         <button class="nav-item" id="navRecommendPlaces">
-          <span class="nav-icon">🎯</span>
+          <span class="nav-icon"><i class="fa-solid fa-location-dot"></i></span>
           <span class="nav-text">Gợi ý 5 địa điểm</span>
         </button>
 
         <button class="nav-item" id="navEvents">
-          <span class="nav-icon">🎉</span>
+          <span class="nav-icon"><i class="fa-solid fa-calendar-days"></i></span>
           <span class="nav-text">Lễ hội & Sự kiện</span>
         </button>
       </div>
@@ -50,18 +58,20 @@
 
   <!-- ===== HEADER ===== -->
   <header class="header">
-    <button class="menu-toggle" id="menuToggle">☰</button>
-    <div class="header-title">Smart Travelling</div>
+    <button class="menu-toggle" id="menuToggle"><i class="fa-solid fa-bars"></i></button>
+    <div class="header-title"><i class="fa-solid fa-plane" style="color: var(--primary);"></i> Smart Travelling</div>
   </header>
 
   <!-- ===== MAIN CONTENT ===== -->
   <main class="main-content">
     <!-- Hero Section -->
-    <section class="hero-section">
+    <section class="hero-section" style="background-image: url('https://minhducpc.vn/uploads/images/hinh-nen-viet-nam-4k25.jpg');">
       <div class="hero-content">
-        <h1 class="hero-title">Khám phá Việt Nam tuyệt đẹp 🇻🇳</h1>
+        <h1 class="hero-title">Khám phá Việt Nam tuyệt đẹp <i class="fa-solid fa-earth-asia" style="color: var(--primary);"></i></h1>
         <p class="hero-subtitle">Hãy bắt đầu cuộc phiêu lưu của bạn</p>
-        <button class="btn btn-primary" id="btnGetStarted">Bắt đầu ngay</button>
+        <button class="btn btn-primary" id="btnGetStarted">
+          <i class="fa-solid fa-rocket"></i> Bắt đầu ngay
+        </button>
       </div>
     </section>
 
@@ -72,32 +82,38 @@
       <div class="features-grid">
         <!-- Feature 1: Lịch trình -->
         <div class="feature-card">
-          <div class="feature-icon">📅</div>
+          <div class="feature-icon"><i class="fa-solid fa-route"></i></div>
           <h3 class="feature-title">Lịch trình thông minh</h3>
           <p class="feature-desc">
             Lên kế hoạch chuyến đi với AI, tự động sắp xếp các địa điểm theo thứ tự hợp lý
           </p>
-          <button class="btn btn-outline" id="featureRecommendTrip">Khám phá →</button>
+          <button class="btn btn-outline" id="featureRecommendTrip">
+            <i class="fa-solid fa-arrow-right"></i> Khám phá
+          </button>
         </div>
 
         <!-- Feature 2: Gợi ý địa điểm -->
         <div class="feature-card">
-          <div class="feature-icon">🎯</div>
+          <div class="feature-icon"><i class="fa-solid fa-location-dot"></i></div>
           <h3 class="feature-title">Gợi ý 5 địa điểm</h3>
           <p class="feature-desc">
             Nhận gợi ý cá nhân hóa dựa trên sở thích của bạn, không bao giờ lặp lại
           </p>
-          <button class="btn btn-outline" id="featureRecommendPlaces">Khám phá →</button>
+          <button class="btn btn-outline" id="featureRecommendPlaces">
+            <i class="fa-solid fa-arrow-right"></i> Khám phá
+          </button>
         </div>
 
         <!-- Feature 3: Lễ hội & Sự kiện -->
         <div class="feature-card">
-          <div class="feature-icon">🎉</div>
+          <div class="feature-icon"><i class="fa-solid fa-calendar-days"></i></div>
           <h3 class="feature-title">Lễ hội & Sự kiện</h3>
           <p class="feature-desc">
             Tìm kiếm và tham dự các lễ hội, sự kiện thú vị diễn ra khắp nước
           </p>
-          <button class="btn btn-outline" id="featureEvents">Khám phá →</button>
+          <button class="btn btn-outline" id="featureEvents">
+            <i class="fa-solid fa-arrow-right"></i> Khám phá
+          </button>
         </div>
       </div>
     </section>
@@ -109,7 +125,7 @@
       <div class="destinations-grid">
         <!-- Đà Lạt -->
         <div class="destination-card">
-          <div class="destination-image dalat-image"></div>
+          <div class="destination-image" style="background-image: url('https://minhducpc.vn/uploads/images/hinh-nen-viet-nam-4k25.jpg');"></div>
           <div class="destination-content">
             <h3 class="destination-title">Đà Lạt</h3>
             <p class="destination-desc">
@@ -120,7 +136,7 @@
 
         <!-- Hạ Long -->
         <div class="destination-card">
-          <div class="destination-image halong-image"></div>
+          <div class="destination-image" style="background-image: url('https://minhducpc.vn/uploads/images/hinh-nen-viet-nam-4k25.jpg');"></div>
           <div class="destination-content">
             <h3 class="destination-title">Hạ Long</h3>
             <p class="destination-desc">
@@ -131,7 +147,7 @@
 
         <!-- Sa Pa -->
         <div class="destination-card">
-          <div class="destination-image sapa-image"></div>
+          <div class="destination-image" style="background-image: url('https://minhducpc.vn/uploads/images/hinh-nen-viet-nam-4k25.jpg');"></div>
           <div class="destination-content">
             <h3 class="destination-title">Sa Pa</h3>
             <p class="destination-desc">
@@ -142,7 +158,7 @@
 
         <!-- Phú Quốc -->
         <div class="destination-card">
-          <div class="destination-image phuquoc-image"></div>
+          <div class="destination-image" style="background-image: url('https://minhducpc.vn/uploads/images/hinh-nen-viet-nam-4k25.jpg');"></div>
           <div class="destination-content">
             <h3 class="destination-title">Phú Quốc</h3>
             <p class="destination-desc">
