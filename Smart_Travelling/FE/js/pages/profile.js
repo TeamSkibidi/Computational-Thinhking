@@ -8,6 +8,7 @@
 // 5) Có hàm switchTab và logout vì HTML gọi inline.
 
 import { getProfile, updateInfo, changePassword } from "../api/userApi.js";
+import { AVAILABLE_TAGS } from "../services/trip.service.js";
 
 // ============================
 // 0) LẤY USER ĐÃ LOGIN TỪ LOCALSTORAGE
@@ -29,6 +30,39 @@ const userId = user.id;
 // 1) LẤY PROFILE TỪ BACKEND + HIỂN THỊ
 // ============================
 let currentProfile = null; // lưu profile hiện tại để dùng khi edit
+let selectedTags = []; // lưu các tag đã chọn cho user hiện tại
+
+// Helpers lưu tag theo user vào localStorage (vì backend chưa có API tags)
+function getUserTagsKey(userId) {
+  return `preferred_tags_${userId}`;
+}
+
+function loadSavedTags(userId) {
+  try {
+    const raw = localStorage.getItem(getUserTagsKey(userId));
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (e) {
+    return [];
+  }
+}
+
+function saveTags(userId, tags) {
+  localStorage.setItem(getUserTagsKey(userId), JSON.stringify(tags || []));
+}
+
+// DOM elements for tags
+const tagsDisplayMode = document.getElementById("tagsDisplayMode");
+const tagsEditMode = document.getElementById("tagsEditMode");
+const editTagsBtn = document.getElementById("editTagsBtn");
+const saveTagsBtn = document.getElementById("saveTagsBtn");
+const cancelTagsBtn = document.getElementById("cancelTagsBtn");
+const currentTagsList = document.getElementById("currentTagsList");
+const emptyTagsMessage = document.getElementById("emptyTagsMessage");
+const allTagsContainer = document.getElementById("allTagsContainer");
+const selectedTagsList = document.getElementById("selectedTagsList");
+const searchTagsInput = document.getElementById("searchTagsInput");
 
 async function loadProfile() {
   try {
@@ -47,7 +81,12 @@ async function loadProfile() {
     document.getElementById("phoneText").innerText =
       profile.phone_number ? profile.phone_number : "Chưa có số điện thoại";
 
-    
+    // Tags: ưu tiên dữ liệu từ profile (nếu backend trả về), fallback localStorage
+    selectedTags =
+      (Array.isArray(profile.preferred_tags) && profile.preferred_tags.length
+        ? profile.preferred_tags
+        : loadSavedTags(userId)) || [];
+    renderTagsDisplay();
 
   } catch (err) {
     alert("Lỗi load profile: " + err.message);
@@ -234,3 +273,117 @@ window.logout = function() {
   alert("Đã đăng xuất!");
   window.location.href = "../html/login.html";
 };
+
+// ============================
+// 7) TAGS: RENDER & EVENTS
+// ============================
+
+function renderTagsDisplay() {
+  if (!currentTagsList || !emptyTagsMessage) return;
+  currentTagsList.innerHTML = "";
+
+  if (!selectedTags || selectedTags.length === 0) {
+    emptyTagsMessage.classList.remove("hidden");
+    return;
+  }
+
+  emptyTagsMessage.classList.add("hidden");
+  selectedTags.forEach((tag) => {
+    const span = document.createElement("span");
+    span.className = "tag";
+    span.textContent = tag;
+    currentTagsList.appendChild(span);
+  });
+}
+
+function renderTagsSelection(filterText = "") {
+  if (!allTagsContainer || !selectedTagsList) return;
+  allTagsContainer.innerHTML = "";
+  selectedTagsList.innerHTML = "";
+
+  const lowerFilter = filterText.trim().toLowerCase();
+
+  AVAILABLE_TAGS.forEach((tag) => {
+    if (lowerFilter && !tag.toLowerCase().includes(lowerFilter)) return;
+
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = `tag-btn${selectedTags.includes(tag) ? " active" : ""}`;
+    btn.textContent = tag;
+    btn.dataset.tag = tag;
+    btn.addEventListener("click", () => {
+      if (selectedTags.includes(tag)) {
+        selectedTags = selectedTags.filter((t) => t !== tag);
+        btn.classList.remove("active");
+      } else {
+        selectedTags.push(tag);
+        btn.classList.add("active");
+      }
+      renderSelectedTagsPreview();
+    });
+    allTagsContainer.appendChild(btn);
+  });
+
+  renderSelectedTagsPreview();
+}
+
+function renderSelectedTagsPreview() {
+  if (!selectedTagsList) return;
+  selectedTagsList.innerHTML = "";
+  if (!selectedTags || selectedTags.length === 0) {
+    const p = document.createElement("p");
+    p.className = "info-text";
+    p.style.fontSize = "12px";
+    p.textContent = "Chưa chọn tag nào";
+    selectedTagsList.appendChild(p);
+    return;
+  }
+  selectedTags.forEach((tag) => {
+    const badge = document.createElement("span");
+    badge.className = "selected-tag";
+    badge.textContent = tag;
+    const removeBtn = document.createElement("button");
+    removeBtn.className = "remove-btn";
+    removeBtn.type = "button";
+    removeBtn.textContent = "×";
+    removeBtn.addEventListener("click", () => {
+      selectedTags = selectedTags.filter((t) => t !== tag);
+      renderTagsSelection(searchTagsInput?.value || "");
+    });
+    badge.appendChild(removeBtn);
+    selectedTagsList.appendChild(badge);
+  });
+}
+
+// Events cho edit/save/cancel tags
+if (editTagsBtn && tagsDisplayMode && tagsEditMode) {
+  editTagsBtn.addEventListener("click", () => {
+    tagsDisplayMode.classList.add("hidden");
+    tagsEditMode.classList.remove("hidden");
+    renderTagsSelection("");
+    if (searchTagsInput) searchTagsInput.value = "";
+  });
+}
+
+if (cancelTagsBtn && tagsDisplayMode && tagsEditMode) {
+  cancelTagsBtn.addEventListener("click", () => {
+    tagsEditMode.classList.add("hidden");
+    tagsDisplayMode.classList.remove("hidden");
+    renderTagsDisplay();
+  });
+}
+
+if (saveTagsBtn && tagsDisplayMode && tagsEditMode) {
+  saveTagsBtn.addEventListener("click", () => {
+    saveTags(userId, selectedTags);
+    tagsEditMode.classList.add("hidden");
+    tagsDisplayMode.classList.remove("hidden");
+    renderTagsDisplay();
+  });
+}
+
+if (searchTagsInput) {
+  searchTagsInput.addEventListener("input", (e) => {
+    renderTagsSelection(e.target.value);
+  });
+}

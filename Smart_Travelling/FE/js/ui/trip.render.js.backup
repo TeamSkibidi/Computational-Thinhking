@@ -1,66 +1,5 @@
 import { BLOCK_CONFIG } from "../services/trip.service.js";
 
-// Hàm hiển thị modal bản đồ Google Maps
-function showMapModal(placeName, embedUrl, fullUrl) {
-    // Tạo modal overlay
-    const modalOverlay = document.createElement('div');
-    modalOverlay.className = 'map-modal-overlay';
-    modalOverlay.innerHTML = `
-        <div class="map-modal">
-            <div class="map-modal-header">
-                <h3 class="map-modal-title">
-                    <i class="fa-solid fa-location-dot"></i>
-                    ${placeName}
-                </h3>
-                <div class="map-modal-actions">
-                    <a href="${fullUrl}" target="_blank" class="btn-open-fullmap" title="Mở trong Google Maps">
-                        <i class="fa-solid fa-up-right-from-square"></i>
-                    </a>
-                    <button class="btn-close-map" title="Đóng">
-                        <i class="fa-solid fa-xmark"></i>
-                    </button>
-                </div>
-            </div>
-            <div class="map-modal-body">
-                <iframe 
-                    src="${embedUrl}"
-                    width="100%" 
-                    height="100%" 
-                    style="border:0;" 
-                    allowfullscreen="" 
-                    loading="lazy" 
-                    referrerpolicy="no-referrer-when-downgrade">
-                </iframe>
-            </div>
-        </div>
-    `;
-    
-    document.body.appendChild(modalOverlay);
-    
-    // Animation vào
-    requestAnimationFrame(() => {
-        modalOverlay.classList.add('active');
-    });
-    
-    // Đóng modal khi click overlay hoặc nút đóng
-    modalOverlay.addEventListener('click', (e) => {
-        if (e.target === modalOverlay || e.target.closest('.btn-close-map')) {
-            modalOverlay.classList.remove('active');
-            setTimeout(() => modalOverlay.remove(), 300);
-        }
-    });
-    
-    // Đóng bằng ESC
-    const handleEsc = (e) => {
-        if (e.key === 'Escape') {
-            modalOverlay.classList.remove('active');
-            setTimeout(() => modalOverlay.remove(), 300);
-            document.removeEventListener('keydown', handleEsc);
-        }
-    };
-    document.addEventListener('keydown', handleEsc);
-}
-
 // Hàm format tiền tệ
 function formatCurrency(amount) {
     if (amount >= 1000000) {
@@ -73,31 +12,17 @@ function formatCurrency(amount) {
 
 // Hàm parse giá tiền từ string
 function parsePrice(priceStr) {
-    if (priceStr === null || priceStr === undefined) return 0;
+    if (!priceStr) return 0;
     if (typeof priceStr === 'number') return priceStr;
     // Loại bỏ các ký tự không phải số
-    const numStr = priceStr.toString().replace(/[^0-9.-]/g, '');
-    const parsed = parseFloat(numStr);
-    return Number.isFinite(parsed) ? parsed : 0;
-}
-
-function parseDistanceKm(value) {
-    if (value === null || value === undefined) return 0;
-    if (typeof value === 'number') return value;
-    const numStr = value.toString().replace(/[^0-9.-]/g, '');
-    const parsed = parseFloat(numStr);
-    return Number.isFinite(parsed) ? parsed : 0;
+    const numStr = priceStr.toString().replace(/[^0-9]/g, '');
+    return parseInt(numStr) || 0;
 }
 
 // Tính tổng chi phí của một ngày
 function calculateDayCost(dayData) {
-    if (!dayData) return 0;
-    // Ưu tiên cost_summary nếu backend đã tính
-    if (dayData.cost_summary && dayData.cost_summary.total_trip_cost_vnd) {
-        return parsePrice(dayData.cost_summary.total_trip_cost_vnd);
-    }
-
-    if (!dayData.blocks) return 0;
+    if (!dayData || !dayData.blocks) return 0;
+    
     let total = 0;
     Object.values(dayData.blocks).forEach(items => {
         if (Array.isArray(items)) {
@@ -146,11 +71,13 @@ export function renderHeaderInfo(config, days = null) {
     if (days && Array.isArray(days) && days.length > 0) {
         const totalCost = calculateTotalCost(days);
         const totalPlaces = countTotalPlaces(days);
+        const totalDistance = calculateTotalDistance(days);
         
-        console.log("Calculated - Places:", totalPlaces, "Cost:", totalCost);
+        console.log("Calculated - Places:", totalPlaces, "Cost:", totalCost, "Distance:", totalDistance);
         
         const displayTotal = document.getElementById('displayTotal');
         const displayTotalCost = document.getElementById('displayTotalCost');
+        const displayTotalDistance = document.getElementById('displayTotalDistance');
         
         if (displayTotal) {
             displayTotal.textContent = totalPlaces;
@@ -165,6 +92,13 @@ export function renderHeaderInfo(config, days = null) {
         } else {
             console.error("#displayTotalCost not found!");
         }
+
+        if (displayTotalDistance) {
+            displayTotalDistance.textContent = totalDistance.toFixed(1);
+            console.log("Updated #displayTotalDistance to:", totalDistance);
+        } else {
+            console.warn("#displayTotalDistance not found (optional)");
+        }
     } else {
         console.warn("No valid days data:", days);
     }
@@ -175,15 +109,13 @@ export function renderHeaderInfo(config, days = null) {
 // Render thanh điều hướng ngày (Day Navigator)
 function calculateDayDistance(dayData) {
     if (!dayData || !dayData.blocks) return 0;
+    
     let totalDistance = 0;
     Object.values(dayData.blocks).forEach(items => {
         if (Array.isArray(items)) {
             items.forEach(item => {
-                // Backend trả về distance_from_prev_km cho từng activity
-                const distanceKm =
-                    parseDistanceKm(item.distance_from_prev_km) ||
-                    parseDistanceKm(item.distance_km) ||
-                    0;
+                // Lấy distance_km, nếu không có thì = 0
+                const distanceKm = parseFloat(item.distance_km) || 0;
                 totalDistance += distanceKm;
             });
         }
@@ -299,25 +231,24 @@ export function renderDayTimeline(dayData, direction = 'none', onRemovePlace = n
                     <i class="fa-solid ${block.icon}" style="color:white;"></i>
                 </div>
                 <div class="session-title-wrapper">
-                        <h2 class="session-title">${block.label}</h2>
-                        <div class="session-line"></div>
+                    <h2 class="session-title">${block.label}</h2>
+                    <div class="session-line"></div>
                 </div>
             `;
             container.appendChild(sessionHeader);
 
             items.forEach((item, itemIndex) => {
-                // ✅ SỬA: Travel Info - parse an toàn hơn
-                const travelMin =
-                    parseFloat(item.travel_from_prev_min) ||
-                    parseFloat(item.travel_min) ||
-                    0;
-                const distanceKm =
-                    parseDistanceKm(item.distance_from_prev_km) ||
-                    parseDistanceKm(item.distance_km) ||
-                    0;
+                // Parse travel info an toàn - hỗ trợ nhiều field names
+                const travelMin = parseFloat(item.travel_min) || 
+                                 parseFloat(item.travel_from_prev_min) || 
+                                 parseFloat(item.travel_time) || 0;
                 
-                // Chỉ hiển thị nếu > 0 (không phải activity đầu tiên)
-                if (travelMin > 0 || distanceKm > 0) {
+                const distanceKm = parseFloat(item.distance_km) || 
+                                  parseFloat(item.travel_from_prev_km) || 
+                                  parseFloat(item.distance) || 0;
+                
+                // Hiển thị travel info nếu không phải activity đầu tiên
+                if (itemIndex > 0 && (travelMin > 0 || distanceKm > 0)) {
                     const travelDiv = document.createElement('div');
                     travelDiv.className = "travel-info";
                     travelDiv.innerHTML = `
@@ -326,6 +257,7 @@ export function renderDayTimeline(dayData, direction = 'none', onRemovePlace = n
                             <i class="fa-solid fa-person-walking-luggage"></i>
                             <span>${travelMin > 0 ? Math.round(travelMin) : 0} phút</span>
                             <div class="dot-divider"></div>
+                            <i class="fa-solid fa-road"></i>
                             <span>${distanceKm > 0 ? distanceKm.toFixed(1) : '0.0'} km</span>
                         </div>
                     `;
@@ -348,43 +280,21 @@ export function renderDayTimeline(dayData, direction = 'none', onRemovePlace = n
                 if(item.type === 'eat') iconType = 'fa-utensils';
                 if(item.type === 'coffee') iconType = 'fa-mug-hot';
 
-                // Parse các giá trị an toàn
                 const priceDisplay = formatCurrency(item.price_vnd);
                 const dwellMin = parsePrice(item.dwell_min) || item.dwell_min || 'N/A';
                 const imageUrl = item.image_url || 'https://via.placeholder.com/300x200?text=No+Image';
                 const itemName = item.name || 'Không có tên';
                 const startTime = item.start || '--:--';
                 const endTime = item.end || '--:--';
-                
-                // Tạo Google Maps URL từ lat, lng
-                const lat = item.lat;
-                const lng = item.lng;
-                const hasLocation = lat && lng;
-                // URL cho iframe embed
-                const googleMapsEmbedUrl = hasLocation 
-                    ? `https://www.google.com/maps?q=${lat},${lng}&output=embed`
-                    : null;
-                // URL để mở trong tab mới
-                const googleMapsUrl = hasLocation 
-                    ? `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`
-                    : null;
 
                 const card = document.createElement('div');
                 card.className = "card";
-                
-                // Thêm style cursor pointer nếu có location
-                if (hasLocation) {
-                    card.style.cursor = 'pointer';
-                    card.title = 'Nhấn để xem bản đồ';
-                }
-                
                 card.innerHTML = `
                     <div class="card-img-wrapper">
                         <img src="${imageUrl}" class="card-img" onerror="this.src='https://via.placeholder.com/300x200?text=No+Image'">
                         <button class="btn-remove-place" title="Xóa khỏi lịch trình">
                             <i class="fa-solid fa-xmark"></i>
                         </button>
-                        ${hasLocation ? '<div class="map-badge"><i class="fa-solid fa-location-dot"></i></div>' : ''}
                     </div>
                     <div class="card-content">
                         <div class="card-header">
@@ -404,16 +314,50 @@ export function renderDayTimeline(dayData, direction = 'none', onRemovePlace = n
                         </div>
                     </div>
                 `;
-                
-                // Click vào card để mở modal bản đồ
-                if (hasLocation) {
-                    card.addEventListener('click', (e) => {
-                        // Không mở nếu click vào nút xóa
-                        if (e.target.closest('.btn-remove-place')) return;
-                        showMapModal(itemName, googleMapsEmbedUrl, googleMapsUrl);
+                const btnRemove = card.querySelector('.btn-remove-place');
+                if (btnRemove && onRemovePlace) {
+                    btnRemove.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        onRemovePlace(block.id, itemIndex, item.name);
                     });
                 }
-                
+                wrapper.appendChild(card);
+                container.appendChild(wrapper);
+            });
+                const priceDisplay = formatCurrency(item.price_vnd);
+                const dwellMin = parsePrice(item.dwell_min) || item.dwell_min || 'N/A';
+                const imageUrl = item.image_url || 'https://via.placeholder.com/300x200?text=No+Image';
+                const itemName = item.name || 'Không có tên';
+                const startTime = item.start || '--:--';
+                const endTime = item.end || '--:--';
+
+                const card = document.createElement('div');
+                card.className = "card";
+                card.innerHTML = `
+                    <div class="card-img-wrapper">
+                        <img src="${imageUrl}" class="card-img" onerror="this.src='https://via.placeholder.com/300x200?text=No+Image'">
+                        <button class="btn-remove-place" title="Xóa khỏi lịch trình">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-header">
+                            <div>
+                                <div class="time-badge">
+                                    ${startTime} - ${endTime}
+                                </div>
+                                <h3 class="card-title">${itemName}</h3>
+                            </div>
+                            <div class="card-icon">
+                                <i class="fa-solid ${iconType}"></i>
+                            </div>
+                        </div>
+                        <div class="card-meta">
+                            <span class="card-meta-item"><i class="fa-regular fa-clock"></i> ${dwellMin} phút</span>
+                            <span class="card-meta-item"><i class="fa-solid fa-money-bill-1-wave"></i> ${priceDisplay}</span>
+                        </div>
+                    </div>
+                `;
                 const btnRemove = card.querySelector('.btn-remove-place');
                 if (btnRemove && onRemovePlace) {
                     btnRemove.addEventListener('click', (e) => {

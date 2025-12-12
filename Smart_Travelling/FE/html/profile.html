@@ -3,39 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hồ sơ người dùng</title>
+    <title>Hồ sơ người dùng - Travel AI</title>
+    
+    <!-- Font Awesome (Local) -->
+    <link rel="stylesheet" href="../icons/fontawesome/css/all.min.css">
+    <!-- Local Fonts -->
+    <link rel="stylesheet" href="../css/fonts.css">
+    
     <link rel="stylesheet" href="../css/profile.css">
 </head>
 <body>
 
-    <!-- Nếu sau này cần navbar thì bỏ comment khối này -->
-    <!--
-    <nav class="navbar">
-        <a href="#" class="brand"><i class="ph ph-nut"></i> UserSettings</a>
-        <div class="user-menu">
-            <span>Nguyễn Văn A</span>
-            <img src="../image/avatar.png" alt="Avatar">
-        </div>
-    </nav>
-    -->
+    <!-- Back Button -->
+    <button class="btn-back-home" id="btnBackHome" title="Về trang chủ">
+        <i class="fa-solid fa-arrow-left"></i>
+        <span>Trang chủ</span>
+    </button>
 
     <div class="container">
         <aside class="sidebar">
             <ul class="nav-links">
                 <li>
                     <a href="#" class="nav-link active" onclick="switchTab('tab-general', this)">
-                        <i class="ph ph-user"></i> Thông tin chung
+                        <i class="fa-solid fa-user"></i> Thông tin chung
                     </a>
                 </li>
                 <li>
                     <a href="#" class="nav-link" onclick="switchTab('tab-security', this)">
-                        <i class="ph ph-shield-check"></i> Bảo mật & Đăng nhập
+                        <i class="fa-solid fa-shield-halved"></i> Bảo mật & Đăng nhập
                     </a>
                 </li>
               
                 <li>
                     <a href="#" class="nav-link" style="color: var(--danger);" onclick="logout()">
-                        <i class="ph ph-sign-out"></i> Đăng xuất
+                        <i class="fa-solid fa-right-from-bracket"></i> Đăng xuất
                     </a>
                 </li>
             </ul>

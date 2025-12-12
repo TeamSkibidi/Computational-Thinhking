@@ -3,29 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Let's Travel - Đăng nhập</title>
+    <title>Travel AI - Đăng nhập</title>
+    
+    <!-- Font Awesome (Local) -->
+    <link rel="stylesheet" href="../icons/fontawesome/css/all.min.css">
+    <!-- Local Fonts -->
+    <link rel="stylesheet" href="../css/fonts.css">
+    
     <link rel="stylesheet" href="../css/login.css">
 </head>
 <body>
 
-    <button class="back-btn" id="backBtn" type="button">Back</button>
+    <button class="back-btn" id="backBtn" type="button">
+        <i class="fa-solid fa-arrow-left"></i> Back
+    </button>
 
     <div class="main-container">
         <div class="image-side"></div>
 
         <div class="login-side">
             <div class="login-wrapper">
-                <div class="logo">Welcome to us</div>
+                <div class="logo">
+                    <i class="fa-solid fa-plane-departure" style="color: var(--primary);"></i>
+                    Travel AI
+                </div>
 
                 <form class="login-card" id="loginForm">
-                    <h2>Login</h2>
+                    <h2>Đăng nhập</h2>
                     
-                    <input type="text" class="input-field" placeholder="Username" id="username" />
-                    <input type="password" class="input-field" placeholder="Password" id="password" />
+                    <div class="input-group">
+                        <i class="fa-solid fa-user"></i>
+                        <input type="text" class="input-field" placeholder="Tên đăng nhập" id="username" />
+                    </div>
+                    <div class="input-group">
+                        <i class="fa-solid fa-lock"></i>
+                        <input type="password" class="input-field" placeholder="Mật khẩu" id="password" />
+                    </div>
                     
                     <div class="button-group">
-                        <button class="neumorph-btn primary" id="loginBtn" type="submit">Submit</button>
-                        <button class="neumorph-btn secondary" id="signinBtn" type="button">Sign Up</button>
+                        <button class="neumorph-btn primary" id="loginBtn" type="submit">
+                            <i class="fa-solid fa-right-to-bracket"></i> Đăng nhập
+                        </button>
+                        <button class="neumorph-btn secondary" id="signinBtn" type="button">
+                            <i class="fa-solid fa-user-plus"></i> Đăng ký
+                        </button>
                     </div>
                 </form>
             </div>

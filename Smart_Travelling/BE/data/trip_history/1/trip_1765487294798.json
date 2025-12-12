@@ -1,0 +1,468 @@
+{
+  "city": "Hồ Chí Minh",
+  "start_date": "2025-12-11",
+  "num_days": 3,
+  "num_people": 1,
+  "total_cost": 980000,
+  "places": [
+    {
+      "name": "Zenna Pool Camp",
+      "type": "visit",
+      "day": "2025-12-11",
+      "block": "morning",
+      "price_vnd": 50000,
+      "image_url": "https://res.klook.com/image/upload/q_85/c_fill,w_750/v1685957337/kvgnnsnvi9j6tk7vf7ez.jpg"
+    },
+    {
+      "name": "Bảo tàng Vũ khí cổ Robert Taylor",
+      "type": "visit",
+      "day": "2025-12-11",
+      "block": "afternoon",
+      "price_vnd": 70000,
+      "image_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQijJCowzRn8y3Sm_6z2RFuy2o7YyyVdeOgvtclZKhBZxM0Wn3ourYJ4pj1L0KS"
+    },
+    {
+      "name": "Đồi Con Heo",
+      "type": "visit",
+      "day": "2025-12-11",
+      "block": "afternoon",
+      "price_vnd": 0,
+      "image_url": "https://encrypted-tbn3.gstatic.com/licensed-image?q=tbn:ANd9GcQMe8aQIqiQc8_SXpBfNYv62FkV9EvMVb7WZuwYTMKd_rxw34P6HkaKQ9Bz6rFpL2-0CQzYVBZ8XhfxZJ6b1vfVcPtrjI-z01I_dKkmEgBxZu9JVdQ"
+    },
+    {
+      "name": "Tượng Chúa Kitô Vua",
+      "type": "visit",
+      "day": "2025-12-11",
+      "block": "afternoon",
+      "price_vnd": 0,
+      "image_url": "https://encrypted-tbn1.gstatic.com/licensed-image?q=tbn:ANd9GcTdecMQdJH7W7bq6vu8HTHOik1vGLx-76EWlWppUC0UL-G2Fe5yRwACzr3SvfqMP-g7LiEWcP05ptzVi7ZRFh2extpDJbeOCh4dkLFuUxM2NUt38Jo"
+    },
+    {
+      "name": "Lẩu Cá Đuối Hoàng Minh",
+      "type": "eat",
+      "day": "2025-12-11",
+      "block": "dinner",
+      "price_vnd": 200000,
+      "image_url": "https://yeuvungtau.com/wp-content/uploads/2022/03/lau-ca-duoi-hoang-minh-8.jpg"
+    },
+    {
+      "name": "Mũi Nghinh Phong",
+      "type": "visit",
+      "day": "2025-12-11",
+      "block": "evening",
+      "price_vnd": 0,
+      "image_url": "https://encrypted-tbn2.gstatic.com/licensed-image?q=tbn:ANd9GcS2cL6MAy1nxacT0bNX981JNkxFhR22lgu2Bonb94EMRZlckvhBdy7k-9flIHmV2p0eAdSm1ymxuHOHIXbzqGQuHVewjjgESGr0M5Fwu2EK_k_mziI"
+    },
+    {
+      "name": "Bảo tàng Chứng tích Chiến tranh",
+      "type": "visit",
+      "day": "2025-12-12",
+      "block": "morning",
+      "price_vnd": 40000,
+      "image_url": "https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcS5XNNmq3p10Cw4k1bnEEEFN8AgZK9ecB17vB2hDbw09tuHnCuzXrCvRmceH7Fp"
+    },
+    {
+      "name": "Công viên Bờ sông Sài Gòn",
+      "type": "visit",
+      "day": "2025-12-12",
+      "block": "morning",
+      "price_vnd": 0,
+      "image_url": "https://statics.vinpearl.com/cong-vien-bo-song-sai-gon_1732009640.jpg"
+    },
+    {
+      "name": "Chicago Cơm Ngon Hà Nội",
+      "type": "eat",
+      "day": "2025-12-12",
+      "block": "lunch",
+      "price_vnd": 150000,
+      "image_url": "https://i.pinimg.com/1200x/b0/4a/13/b04a13a6f69a4770a37fe960bc80dee1.jpg"
+    },
+    {
+      "name": "Phố đi bộ Nguyễn Huệ",
+      "type": "visit",
+      "day": "2025-12-12",
+      "block": "afternoon",
+      "price_vnd": 0,
+      "image_url": "https://encrypted-tbn2.gstatic.com/licensed-image?q=tbn:ANd9GcTf5-KNaijhAwlV6Wc2RWCpQb-1VvBN4CxlvwzUo8-XdPqrL-O5_uHyx27MYlE6wNA_8fj0wSDc97aXlU1msJU6eVMHZ6Li-1vF3NYa8h55UVSUpXI"
+    },
+    {
+      "name": "Dinh Độc Lập",
+      "type": "visit",
+      "day": "2025-12-12",
+      "block": "afternoon",
+      "price_vnd": 40000,
+      "image_url": "https://encrypted-tbn0.gstatic.com/licensed-image?q=tbn:ANd9GcTbAgFkvF_eck0wFiGh-zBjfAVQ5v7fJ2LMVLMPz3wZxrXqoXfznqG4oPLQ85-j-nEjYgQGOONV8wgclQdn6v0b2Dk0xzmGllSecuKnd0xy_yuNABk"
+    },
+    {
+      "name": "Chợ Bến Thành",
+      "type": "visit",
+      "day": "2025-12-12",
+      "block": "afternoon",
+      "price_vnd": 0,
+      "image_url": "https://encrypted-tbn3.gstatic.com/licensed-image?q=tbn:ANd9GcTpCAXpCMFfdq-_Q5r8R9faD47tDKUVle3dltOf4AWXCTLX7rNwTYOxDqcAMul9hH3QhniGynY86Twj48JbQaMBo17y3Yz9fxhuhM-rL_oZkdWBT20"
+    },
+    {
+      "name": "Bánh Mì Như Lan",
+      "type": "eat",
+      "day": "2025-12-12",
+      "block": "dinner",
+      "price_vnd": 40000,
+      "image_url": "https://encrypted-tbn2.gstatic.com/licensed-image?q=tbn:ANd9GcTuo6VuHnVfXjRqd-aKYoOMl59ZPQKGCYplNRwcqTNK-L-EoYh1sotlto-kqD7omH8x5femWaDyqV9FGNkfxAqYmG9UR3W2c4bXNePrINv_mHkrx3A"
+    },
+    {
+      "name": "Bitexco Tower",
+      "type": "visit",
+      "day": "2025-12-12",
+      "block": "evening",
+      "price_vnd": 200000,
+      "image_url": "https://encrypted-tbn3.gstatic.com/licensed-image?q=tbn:ANd9GcQVVCY2Bavik9y5l0DT3oShbI_MHZORle-eHzNI4fLJ6XyTwMIM6a5Zd4NTKBQjEDhiG09TxMVYD5C5ZPzSoTy_gMZU2Se9Gs72naC_2VIlVBk-DAY"
+    },
+    {
+      "name": "Đèo Nước Ngọt",
+      "type": "visit",
+      "day": "2025-12-13",
+      "block": "morning",
+      "price_vnd": 0,
+      "image_url": "https://encrypted-tbn3.gstatic.com/licensed-image?q=tbn:ANd9GcSn1u6uTlaQXFD9IiU7UEjbzT9mzkQZ39QDrCxL8o7noVhdoxCYNVNCR0pVGSbXvkbyA12ZtkHp5WepDubPysyTlNu8U6I_OHoH0m2bbMV5m6QhthQ"
+    },
+    {
+      "name": "Hải sản Chợ Phước Hải",
+      "type": "eat",
+      "day": "2025-12-13",
+      "block": "lunch",
+      "price_vnd": 150000,
+      "image_url": "https://mia.vn/media/uploads/blog-du-lich/cho-phuoc-hai-quy-mo-1742261460.jpg"
+    },
+    {
+      "name": "Hồ Đá Xanh",
+      "type": "visit",
+      "day": "2025-12-13",
+      "block": "afternoon",
+      "price_vnd": 40000,
+      "image_url": "https://encrypted-tbn0.gstatic.com/licensed-image?q=tbn:ANd9GcR1jnK909E500LnV-_RnTeWv9s9T7w9yMuTur91hwVdx3qPcOYdEYk46CTeNopA6lAQ_cUR_8WvuapwQH47nQT28PsAOMdfsn2axVW3WG54ZHVJSJw"
+    }
+  ],
+  "tags": [],
+  "trip_data": {
+    "city": "Hồ Chí Minh",
+    "start_date": "2025-12-11",
+    "num_days": 3,
+    "num_nights": 2,
+    "days": [
+      {
+        "city": "Hồ Chí Minh",
+        "date": "2025-12-11",
+        "blocks": {
+          "morning": [
+            {
+              "order": 1,
+              "type": "visit",
+              "name": "Zenna Pool Camp",
+              "start": "08:00",
+              "end": "10:10",
+              "distance_from_prev_km": 0.0,
+              "travel_from_prev_min": 0,
+              "dwell_min": 130,
+              "image_url": "https://res.klook.com/image/upload/q_85/c_fill,w_750/v1685957337/kvgnnsnvi9j6tk7vf7ez.jpg",
+              "price_vnd": 50000,
+              "lat": 10.403658427146764,
+              "lng": 107.18905367038157,
+              "place_id": 55
+            }
+          ],
+          "lunch": [],
+          "afternoon": [
+            {
+              "order": 1,
+              "type": "visit",
+              "name": "Bảo tàng Vũ khí cổ Robert Taylor",
+              "start": "12:55",
+              "end": "14:35",
+              "distance_from_prev_km": 13.79,
+              "travel_from_prev_min": 165,
+              "dwell_min": 100,
+              "image_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQijJCowzRn8y3Sm_6z2RFuy2o7YyyVdeOgvtclZKhBZxM0Wn3ourYJ4pj1L0KS",
+              "price_vnd": 70000,
+              "lat": 10.351279534169908,
+              "lng": 107.07480852625295,
+              "place_id": 50
+            },
+            {
+              "order": 2,
+              "type": "visit",
+              "name": "Đồi Con Heo",
+              "start": "15:10",
+              "end": "16:00",
+              "distance_from_prev_km": 2.93,
+              "travel_from_prev_min": 35,
+              "dwell_min": 50,
+              "image_url": "https://encrypted-tbn3.gstatic.com/licensed-image?q=tbn:ANd9GcQMe8aQIqiQc8_SXpBfNYv62FkV9EvMVb7WZuwYTMKd_rxw34P6HkaKQ9Bz6rFpL2-0CQzYVBZ8XhfxZJ6b1vfVcPtrjI-z01I_dKkmEgBxZu9JVdQ",
+              "price_vnd": 0,
+              "lat": 10.327554673214998,
+              "lng": 107.08642042270655,
+              "place_id": 56
+            },
+            {
+              "order": 3,
+              "type": "visit",
+              "name": "Tượng Chúa Kitô Vua",
+              "start": "16:03",
+              "end": "17:25",
+              "distance_from_prev_km": 0.23,
+              "travel_from_prev_min": 3,
+              "dwell_min": 82,
+              "image_url": "https://encrypted-tbn1.gstatic.com/licensed-image?q=tbn:ANd9GcTdecMQdJH7W7bq6vu8HTHOik1vGLx-76EWlWppUC0UL-G2Fe5yRwACzr3SvfqMP-g7LiEWcP05ptzVi7ZRFh2extpDJbeOCh4dkLFuUxM2NUt38Jo",
+              "price_vnd": 0,
+              "lat": 10.32654083870638,
+              "lng": 107.08461227621174,
+              "place_id": 59
+            }
+          ],
+          "dinner": [
+            {
+              "order": 1,
+              "type": "eat",
+              "name": "Lẩu Cá Đuối Hoàng Minh",
+              "start": "17:50",
+              "end": "18:50",
+              "distance_from_prev_km": 2.05,
+              "travel_from_prev_min": 25,
+              "dwell_min": 60,
+              "image_url": "https://yeuvungtau.com/wp-content/uploads/2022/03/lau-ca-duoi-hoang-minh-8.jpg",
+              "price_vnd": 200000,
+              "lat": 10.344257953168823,
+              "lng": 107.07947796156425,
+              "place_id": 128
+            }
+          ],
+          "evening": [
+            {
+              "order": 1,
+              "type": "visit",
+              "name": "Mũi Nghinh Phong",
+              "start": "19:20",
+              "end": "22:00",
+              "distance_from_prev_km": 2.52,
+              "travel_from_prev_min": 30,
+              "dwell_min": 160,
+              "image_url": "https://encrypted-tbn2.gstatic.com/licensed-image?q=tbn:ANd9GcS2cL6MAy1nxacT0bNX981JNkxFhR22lgu2Bonb94EMRZlckvhBdy7k-9flIHmV2p0eAdSm1ymxuHOHIXbzqGQuHVewjjgESGr0M5Fwu2EK_k_mziI",
+              "price_vnd": 0,
+              "lat": 10.321980456829671,
+              "lng": 107.08368261197074,
+              "place_id": 52
+            }
+          ]
+        },
+        "cost_summary": {
+          "total_attraction_cost_vnd": 120000,
+          "total_trip_cost_vnd": 320000
+        }
+      },
+      {
+        "city": "Hồ Chí Minh",
+        "date": "2025-12-12",
+        "blocks": {
+          "morning": [
+            {
+              "order": 1,
+              "type": "visit",
+              "name": "Bảo tàng Chứng tích Chiến tranh",
+              "start": "08:00",
+              "end": "10:04",
+              "distance_from_prev_km": 0.0,
+              "travel_from_prev_min": 0,
+              "dwell_min": 124,
+              "image_url": "https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcS5XNNmq3p10Cw4k1bnEEEFN8AgZK9ecB17vB2hDbw09tuHnCuzXrCvRmceH7Fp",
+              "price_vnd": 40000,
+              "lat": 10.779530556303875,
+              "lng": 106.6920888103032,
+              "place_id": 185
+            },
+            {
+              "order": 2,
+              "type": "visit",
+              "name": "Công viên Bờ sông Sài Gòn",
+              "start": "10:28",
+              "end": "11:30",
+              "distance_from_prev_km": 2.04,
+              "travel_from_prev_min": 24,
+              "dwell_min": 62,
+              "image_url": "https://statics.vinpearl.com/cong-vien-bo-song-sai-gon_1732009640.jpg",
+              "price_vnd": 0,
+              "lat": 10.777621654320615,
+              "lng": 106.71064902214702,
+              "place_id": 108
+            }
+          ],
+          "lunch": [
+            {
+              "order": 1,
+              "type": "eat",
+              "name": "Chicago Cơm Ngon Hà Nội",
+              "start": "11:52",
+              "end": "12:52",
+              "distance_from_prev_km": 1.81,
+              "travel_from_prev_min": 22,
+              "dwell_min": 60,
+              "image_url": "https://i.pinimg.com/1200x/b0/4a/13/b04a13a6f69a4770a37fe960bc80dee1.jpg",
+              "price_vnd": 150000,
+              "lat": 10.774900471169003,
+              "lng": 106.69430359018426,
+              "place_id": 69
+            }
+          ],
+          "afternoon": [
+            {
+              "order": 1,
+              "type": "visit",
+              "name": "Phố đi bộ Nguyễn Huệ",
+              "start": "13:04",
+              "end": "14:09",
+              "distance_from_prev_km": 1.03,
+              "travel_from_prev_min": 12,
+              "dwell_min": 65,
+              "image_url": "https://encrypted-tbn2.gstatic.com/licensed-image?q=tbn:ANd9GcTf5-KNaijhAwlV6Wc2RWCpQb-1VvBN4CxlvwzUo8-XdPqrL-O5_uHyx27MYlE6wNA_8fj0wSDc97aXlU1msJU6eVMHZ6Li-1vF3NYa8h55UVSUpXI",
+              "price_vnd": 0,
+              "lat": 10.773864734536067,
+              "lng": 106.70366103443047,
+              "place_id": 70
+            },
+            {
+              "order": 2,
+              "type": "visit",
+              "name": "Dinh Độc Lập",
+              "start": "14:21",
+              "end": "16:31",
+              "distance_from_prev_km": 0.97,
+              "travel_from_prev_min": 12,
+              "dwell_min": 130,
+              "image_url": "https://encrypted-tbn0.gstatic.com/licensed-image?q=tbn:ANd9GcTbAgFkvF_eck0wFiGh-zBjfAVQ5v7fJ2LMVLMPz3wZxrXqoXfznqG4oPLQ85-j-nEjYgQGOONV8wgclQdn6v0b2Dk0xzmGllSecuKnd0xy_yuNABk",
+              "price_vnd": 40000,
+              "lat": 10.777030924431134,
+              "lng": 106.69539248867457,
+              "place_id": 173
+            },
+            {
+              "order": 3,
+              "type": "visit",
+              "name": "Chợ Bến Thành",
+              "start": "16:38",
+              "end": "17:13",
+              "distance_from_prev_km": 0.58,
+              "travel_from_prev_min": 7,
+              "dwell_min": 35,
+              "image_url": "https://encrypted-tbn3.gstatic.com/licensed-image?q=tbn:ANd9GcTpCAXpCMFfdq-_Q5r8R9faD47tDKUVle3dltOf4AWXCTLX7rNwTYOxDqcAMul9hH3QhniGynY86Twj48JbQaMBo17y3Yz9fxhuhM-rL_oZkdWBT20",
+              "price_vnd": 0,
+              "lat": 10.772532946392827,
+              "lng": 106.69801674571262,
+              "place_id": 73
+            }
+          ],
+          "dinner": [
+            {
+              "order": 1,
+              "type": "eat",
+              "name": "Bánh Mì Như Lan",
+              "start": "17:21",
+              "end": "18:21",
+              "distance_from_prev_km": 0.69,
+              "travel_from_prev_min": 8,
+              "dwell_min": 60,
+              "image_url": "https://encrypted-tbn2.gstatic.com/licensed-image?q=tbn:ANd9GcTuo6VuHnVfXjRqd-aKYoOMl59ZPQKGCYplNRwcqTNK-L-EoYh1sotlto-kqD7omH8x5femWaDyqV9FGNkfxAqYmG9UR3W2c4bXNePrINv_mHkrx3A",
+              "price_vnd": 40000,
+              "lat": 10.771131426595419,
+              "lng": 106.70419605319678,
+              "place_id": 147
+            }
+          ],
+          "evening": [
+            {
+              "order": 1,
+              "type": "visit",
+              "name": "Bitexco Tower",
+              "start": "18:22",
+              "end": "22:00",
+              "distance_from_prev_km": 0.07,
+              "travel_from_prev_min": 1,
+              "dwell_min": 218,
+              "image_url": "https://encrypted-tbn3.gstatic.com/licensed-image?q=tbn:ANd9GcQVVCY2Bavik9y5l0DT3oShbI_MHZORle-eHzNI4fLJ6XyTwMIM6a5Zd4NTKBQjEDhiG09TxMVYD5C5ZPzSoTy_gMZU2Se9Gs72naC_2VIlVBk-DAY",
+              "price_vnd": 200000,
+              "lat": 10.77172949642816,
+              "lng": 106.7043791802825,
+              "place_id": 189
+            }
+          ]
+        },
+        "cost_summary": {
+          "total_attraction_cost_vnd": 280000,
+          "total_trip_cost_vnd": 470000
+        }
+      },
+      {
+        "city": "Hồ Chí Minh",
+        "date": "2025-12-13",
+        "blocks": {
+          "morning": [
+            {
+              "order": 1,
+              "type": "visit",
+              "name": "Đèo Nước Ngọt",
+              "start": "08:00",
+              "end": "10:10",
+              "distance_from_prev_km": 0.0,
+              "travel_from_prev_min": 0,
+              "dwell_min": 130,
+              "image_url": "https://encrypted-tbn3.gstatic.com/licensed-image?q=tbn:ANd9GcSn1u6uTlaQXFD9IiU7UEjbzT9mzkQZ39QDrCxL8o7noVhdoxCYNVNCR0pVGSbXvkbyA12ZtkHp5WepDubPysyTlNu8U6I_OHoH0m2bbMV5m6QhthQ",
+              "price_vnd": 0,
+              "lat": 10.37981143273993,
+              "lng": 107.25490953881574,
+              "place_id": 51
+            }
+          ],
+          "lunch": [
+            {
+              "order": 1,
+              "type": "eat",
+              "name": "Hải sản Chợ Phước Hải",
+              "start": "11:31",
+              "end": "12:31",
+              "distance_from_prev_km": 6.74,
+              "travel_from_prev_min": 81,
+              "dwell_min": 60,
+              "image_url": "https://mia.vn/media/uploads/blog-du-lich/cho-phuoc-hai-quy-mo-1742261460.jpg",
+              "price_vnd": 150000,
+              "lat": 10.425633554979461,
+              "lng": 107.29525910177027,
+              "place_id": 132
+            }
+          ],
+          "afternoon": [
+            {
+              "order": 1,
+              "type": "visit",
+              "name": "Hồ Đá Xanh",
+              "start": "16:14",
+              "end": "17:19",
+              "distance_from_prev_km": 18.62,
+              "travel_from_prev_min": 223,
+              "dwell_min": 65,
+              "image_url": "https://encrypted-tbn0.gstatic.com/licensed-image?q=tbn:ANd9GcR1jnK909E500LnV-_RnTeWv9s9T7w9yMuTur91hwVdx3qPcOYdEYk46CTeNopA6lAQ_cUR_8WvuapwQH47nQT28PsAOMdfsn2axVW3WG54ZHVJSJw",
+              "price_vnd": 40000,
+              "lat": 10.50869778020838,
+              "lng": 107.14735325218433,
+              "place_id": 53
+            }
+          ],
+          "dinner": [],
+          "evening": []
+        },
+        "cost_summary": {
+          "total_attraction_cost_vnd": 40000,
+          "total_trip_cost_vnd": 190000
+        }
+      }
+    ]
+  },
+  "id": 1765487294798,
+  "created_at": "2025-12-11T21:08:14.798957+00:00"
+}

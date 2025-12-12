@@ -1,12 +1,17 @@
 :root {
-  /* Palette sáng – gần giống trang lịch trình */
-  --bg: #f3f4f6;
-  --bg-hero: linear-gradient(135deg, #22c1c3 0%, #6dd5ed 40%, #ffffff 100%);
+  /* Đồng bộ với template trip_recommend (teal theme) */
+  --primary: #0d9488;       /* teal-600 */
+  --primary-dark: #0f766e;  /* teal-700 */
+  --primary-light: #ccfbf1; /* teal-100 */
+  --primary-bg: #f0fdfa;    /* teal-50 */
+  
+  --bg: #f8fafc;            /* slate-50 */
+  --bg-hero: linear-gradient(135deg, #0d9488 0%, #14b8a6 40%, #ffffff 100%);
   --bg-card: #ffffff;
   --bg-card-soft: #f9fafb;
-  --accent: #0ea5e9;
-  --accent-soft: rgba(14, 165, 233, 0.12);
-  --accent-strong: #0369a1;
+  --accent: #0d9488;        /* teal-600 */
+  --accent-soft: rgba(13, 148, 136, 0.12);
+  --accent-strong: #0f766e; /* teal-700 */
   --text-main: #0f172a;
   --text-muted: #6b7280;
   --border: #e5e7eb;

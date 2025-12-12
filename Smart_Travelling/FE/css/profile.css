@@ -1,13 +1,51 @@
 :root {
-    --primary: #4f46e5; /* Màu tím xanh hiện đại */
-    --primary-hover: #4338ca;
-    --bg-body: #f3f4f6;
+    /* Đồng bộ với template recommend (teal theme) */
+    --primary: #0d9488;       /* teal-600 */
+    --primary-hover: #0f766e; /* teal-700 */
+    --primary-light: #ccfbf1; /* teal-100 */
+    --primary-bg: #f0fdfa;    /* teal-50 */
+    
+    --bg-body: #f8fafc;       /* slate-50 */
     --bg-card: #ffffff;
-    --text-main: #111827;
-    --text-muted: #6b7280;
-    --border: #e5e7eb;
+    --text-main: #0f172a;     /* slate-900 */
+    --text-muted: #64748b;    /* slate-500 */
+    --border: #e2e8f0;        /* slate-200 */
     --danger: #ef4444;
     --success: #10b981;
+    
+    --amber-500: #f59e0b;
+}
+
+/* Back Button */
+.btn-back-home {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    color: var(--text-main);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.1);
+    transition: all 0.2s ease;
+}
+
+.btn-back-home:hover {
+    background: var(--primary-light);
+    border-color: var(--primary);
+    color: var(--primary);
+    transform: translateX(-2px);
+}
+
+.btn-back-home i {
+    font-size: 14px;
 }
 
 /* --- Reset CSS --- */

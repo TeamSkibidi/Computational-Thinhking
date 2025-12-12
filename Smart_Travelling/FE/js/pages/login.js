@@ -50,7 +50,7 @@ loginForm.addEventListener("submit", async (e) => {
     window.location.href = "../html/recommend_five_vistor.html";
 
   } catch (err) {
-    // Nếu backend trả lỗi, authApi đã throw Error
+    // Nếu backend trả lỗi, aut`hApi đã throw Error
     alert("Lỗi đăng nhập: " + err.message);
   }
 });
@@ -66,5 +66,5 @@ backBtn.addEventListener("click", () => {
 // 3) NÚT SIGN UP
 // ============================
 signinBtn.addEventListener("click", () => {
-  window.location.href = "../html/signin.html";
+  window.location.href = "../html/main.html";
 });

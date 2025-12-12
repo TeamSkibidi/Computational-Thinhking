@@ -14,6 +14,9 @@ class BlockItemResponse(BaseModel):
     dwell_min: int = Field(..., example=90)
     image_url: str | None = Field(None, example="https://cdn.../place.jpg")
     price_vnd: int | None = Field(None, example=50000)
+    lat: float | None = Field(None, example=21.0285)
+    lng: float | None = Field(None, example=105.8542)
+    place_id: int | None = Field(None, example=123)
 
 """Tổng hợp chi phí trong ngày không bao gồm ăn uống và di chuyển nha (chỉ tính tham quan với khách sạn thôi    )"""
 class CostSummaryResponse(BaseModel):
