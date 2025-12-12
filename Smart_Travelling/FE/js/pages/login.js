@@ -47,7 +47,7 @@ loginForm.addEventListener("submit", async (e) => {
     localStorage.setItem("user", JSON.stringify(user));
 
     // Chuyển sang trang profile (đổi path nếu bạn đặt khác)
-    window.location.href = "../html/recommend_five_vistor.html";
+    window.location.href = "../html/main.html";
 
   } catch (err) {
     // Nếu backend trả lỗi, aut`hApi đã throw Error
@@ -66,5 +66,5 @@ backBtn.addEventListener("click", () => {
 // 3) NÚT SIGN UP
 // ============================
 signinBtn.addEventListener("click", () => {
-  window.location.href = "../html/main.html";
+  window.location.href = "../html/signin.html";
 });
