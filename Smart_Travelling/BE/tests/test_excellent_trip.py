@@ -1,19 +1,5 @@
-"""
-╔══════════════════════════════════════════════════════════════════════════════╗
-║                    EXCELLENT TESTING & IMPROVEMENT                            ║
-║                    Smart Travelling - Trip Recommender                        ║
-╠══════════════════════════════════════════════════════════════════════════════╣
-║  Criterion: Testing & Improvement (10%)                                       ║
-║  Target: EXCELLENT (9-10 points)                                              ║
-║  Requirements:                                                                ║
-║    ✓ Multiple test cases with different scenarios                             ║
-║    ✓ Strong analysis of results                                               ║
-║    ✓ Realistic improvement suggestions                                        ║
-║    ✓ Testing: different budgets, tastes, preferences                          ║
-║    ✓ Reflection: weaknesses identified                                        ║
-║    ✓ Improvement: time-based filters, trending features                       ║
-╚══════════════════════════════════════════════════════════════════════════════╝
 
+"""
 Chạy test:
     pytest tests/test_excellent_trip.py -v -s --tb=short
     
@@ -190,7 +176,7 @@ def analyze_response(response_body: Dict, test_name: str, scenario: str,
     avg_rating = statistics.mean(all_ratings) if all_ratings else 0
     
     analysis = f"""
-    📊 PHÂN TÍCH KẾT QUẢ:
+    PHÂN TÍCH KẾT QUẢ:
     - Tổng địa điểm: {total_places}
     - Tổng chi phí: {total_cost:,} VND
     - Rating trung bình: {avg_rating:.2f}
@@ -221,8 +207,8 @@ def analyze_response(response_body: Dict, test_name: str, scenario: str,
 def print_test_result(result: TestResult):
     """In kết quả test với format đẹp"""
     print("\n" + "═" * 80)
-    print(f"📋 TEST: {result.test_name}")
-    print(f"🎯 SCENARIO: {result.scenario}")
+    print(f"TEST: {result.test_name}")
+    print(f"SCENARIO: {result.scenario}")
     print("═" * 80)
     
     print("\n📥 INPUT:")
@@ -233,26 +219,26 @@ def print_test_result(result: TestResult):
     
     print("\n📤 OUTPUT:")
     print("-" * 40)
-    print(f"   ✅ Success: {result.success}")
-    print(f"   📅 Số ngày: {result.num_days}")
-    print(f"   📍 Tổng địa điểm: {result.total_places}")
-    print(f"   💰 Tổng chi phí: {result.total_cost:,} VND")
-    print(f"   ⭐ Rating TB: {result.avg_rating:.2f}")
-    print(f"   🎨 Diversity: {result.diversity_score:.2f}")
+    print(f"Success: {result.success}")
+    print(f"Số ngày: {result.num_days}")
+    print(f"Tổng địa điểm: {result.total_places}")
+    print(f"Tổng chi phí: {result.total_cost:,} VND")
+    print(f"Rating TB: {result.avg_rating:.2f}")
+    print(f"Diversity: {result.diversity_score:.2f}")
     
-    print("\n📊 PHÂN BỐ:")
+    print("\nPHÂN BỐ:")
     print("-" * 40)
-    print(f"   Theo loại: {result.places_by_type}")
-    print(f"   Theo block: {result.places_by_block}")
+    print(f"Theo loại: {result.places_by_type}")
+    print(f"Theo block: {result.places_by_block}")
     
     if result.issues:
-        print("\n⚠️  VẤN ĐỀ PHÁT HIỆN:")
+        print("\nVẤN ĐỀ PHÁT HIỆN:")
         print("-" * 40)
         for issue in result.issues:
             print(f"   • {issue}")
     
     if result.recommendations:
-        print("\n💡 ĐỀ XUẤT CẢI THIỆN:")
+        print("\nĐỀ XUẤT CẢI THIỆN:")
         print("-" * 40)
         for rec in result.recommendations:
             print(f"   → {rec}")
@@ -402,7 +388,7 @@ class TestDifferentTastes:
         # Foodie nên có nhiều địa điểm food
         if result.places_by_type:
             food_count = result.places_by_type.get("food", 0)
-            print(f"   🍜 Số địa điểm food: {food_count}")
+            print(f"Số địa điểm food: {food_count}")
     
     def test_nature_lover(self):
         """Test 7: Người yêu thiên nhiên"""
@@ -605,7 +591,7 @@ class TestEdgeCases:
         assert response.status_code == 200
         # 7 ngày nên không có địa điểm trùng lặp
         if result.total_places > 0:
-            print(f"   📊 Độ đa dạng cho 7 ngày: {result.diversity_score:.2f}")
+            print(f"Độ đa dạng cho 7 ngày: {result.diversity_score:.2f}")
     
     def test_large_group_10_people(self):
         """Test 15: Nhóm lớn 10 người"""
@@ -654,11 +640,11 @@ class TestEdgeCases:
         response = client.post("/api/v0/recommand/trip", json=request)
         
         print("\n" + "═" * 80)
-        print("📋 TEST: Minimum Input Test")
-        print("🎯 SCENARIO: Chỉ cung cấp city, start_date, num_days")
+        print("TEST: Minimum Input Test")
+        print("SCENARIO: Chỉ cung cấp city, start_date, num_days")
         print("═" * 80)
-        print(f"\n📥 INPUT: {request}")
-        print(f"\n📤 STATUS: {response.status_code}")
+        print(f"\nINPUT: {request}")
+        print(f"\nSTATUS: {response.status_code}")
         
         # Có thể pass hoặc fail tùy validation
         assert response.status_code in [200, 422]
@@ -687,7 +673,7 @@ class TestReflectionAndAnalysis:
         # ──────────────────────────────────────────────────────────────────────
         
         print("║" + " " * 78 + "║")
-        print("║  🔴 IDENTIFIED WEAKNESSES (Điểm yếu phát hiện)" + " " * 31 + "║")
+        print("║IDENTIFIED WEAKNESSES (Điểm yếu phát hiện)" + " " * 31 + "║")
         print("║" + "─" * 78 + "║")
         
         weaknesses = [
@@ -719,7 +705,7 @@ class TestReflectionAndAnalysis:
         # ──────────────────────────────────────────────────────────────────────
         
         print("║" + " " * 78 + "║")
-        print("║  🟢 STRENGTHS (Điểm mạnh)" + " " * 52 + "║")
+        print("║STRENGTHS (Điểm mạnh)" + " " * 52 + "║")
         print("║" + "─" * 78 + "║")
         
         strengths = [
@@ -751,7 +737,7 @@ class TestReflectionAndAnalysis:
         # ──────────────────────────────────────────────────────────────────────
         
         print("║" + " " * 78 + "║")
-        print("║  💡 IMPROVEMENT SUGGESTIONS (Đề xuất cải thiện)" + " " * 30 + "║")
+        print("║IMPROVEMENT SUGGESTIONS (Đề xuất cải thiện)" + " " * 30 + "║")
         print("║" + "─" * 78 + "║")
         
         improvements = [
@@ -843,12 +829,12 @@ class TestImprovementPrototypes:
         # Test với các khung giờ khác nhau
         test_times = ["09:00", "14:00", "20:00", "23:00"]
         
-        print("\n📊 KẾT QUẢ FILTER THEO GIỜ:")
+        print("\nKẾT QUẢ FILTER THEO GIỜ:")
         print("-" * 60)
         
         for t in test_times:
             filtered = filter_by_time(mock_places, t)
-            print(f"\n⏰ {t}:")
+            print(f"\n{t}:")
             for p in filtered:
                 print(f"   ✓ {p['name']} (mở: {p['open']} - {p['close']})")
             print(f"   → Có {len(filtered)}/{len(mock_places)} địa điểm mở cửa")
@@ -894,20 +880,20 @@ class TestImprovementPrototypes:
                     return base_score + boost
             return base_score
         
-        print(f"\n📅 Tuần: {mock_trending['week']}")
-        print(f"📍 Thành phố: {mock_trending['city']}")
-        print(f"📊 Nguồn dữ liệu: {', '.join(mock_trending['data_sources'])}")
+        print(f"\nTuần: {mock_trending['week']}")
+        print(f"Thành phố: {mock_trending['city']}")
+        print(f"Nguồn dữ liệu: {', '.join(mock_trending['data_sources'])}")
         
-        print("\n🔥 TOP TRENDING DISHES:")
+        print("\nTOP TRENDING DISHES:")
         print("-" * 60)
         
         for i, dish in enumerate(mock_trending["trending_dishes"], 1):
             print(f"\n   #{i} {dish['dish']}")
-            print(f"      📈 Mentions: {dish['mentions']:,}")
-            print(f"      😊 Sentiment: {dish['sentiment']:.0%}")
-            print(f"      🏪 Top places: {', '.join(dish['top_places'])}")
+            print(f"Mentions: {dish['mentions']:,}")
+            print(f"Sentiment: {dish['sentiment']:.0%}")
+            print(f"Top places: {', '.join(dish['top_places'])}")
         
-        print("\n💡 ỨNG DỤNG VÀO ALGORITHM:")
+        print("\nỨNG DỤNG VÀO ALGORITHM:")
         print("-" * 60)
         
         test_places = [
@@ -949,7 +935,7 @@ class TestPerformance:
             ("7 ngày", create_request(num_days=7)),
         ]
         
-        print("\n⏱️  RESPONSE TIME MEASUREMENT:")
+        print("\nRESPONSE TIME MEASUREMENT:")
         print("-" * 60)
         
         results = []
@@ -964,16 +950,16 @@ class TestPerformance:
             
             print(f"   {status_icon} {name}: {elapsed:.3f}s {speed_icon}")
         
-        print("\n📊 PHÂN TÍCH:")
+        print("\nPHÂN TÍCH:")
         avg_time = sum(r[1] for r in results) / len(results)
         max_time = max(r[1] for r in results)
         print(f"   • Thời gian trung bình: {avg_time:.3f}s")
         print(f"   • Thời gian tối đa: {max_time:.3f}s")
         
         if max_time < 5:
-            print("   • Đánh giá: ✅ ACCEPTABLE (<5s)")
+            print("   • Đánh giá:ACCEPTABLE (<5s)")
         else:
-            print("   • Đánh giá: ⚠️ CẦN TỐI ƯU (>5s)")
+            print("   • Đánh giá:CẦN TỐI ƯU (>5s)")
         
         assert all(r[2] == 200 for r in results)
 
@@ -999,38 +985,38 @@ class TestFinalSummary:
         
         summary = """
 ║                                                                              ║
-║  📊 TEST CATEGORIES COVERED:                                                 ║
+║  TEST CATEGORIES COVERED:                                                 ║
 ║  ────────────────────────────────────────────────────────────────────────    ║
-║     ✅ Budget Testing (4 test cases)                                         ║
+║     Budget Testing (4 test cases)                                         ║
 ║        - Low budget (500K), Medium (2M), High (10M), Unlimited               ║
 ║                                                                              ║
-║     ✅ Taste/Preference Testing (6 test cases)                               ║
+║     Taste/Preference Testing (6 test cases)                               ║
 ║        - Cultural lover, Foodie, Nature lover, Adventure seeker             ║
 ║        - Family trip, Romantic couple                                        ║
 ║                                                                              ║
-║     ✅ Time Block Testing (3 test cases)                                     ║
+║     Time Block Testing (3 test cases)                                     ║
 ║        - Morning only, Evening only, Full day intensive                      ║
 ║                                                                              ║
-║     ✅ Edge Cases Testing (4 test cases)                                     ║
+║     Edge Cases Testing (4 test cases)                                     ║
 ║        - 7-day trip, Large group, Conflicting tags, Minimum input           ║
 ║                                                                              ║
-║     ✅ Reflection & Analysis (1 comprehensive report)                        ║
+║     Reflection & Analysis (1 comprehensive report)                        ║
 ║        - Weaknesses identified, Strengths documented                         ║
 ║        - Improvement suggestions with priorities                             ║
 ║                                                                              ║
-║     ✅ Improvement Prototypes (2 working prototypes)                         ║
+║     Improvement Prototypes (2 working prototypes)                         ║
 ║        - Time-based filter (open hours)                                      ║
 ║        - Weekly trending dishes from social media                            ║
 ║                                                                              ║
-║     ✅ Performance Testing (1 test case)                                     ║
+║     Performance Testing (1 test case)                                     ║
 ║        - Response time measurement for 1/3/7 days                            ║
 ║                                                                              ║
 ║  ────────────────────────────────────────────────────────────────────────    ║
-║  📈 TOTAL: 22 TEST CASES                                                     ║
-║  🎯 TARGET: EXCELLENT (9-10 points)                                          ║
+║  TOTAL: 22 TEST CASES                                                     ║
+║  TARGET: EXCELLENT (9-10 points)                                          ║
 ║                                                                              ║
 ║  ────────────────────────────────────────────────────────────────────────    ║
-║  🔑 KEY ACHIEVEMENTS:                                                        ║
+║  KEY ACHIEVEMENTS:                                                        ║
 ║     • Multiple test cases với different scenarios ✓                         ║
 ║     • Strong analysis với detailed metrics ✓                                 ║
 ║     • Realistic improvement suggestions ✓                                    ║
